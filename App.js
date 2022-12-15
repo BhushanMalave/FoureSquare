@@ -9,12 +9,12 @@ import {
   View,
 } from 'react-native';
 
-import {Login} from './src/screens/LoginScreen';
+import { LoginStack } from './src/navigation/LoginStack';
 
 const App = () => {
   return (
     <View style={{flex: 1}}>
-      <Login />
+      <LoginStack />
     </View>
   );
 };
