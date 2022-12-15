@@ -19,7 +19,7 @@ import {Formik} from 'formik';
 import * as yup from 'yup';
 import {TextField} from 'rn-material-ui-textfield';
 
-export const VerifyOtp = () => {
+export const VerifyOtp = ({navigation}) => {
   const {width, height} = useWindowDimensions();
   const width1 = width < height ? -11.5 : -45;
   const width2 = width < height ? -15.5 : -50;
@@ -51,6 +51,7 @@ export const VerifyOtp = () => {
                 initialValues={{otp: ''}}
                 onSubmit={async (values, {resetForm}) => {
                   console.log(values);
+                  navigation.navigate('Forgot Password')
                 }}>
                 {({
                   handleChange,
@@ -64,7 +65,7 @@ export const VerifyOtp = () => {
                     <TextField
                       label="Enter OTP"
                       name="otp"
-                      keyboardType="email-address"
+                      keyboardType='number-pad'
                       formatText={this.formatText}
                       onSubmitEditing={this.onSubmit}
                       ref={this.fieldRef}

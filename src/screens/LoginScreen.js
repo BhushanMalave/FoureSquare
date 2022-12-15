@@ -157,7 +157,7 @@ export const Login = ({navigation}) => {
                     </Text>
                   )}
 
-                  <TouchableOpacity style={{}} onPress={() => {navigation.navigate('Forgot Password')}}>
+                  <TouchableOpacity style={{}} onPress={() => {navigation.navigate('Verification')}}>
                     <Text style={styles.text}>Forgot Password?</Text>
                   </TouchableOpacity>
                   <View style={styles.container}>
