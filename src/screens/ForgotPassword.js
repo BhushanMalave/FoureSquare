@@ -18,11 +18,13 @@ import {
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {TextField} from 'rn-material-ui-textfield';
+import { changePasswordApi } from '../authorization/Auth';
 
-export const ForgotPassword = ({navigation}) => {
+export const ForgotPassword = ({navigation,route}) => {
   const {width, height} = useWindowDimensions();
   const width1 = width < height ? -11.5 : -25;
   const width2 = width < height ? -20.5 : -50;
+  const Email= route.params.Email;
   const signinValidationSchema = yup.object().shape({
     password: yup
       .string()
@@ -55,9 +57,22 @@ export const ForgotPassword = ({navigation}) => {
                 validationSchema={signinValidationSchema}
                 initialValues={{password: '', confirmPassword: ''}}
                 onSubmit={async (values, {resetForm}) => {
-                  console.log(values);
+                  const obj =
+                  {
+                    "email": Email,
+                    "newPassword":values.password
+                }
+                console.log(obj)
+                const response = await changePasswordApi(obj);
+                console.log(response);
+                  
+                if(response?.message === "Your new password is updated. Please log in...")
+                {
                   navigation.navigate('Login')
                   resetForm({initialValues: ''});
+                  } else {
+                    console.log(response.message);
+                  }
 
                 }}>
                 {({
@@ -137,7 +152,7 @@ export const ForgotPassword = ({navigation}) => {
                       labelOffset={{y1: -5, x1: width2}}
                       onChangeText={handleChange('confirmPassword')}
                       onBlur={handleBlur('confirmPassword')}
-                      value={values.conformPassword}
+                      value={values.confirmPassword}
                       autoCorrect={false}
                       secureTextEntry={true}
                       style={{

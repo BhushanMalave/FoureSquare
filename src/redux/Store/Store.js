@@ -2,7 +2,7 @@ import {configureStore} from '@reduxjs/toolkit';
 import {persistReducer} from 'redux-persist';
 import {combineReducers} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import userDetailsReducer from '../ReduxPersist/UserDetails';
+import userDetailsReducer from '../ReduxPersist/User'
 
 
 const persistConfig = {
