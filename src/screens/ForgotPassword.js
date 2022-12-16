@@ -21,8 +21,8 @@ import {TextField} from 'rn-material-ui-textfield';
 
 export const ForgotPassword = ({navigation}) => {
   const {width, height} = useWindowDimensions();
-  const width1 = width < height ? -11.5 : -45;
-  const width2 = width < height ? -15.5 : -50;
+  const width1 = width < height ? -11.5 : -25;
+  const width2 = width < height ? -20.5 : -50;
   const signinValidationSchema = yup.object().shape({
     password: yup
       .string()
@@ -44,7 +44,7 @@ export const ForgotPassword = ({navigation}) => {
         style={{flex: 1}}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <SafeAreaView style={{flex: 1, marginHorizontal: 30}}>
-            <View style={{alignItems: 'center', marginTop: 30}}>
+            <View style={{alignItems: 'center',  marginTop: Platform.OS === 'ios' ?  40 :70}}>
               <Image
                 source={require('../assets/images/logo.png')}
                 style={styles.logo}
@@ -57,6 +57,7 @@ export const ForgotPassword = ({navigation}) => {
                 onSubmit={async (values, {resetForm}) => {
                   console.log(values);
                   navigation.navigate('Login')
+                  resetForm({initialValues: ''});
 
                 }}>
                 {({
@@ -80,7 +81,7 @@ export const ForgotPassword = ({navigation}) => {
                       baseColor="#b5abab"
                       lineWidth={1}
                       autoCapitalize="none"
-                      labelFontSize={18}
+                      labelFontSize={17}
                       labelOffset={{y1: -5, x1: width1}}
                       onChangeText={handleChange('password')}
                       onBlur={handleBlur('password')}
@@ -101,8 +102,7 @@ export const ForgotPassword = ({navigation}) => {
                         color: '#b5abab',
                         fontFamily: 'Avenir Book',
                         alignSelf: 'center',
-                        height: 50,
-                        paddingTop: Platform.OS === 'ios' ? 2 : 3,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
                       }}
                       containerStyle={
                         {
@@ -134,7 +134,7 @@ export const ForgotPassword = ({navigation}) => {
                       lineWidth={1}
                       autoCapitalize="none"
                       labelFontSize={18}
-                      labelOffset={{y1: -5, x1: width1}}
+                      labelOffset={{y1: -5, x1: width2}}
                       onChangeText={handleChange('confirmPassword')}
                       onBlur={handleBlur('confirmPassword')}
                       value={values.conformPassword}
@@ -155,7 +155,7 @@ export const ForgotPassword = ({navigation}) => {
                         fontFamily: 'Avenir Book',
                         alignSelf: 'center',
                         height: 50,
-                        paddingTop: Platform.OS === 'ios' ? 2 : 3,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
                       }}
                       containerStyle={
                         {
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   viewTextInput: {
-    marginTop: 80,
+    marginTop:Platform.OS === 'android' ?  100 : 90,
   },
   textskip: {
     fontFamily: 'Avenir Book',
@@ -241,7 +241,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 80,
+    marginTop: Platform.OS === 'android' ? 110 :90,
+    marginBottom:30,
   },
   button: {
     backgroundColor: 'transparent',

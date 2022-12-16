@@ -21,7 +21,7 @@ import {TextField} from 'rn-material-ui-textfield';
 
 export const Login = ({navigation}) => {
   const {width, height} = useWindowDimensions();
-  const width1 = width < height ? -11.5:-45;
+  const width1 = width < height ? -15.5:-45;
   const width2 = width < height ? -15.5:-50;
   const signinValidationSchema = yup.object().shape({
     email: yup
@@ -61,6 +61,7 @@ export const Login = ({navigation}) => {
               onSubmit={async (values, {resetForm}) => {
                 console.log(values);
                navigation.navigate('Login')
+               resetForm({initialValues: ''});
                 
               }}>
               {({
@@ -97,6 +98,7 @@ export const Login = ({navigation}) => {
                       textAlign: 'center',
                       marginRight: 0,
                       marginTop: 18,
+                      height:30,
                     }}
                     labelTextStyle={{
                       textAlign: 'center',
@@ -104,7 +106,7 @@ export const Login = ({navigation}) => {
                       fontFamily: 'Avenir Book',
                       alignSelf: 'center',
                       height: 50,
-                      paddingTop:Platform.OS === 'ios' ? 2 : 3, 
+                      paddingTop:Platform.OS === 'ios' ? 2 : 4, 
                     }}
                   />
                   {errors.email && (
@@ -135,21 +137,17 @@ export const Login = ({navigation}) => {
                       marginBottom: 5,
                       textAlign: 'center',
                       marginTop: 10,
-                      marginRight: 0,
+                      marginLeft: 10,
+                      height:30,
                     }}
                     labelTextStyle={{
                       textAlign: 'center',
                       color: '#b5abab',
                       fontFamily: 'Avenir Book',
                       height: 50,
-                      paddingTop:Platform.OS === 'ios' ? 2 : 3, 
+                      paddingTop:Platform.OS === 'ios' ? 2 : 4, 
                     }}
-                    containerStyle={
-                      {
-                        // height:200,
-                        // borderWidth:1,
-                      }
-                    }
+                  
                   />
                   {errors.password && (
                     <Text style={{fontSize: 10, color: 'red',alignSelf:'center'}}>

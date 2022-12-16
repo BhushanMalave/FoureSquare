@@ -21,8 +21,7 @@ import {TextField} from 'rn-material-ui-textfield';
 
 export const VerifyOtp = ({navigation}) => {
   const {width, height} = useWindowDimensions();
-  const width1 = width < height ? -11.5 : -45;
-  const width2 = width < height ? -15.5 : -50;
+  const width2 = width < height ? -19.5 : -45;
   const signinValidationSchema = yup.object().shape({
     password: yup
       .string()
@@ -37,7 +36,7 @@ export const VerifyOtp = ({navigation}) => {
         style={{flex: 1}}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <SafeAreaView style={{flex: 1, marginHorizontal: 30}}>
-            <View style={{alignItems: 'center', marginTop: 30}}>
+            <View style={{alignItems: 'center', marginTop: Platform.OS === 'ios' ?  40 :70}}>
               <Image
                 source={require('../assets/images/logo.png')}
                 style={styles.logo}
@@ -52,6 +51,7 @@ export const VerifyOtp = ({navigation}) => {
                 onSubmit={async (values, {resetForm}) => {
                   console.log(values);
                   navigation.navigate('Forgot Password')
+                  resetForm({initialValues: ''});
                 }}>
                 {({
                   handleChange,
@@ -95,7 +95,7 @@ export const VerifyOtp = ({navigation}) => {
                         fontFamily: 'Avenir Book',
                         alignSelf: 'center',
                         height: 50,
-                        paddingTop: Platform.OS === 'ios' ? 2 : 3,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
                       }}
                       containerStyle={
                         {
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   viewTextInput: {
-    marginTop: 30,
+    marginTop: 40,
   },
   textskip: {
     fontFamily: 'Avenir Book',
@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 50,
+    marginBottom:30,
   },
   button: {
     backgroundColor: 'transparent',

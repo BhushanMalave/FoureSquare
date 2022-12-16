@@ -21,8 +21,10 @@ import {TextField} from 'rn-material-ui-textfield';
 
 export const CreateAccount = () => {
   const {width, height} = useWindowDimensions();
-  const width1 = width < height ? -11.5 : -45;
+  const width1 = width < height ? -18.5 : -50;
   const width2 = width < height ? -15.5 : -50;
+  const width3 = width < height ? -20.5 : -45;
+  const width4 = width < height ? -20.5 : -50;
   const signinValidationSchema = yup.object().shape({
     email: yup
     .string()
@@ -55,7 +57,7 @@ export const CreateAccount = () => {
         style={{flex: 1}}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <SafeAreaView style={{flex: 1, marginHorizontal: 30}}>
-            <View style={{alignItems: 'center', marginTop: 30}}>
+            <View style={{alignItems: 'center',  marginTop: Platform.OS === 'ios' ?  40 :70}}>
               <Image
                 source={require('../assets/images/logo.png')}
                 style={styles.logo}
@@ -67,6 +69,7 @@ export const CreateAccount = () => {
                 initialValues={{email:'',mobileNumber:'',password: '', confirmPassword:''}}
                 onSubmit={async (values, {resetForm}) => {
                   console.log(values);
+                  resetForm({initialValues: ''});
                 }}>
                 {({
                   handleChange,
@@ -110,7 +113,7 @@ export const CreateAccount = () => {
                       fontFamily: 'Avenir Book',
                       alignSelf: 'center',
                       height: 50,
-                      paddingTop:Platform.OS === 'ios' ? 2 : 3, 
+                      paddingTop:Platform.OS === 'ios' ? 2 : 4, 
                     }}
                   />
                   {errors.email && (
@@ -131,7 +134,7 @@ export const CreateAccount = () => {
                     lineWidth={1}
                     autoCapitalize="none"
                     labelFontSize={18}
-                    labelOffset={{y1: -5, x1:width2}}
+                    labelOffset={{y1: -5, x1:width1}}
                     onChangeText={handleChange('mobileNumber')}
                     onBlur={handleBlur('mobileNumber')}
                     value={values.mobileNumber}
@@ -151,7 +154,7 @@ export const CreateAccount = () => {
                       fontFamily: 'Avenir Book',
                       alignSelf: 'center',
                       height: 50,
-                      paddingTop:Platform.OS === 'ios' ? 2 : 3, 
+                      paddingTop:Platform.OS === 'ios' ? 2 : 4, 
                     }}
                   />
                   {errors.mobileNumber && (
@@ -172,7 +175,7 @@ export const CreateAccount = () => {
                       lineWidth={1}
                       autoCapitalize="none"
                       labelFontSize={18}
-                      labelOffset={{y1: -5, x1: width1}}
+                      labelOffset={{y1: -5, x1: width3}}
                       onChangeText={handleChange('password')}
                       onBlur={handleBlur('password')}
                       value={values.password}
@@ -193,14 +196,9 @@ export const CreateAccount = () => {
                         fontFamily: 'Avenir Book',
                         alignSelf: 'center',
                         height: 50,
-                        paddingTop: Platform.OS === 'ios' ? 2 : 3,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
                       }}
-                      containerStyle={
-                        {
-                          // height:200,
-                          // borderWidth:1,
-                        }
-                      }
+                
                     />
                     {errors.password && (
                       <Text
@@ -225,7 +223,7 @@ export const CreateAccount = () => {
                       lineWidth={1}
                       autoCapitalize="none"
                       labelFontSize={18}
-                      labelOffset={{y1: -5, x1: width1}}
+                      labelOffset={{y1: -5, x1: width4}}
                       onChangeText={handleChange('confirmPassword')}
                       onBlur={handleBlur('confirmPassword')}
                       value={values.confirmPassword}
@@ -246,14 +244,9 @@ export const CreateAccount = () => {
                         fontFamily: 'Avenir Book',
                         alignSelf: 'center',
                         height: 50,
-                        paddingTop: Platform.OS === 'ios' ? 2 : 3,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
                       }}
-                      containerStyle={
-                        {
-                          // height:200,
-                          // borderWidth:1,
-                        }
-                      }
+                    
                     />
                     {errors.confirmPassword && (
                       <Text
@@ -292,7 +285,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   viewTextInput: {
-    marginTop: 80,
+    marginTop: Platform.OS === 'android' ? 80:60,
   },
   textskip: {
     fontFamily: 'Avenir Book',
@@ -333,6 +326,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 80,
+    marginBottom:Platform.OS === 'android' ? 80:50,
   },
   button: {
     backgroundColor: 'transparent',
