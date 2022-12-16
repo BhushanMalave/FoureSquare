@@ -1,15 +1,13 @@
 import React from 'react';
 import {Dimensions} from 'react-native';
-import {CourseStack} from './CourseStack';
-import {HomeStack} from './HomeStack';
-import {ProfileStack} from './ProfileStack';
-import {SettingStack} from './SettingStack';
-import {NotificationsScreen} from '../screens/NotificationsScreen';
-import {CustomDrawerComponent} from '../components/CustomDrawerComponents';
 import Icon from 'react-native-vector-icons/Feather';
 import Icons from 'react-native-vector-icons/Ionicons';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-
+import { TopPicks } from '../screens/TopPicks';
+import { NearYou } from '../screens/NearYou';
+import { Popular } from '../screens/Popular';
+import { Lunch } from '../screens/Lunch';
+import { Coffee } from '../screens/Coffee';
 export const Drawer = createDrawerNavigator();
 
 export const DrawerNav = ({navigation}) => {

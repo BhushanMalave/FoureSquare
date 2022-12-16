@@ -18,6 +18,9 @@ import {
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {TextField} from 'rn-material-ui-textfield';
+import { signUpApi } from '../authorization/Auth';
+import { setToken } from '../redux/ReduxPersist/User';
+import { useDispatch } from 'react-redux';
 
 export const CreateAccount = () => {
   const {width, height} = useWindowDimensions();
@@ -25,6 +28,7 @@ export const CreateAccount = () => {
   const width2 = width < height ? -15.5 : -50;
   const width3 = width < height ? -20.5 : -45;
   const width4 = width < height ? -20.5 : -50;
+  const dispatch = useDispatch();
   const signinValidationSchema = yup.object().shape({
     email: yup
     .string()
@@ -68,8 +72,24 @@ export const CreateAccount = () => {
                 validationSchema={signinValidationSchema}
                 initialValues={{email:'',mobileNumber:'',password: '', confirmPassword:''}}
                 onSubmit={async (values, {resetForm}) => {
-                  console.log(values);
-                  resetForm({initialValues: ''});
+                  const obj = {  
+                    "email": values.email,
+                    "mobileNumber":values.mobileNumber,
+                    "fullName":"Bhushan",
+                    "password": values.password,              
+                }
+                console.log(obj)
+                const response = await signUpApi(obj);
+                console.log(response)
+                  if(response?.message === "User registered successfully")
+                  {
+                    dispatch(setToken(response.access_Token));
+                    navigation.navigate('Home');
+                    resetForm({initialValues: ''});
+                  }else{
+                    console.log('error')
+                  }
+                 
                 }}>
                 {({
                   handleChange,

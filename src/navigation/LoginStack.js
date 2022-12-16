@@ -3,7 +3,8 @@ import {ForgotPassword} from '../screens/ForgotPassword';
 import { CreateAccount } from '../screens/CreateAccount';
 import { Login } from '../screens/LoginScreen';
 import { VerifyOtp } from '../screens/VerifyOtp';
-
+import { Home } from '../screens/HomeScreen';
+import { DetailScreen } from '../screens/DetailScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import { CardStyleInterpolators ,createStackNavigator} from '@react-navigation/stack';
 const Stack = createStackNavigator();
@@ -40,6 +41,22 @@ export const LoginStack = () => {
       <Stack.Screen
         name="CreateNewAccount"
         component={CreateAccount}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        }}
+      />
+        <Stack.Screen
+        name="Home"
+        component={Home}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        }}
+      />
+       <Stack.Screen
+        name="DetailScreen"
+        component={DetailScreen}
         options={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,

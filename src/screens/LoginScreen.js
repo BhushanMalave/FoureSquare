@@ -18,16 +18,33 @@ import {
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {TextField} from 'rn-material-ui-textfield';
+import {signInApi} from '../authorization/Auth';
+import {forgotPasswordApi} from '../authorization/Auth';
+import {setToken} from '../redux/ReduxPersist/User';
+import {useDispatch} from 'react-redux';
 
 export const Login = ({navigation}) => {
   const {width, height} = useWindowDimensions();
-  const width1 = width < height ? -15.5:-45;
-  const width2 = width < height ? -15.5:-50;
+  const width1 = width < height ? -15.5 : -45;
+  const width2 = width < height ? -15.5 : -50;
+  let Email = '';
+
+  const handleForgotPassword = async () => {
+    const obj = {
+      email: Email,
+    };
+    const response = await forgotPasswordApi(obj);
+    if (response?.message === 'Otp sent, please check your mail') {
+      navigation.navigate('Verification', {Email});
+    } else {
+      console.log(response.message);
+    }
+  };
   const signinValidationSchema = yup.object().shape({
     email: yup
-    .string()
-    .email("Enter correct Email")
-    .required('Enter is required'),
+      .string()
+      .email('Enter correct Email')
+      .required('Enter is required'),
 
     password: yup
       .string()
@@ -37,167 +54,203 @@ export const Login = ({navigation}) => {
       .min(6, ({min}) => `Password must be at least ${min} characters`)
       .required('Enter correct password'),
   });
+  const dispatch = useDispatch();
 
   return (
     <View style={{flex: 1}}>
       <ImageBackground
         source={require('../assets/images/background.png')}
         style={{flex: 1}}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-        <SafeAreaView style={{flex: 1, marginHorizontal: 30}}>
-          <View style={styles.viewTop}>
-            <Text style={styles.textskip}>Skip {'>'}</Text>
-          </View>
-          <View style={{alignItems: 'center', marginTop: 30}}>
-            <Image
-              source={require('../assets/images/logo.png')}
-              style={styles.logo}
-            />
-          </View>
-          <View style={styles.viewTextInput}>
-            <Formik
-              validationSchema={signinValidationSchema}
-              initialValues={{email: '', password: ''}}
-              onSubmit={async (values, {resetForm}) => {
-                console.log(values);
-               navigation.navigate('Login')
-               resetForm({initialValues: ''});
-                
-              }}>
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                isValid,
-              }) => (
-                <>
-                  <TextField
-                    label="Email"
-                    name="email"
-                    keyboardType="email-address"
-                    formatText={this.formatText}
-                    onSubmitEditing={this.onSubmit}
-                    ref={this.fieldRef}
-                    textColor="#FFFFFF"
-                    tintColor="#b5abab"
-                    baseColor="#b5abab"
-                    lineWidth={1}
-                    autoCapitalize="none"
-                    labelFontSize={18}
-                    labelOffset={{y1: -5, x1:width2}}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    value={values.email}
-                    autoCorrect={false}
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginBottom: 5,
-                      textAlign: 'center',
-                      marginRight: 0,
-                      marginTop: 18,
-                      height:30,
-                    }}
-                    labelTextStyle={{
-                      textAlign: 'center',
-                      color: '#b5abab',
-                      fontFamily: 'Avenir Book',
-                      alignSelf: 'center',
-                      height: 50,
-                      paddingTop:Platform.OS === 'ios' ? 2 : 4, 
-                    }}
-                  />
-                  {errors.email && (
-                    <Text style={{fontSize: 10, color: 'red',alignSelf:'center'}}>
-                      {errors.email}
-                    </Text>
-                  )}
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <SafeAreaView style={{flex: 1, marginHorizontal: 30}}>
+            <View style={styles.viewTop}>
+              <Text style={styles.textskip}>Skip {'>'}</Text>
+            </View>
+            <View style={{alignItems: 'center', marginTop: 30}}>
+              <Image
+                source={require('../assets/images/logo.png')}
+                style={styles.logo}
+              />
+            </View>
+            <View style={styles.viewTextInput}>
+              <Formik
+                validationSchema={signinValidationSchema}
+                initialValues={{email: '', password: ''}}
+                onSubmit={async (values, {resetForm}) => {
+                  Email = values.email;
+                  const obj = {
+                    email: values.email,
+                    password: values.password,
+                  };
+                  const res = await signInApi(obj);
 
-                  <TextField
-                    label="Password"
-                    name="email"
-                    keyboardType="ascii-capable"
-                    textColor="#FFFFFF"
-                    tintColor="#b5abab"
-                    baseColor="#b5abab"
-                    lineWidth={1}
-                    autoCapitalize="none"
-                    labelFontSize={18}
-                    labelOffset={{y1: -5, x1:width1}}
-                    onChangeText={handleChange('password')}
-                    onBlur={handleBlur('password')}
-                    value={values.password}
-                    autoCorrect={false}
-                    secureTextEntry={true}
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 24,
-                      marginBottom: 5,
-                      textAlign: 'center',
-                      marginTop: 10,
-                      marginLeft: 10,
-                      height:30,
-                    }}
-                    labelTextStyle={{
-                      textAlign: 'center',
-                      color: '#b5abab',
-                      fontFamily: 'Avenir Book',
-                      height: 50,
-                      paddingTop:Platform.OS === 'ios' ? 2 : 4, 
-                    }}
-                  
-                  />
-                  {errors.password && (
-                    <Text style={{fontSize: 10, color: 'red',alignSelf:'center'}}>
-                      {errors.password}
-                    </Text>
-                  )}
-
-                  <TouchableOpacity style={{}} onPress={() => {navigation.navigate('Verification')}}>
-                    <Text style={styles.text}>Forgot Password?</Text>
-                  </TouchableOpacity>
-                  <View style={styles.container}>
-                    <TouchableOpacity
-                      onPress={handleSubmit}
-                      style={styles.button}
-                      disabled={!isValid}>
-                      <Text style={styles.textbutton}>Login</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <TouchableOpacity onPress={() => {navigation.navigate('CreateNewAccount')}}>
-                  <Text style={styles.textacc}>Create Account</Text>
-                  </TouchableOpacity>
-                  <View
-                    style={{
-                      backgroundColor: '#3B3C57',
-                      height: 40,
-                      width: 40,
-                      borderRadius: 50,
-                      alignSelf: 'center',
-                      marginTop: 30,
-                    }}>
-                    <Text
+                  if (res?.message === 'Login successful') {
+                    dispatch(setToken(res.access_token));
+                    navigation.navigate('Home');
+                    resetForm({initialValues: ''});
+                  } else {
+                    console.log(res.message);
+                  }
+                  navigation.navigate('Home');
+                }}>
+                {({
+                  handleChange,
+                  handleBlur,
+                  handleSubmit,
+                  values,
+                  errors,
+                  isValid,
+                }) => (
+                  <>
+                    <TextField
+                      label="Email"
+                      name="email"
+                      keyboardType="email-address"
+                      formatText={this.formatText}
+                      onSubmitEditing={this.onSubmit}
+                      ref={this.fieldRef}
+                      textColor="#FFFFFF"
+                      tintColor="#b5abab"
+                      baseColor="#b5abab"
+                      lineWidth={1}
+                      autoCapitalize="none"
+                      labelFontSize={18}
+                      labelOffset={{y1: -5, x1: width2}}
+                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur('email')}
+                      value={values.email}
+                      autoCorrect={false}
                       style={{
-                        fontFamily: 'Avenir Light',
-                        fontSize: 18,
-                        color: '#FFFFFF',
-                        textAlign:'center',
-                        marginTop:7,
+                        fontFamily: 'Avenir Book',
+                        fontSize: 22,
+                        marginBottom: 5,
+                        textAlign: 'center',
+                        marginRight: 0,
+                        marginTop: 18,
+                        height: 30,
+                      }}
+                      labelTextStyle={{
+                        textAlign: 'center',
+                        color: '#b5abab',
+                        fontFamily: 'Avenir Book',
+                        alignSelf: 'center',
+                        height: 50,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
+                      }}
+                    />
+                    {errors.email && (
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          color: 'red',
+                          alignSelf: 'center',
+                        }}>
+                        {errors.email}
+                      </Text>
+                    )}
+
+                    <TextField
+                      label="Password"
+                      name="email"
+                      keyboardType="ascii-capable"
+                      textColor="#FFFFFF"
+                      tintColor="#b5abab"
+                      baseColor="#b5abab"
+                      lineWidth={1}
+                      autoCapitalize="none"
+                      labelFontSize={18}
+                      labelOffset={{y1: -5, x1: width1}}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
+                      value={values.password}
+                      autoCorrect={false}
+                      secureTextEntry={true}
+                      style={{
+                        fontFamily: 'Avenir Book',
+                        fontSize: 24,
+                        marginBottom: 5,
+                        textAlign: 'center',
+                        marginTop: 10,
+                        marginLeft: 10,
+                        height: 30,
+                      }}
+                      labelTextStyle={{
+                        textAlign: 'center',
+                        color: '#b5abab',
+                        fontFamily: 'Avenir Book',
+                        height: 50,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
+                      }}
+                    />
+                    {errors.password && (
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          color: 'red',
+                          alignSelf: 'center',
+                        }}>
+                        {errors.password}
+                      </Text>
+                    )}
+
+                    <TouchableOpacity style={{}} onPress={handleForgotPassword}>
+                      <Text style={styles.text}>Forgot Password?</Text>
+                    </TouchableOpacity>
+                    <View style={styles.container}>
+                      <TouchableOpacity
+                        onPress={handleSubmit}
+                        style={styles.button}
+                        disabled={!isValid}>
+                        <Text style={styles.textbutton}>Login</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate('CreateNewAccount');
                       }}>
-                      OR
-                    </Text>
-                  </View>
-                  <View style={{flexDirection:'row',justifyContent:'space-evenly',marginTop:30,paddingBottom:30}}>
-                    <Image  source={require('../assets/images/facebook_btn.png')} style={{width:160,height:45,marginRight:8,}}/>
-                    <Image  source={require('../assets/images/g_btn.png')} style={{width:160,height:45,marginLeft:8,}}/>
-                  </View>
-                </>
-              )}
-            </Formik>
-          </View>
-        </SafeAreaView>
+                      <Text style={styles.textacc}>Create Account</Text>
+                    </TouchableOpacity>
+                    <View
+                      style={{
+                        backgroundColor: '#3B3C57',
+                        height: 40,
+                        width: 40,
+                        borderRadius: 50,
+                        alignSelf: 'center',
+                        marginTop: 30,
+                      }}>
+                      <Text
+                        style={{
+                          fontFamily: 'Avenir Light',
+                          fontSize: 18,
+                          color: '#FFFFFF',
+                          textAlign: 'center',
+                          marginTop: 7,
+                        }}>
+                        OR
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-evenly',
+                        marginTop: 30,
+                        paddingBottom: 30,
+                      }}>
+                      <Image
+                        source={require('../assets/images/facebook_btn.png')}
+                        style={{width: 160, height: 45, marginRight: 8}}
+                      />
+                      <Image
+                        source={require('../assets/images/g_btn.png')}
+                        style={{width: 160, height: 45, marginLeft: 8}}
+                      />
+                    </View>
+                  </>
+                )}
+              </Formik>
+            </View>
+          </SafeAreaView>
         </ScrollView>
       </ImageBackground>
     </View>
@@ -232,7 +285,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Avenir Book',
     color: '#b5abab',
     marginTop: 35,
-    fontSize:20,
+    fontSize: 20,
   },
   container: {
     alignItems: 'center',

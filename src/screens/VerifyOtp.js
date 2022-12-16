@@ -18,10 +18,21 @@ import {
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {TextField} from 'rn-material-ui-textfield';
+import { verifyOtpApi } from '../authorization/Auth';
+import { resendOtpApi } from '../authorization/Auth';
 
-export const VerifyOtp = ({navigation}) => {
+export const VerifyOtp = ({navigation,route}) => {
   const {width, height} = useWindowDimensions();
   const width2 = width < height ? -19.5 : -45;
+  const Email= route.params.Email;
+  const handleResendOtp = async () => {
+    const obj ={
+      "email": "dhaminij0217@gmail.com"
+  }
+  const response = await resendOtpApi(obj);
+  console.log(response);
+
+  }
   const signinValidationSchema = yup.object().shape({
     password: yup
       .string()
@@ -50,8 +61,23 @@ export const VerifyOtp = ({navigation}) => {
                 initialValues={{otp: ''}}
                 onSubmit={async (values, {resetForm}) => {
                   console.log(values);
-                  navigation.navigate('Forgot Password')
+                
                   resetForm({initialValues: ''});
+                  const obj ={
+                    "email":Email,
+                    "otp":values.otp,
+                    
+                }
+                const response = await verifyOtpApi(obj);
+                console.log(response);
+                if(response?.message === true)
+                {
+                  navigation.navigate('Forgot Password',{Email})
+                  resetForm({initialValues: ''});
+                  } else {
+                    console.log(response.message);
+                  }
+               
                 }}>
                 {({
                   handleChange,
@@ -105,7 +131,7 @@ export const VerifyOtp = ({navigation}) => {
                       }
                     />
 
-                    <TouchableOpacity style={{}}>
+                    <TouchableOpacity style={{}} onPress={handleResendOtp}>
                       <Text style={styles.text2}>Resend OTP</Text>
                     </TouchableOpacity>
                     <View style={styles.container}>
