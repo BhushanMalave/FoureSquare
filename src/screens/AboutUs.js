@@ -19,12 +19,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const AboutUs = ({navigation}) => {
   return (
-    <View style={{flex: 1}}>
+    <ScrollView style={{flex: 1}}>
       <View style={styles.topbar}>
         <SafeAreaView>
           <View
             style={{
-              marginTop: Platform.OS === 'ios' ? 20 : 40,
+              marginTop: Platform.OS === 'ios' ? 20 : 30,
               flexDirection: 'row',
               marginHorizontal: 20,
               justifyContent: 'space-between',
@@ -47,13 +47,13 @@ export const AboutUs = ({navigation}) => {
         </Text>
       </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
     topbar: {
-        height:Platform.OS === 'ios' ?  110:100,
+        height:Platform.OS === 'ios' ?  110:80,
         backgroundColor: '#370F24',
         
       },

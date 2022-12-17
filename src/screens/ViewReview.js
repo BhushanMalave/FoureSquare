@@ -31,10 +31,13 @@ export const ViewReview = ({navigation}) => {
               marginHorizontal: 20,
               justifyContent: 'space-between',
             }}>
+               <TouchableOpacity onPress={()=>{navigation.goBack()}}>
             <Image
               style={styles.menu}
               source={require('../assets/images/back_icon.png')}
             />
+            </TouchableOpacity>
+            
             <Text
               style={{
                 fontFamily: 'Avenir Book',

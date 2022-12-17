@@ -16,20 +16,48 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Formik} from 'formik';
 
-export const Feedback = ({navigation}) => {
+import ImagePicker from 'react-native-image-crop-picker';
+
+export const AddReview = ({navigation}) => {
+  const {height, width} = useWindowDimensions();
   const [text, setText] = useState('');
+  const [image, setImage] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const handleText = string => {
     setText(string);
   };
   const handleSubmit = () => {
     console.log(text);
+    console.log(image);
+    console.log(profilePhoto);
+  };
+
+  const changeProfileImageFromLibrary = () => {
+    ImagePicker.openPicker({
+      width: 110,
+      height: 110,
+      cropping: true,
+    }).then(img => {
+      setImage(img.path);
+      const {filename, mime, path} = img;
+      setProfilePhoto({filename, mime, path});
+    });
+  };
+  const changeProfileImageFromCamera = () => {
+    ImagePicker.openCamera({
+      width: 110,
+      height: 110,
+      cropping: true,
+    }).then(img => {
+      setImage(img.path);
+      const {filename, mime, path} = img;
+      setProfilePhoto({filename, mime, path});
+    });
   };
   return (
     <View style={{flex: 1}}>
-      <ScrollView >
+      <ScrollView>
         <View style={styles.topbar}>
           <SafeAreaView>
             <View
@@ -39,20 +67,30 @@ export const Feedback = ({navigation}) => {
                 marginHorizontal: 20,
                 justifyContent: 'space-between',
               }}>
-              <Image
-                style={styles.menu}
-                source={require('../assets/images/back_icon.png')}
-              />
+
+              <TouchableOpacity onPress={()=>{navigation.goBack()}}>
+            <Image
+              style={styles.menu}
+              source={require('../assets/images/back_icon.png')}
+            />
+            </TouchableOpacity>
               <Text
                 style={{
                   fontFamily: 'Avenir Book',
                   fontSize: 26,
                   color: '#fff',
                   marginTop: -5,
+                  marginRight:
+                    width > height
+                      ? Platform.OS === 'ios'
+                        ? 300
+                        : 370
+                      : Platform.OS === 'ios'
+                      ? 105
+                      : 120,
                 }}>
-                Feedback
+                AddReview
               </Text>
-              <Icon name="home-outline" size={28} color="#fff" />
             </View>
           </SafeAreaView>
         </View>
@@ -60,11 +98,11 @@ export const Feedback = ({navigation}) => {
           <View style={{marginHorizontal: 15, marginVertical: 15}}>
             <Text
               style={{fontFamily: 'Avenir Book', fontSize: 20, color: 'black'}}>
-              Write your feedback
+              Write Review
             </Text>
           </View>
 
-          <View style={{marginHorizontal: 15, marginVertical: 15, flex: 1}}>
+          <View style={{marginHorizontal: 15, marginVertical: 0, flex: 1}}>
             <View style={styles.body}>
               <TextInput
                 multiline={true}
@@ -77,11 +115,39 @@ export const Feedback = ({navigation}) => {
             </View>
           </View>
         </View>
+        <Text
+          style={{
+            marginHorizontal: 15,
+            marginVertical: 15,
+            color: '#351347',
+            fontFamily: 'Avenir Book',
+            fontSize: 20,
+          }}>
+          Add a photos to your review
+        </Text>
+        <View
+          style={{
+            marginHorizontal: 15,
+            marginVertical: 0,
+            flex: 1,
+            flexDirection: 'row',
+          }}>
+          <Image
+             source={{uri: image}} 
+            style={{height: 90, width: 90, borderRadius: 10}}
+          />
+          <TouchableOpacity onPress={() => changeProfileImageFromLibrary()}>
+            <Image
+              source={require('../assets/images/images.jpeg')}
+              style={{height: 90, width: 90, marginLeft: 20}}
+            />
+          </TouchableOpacity>
+        </View>
       </ScrollView>
       <View style={styles.buttonbody}>
-        <Pressable onPress={handleSubmit} style={styles.button}>
+        <TouchableOpacity onPress={handleSubmit} style={styles.button}>
           <Text style={styles.buttontext}>Submit</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -97,7 +163,7 @@ const styles = StyleSheet.create({
     width: 22,
   },
   textNotes: {
-    height: 180,
+    height: 200,
     borderWidth: 2,
     borderRadius: 4,
     backgroundColor: '#FFF',

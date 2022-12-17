@@ -18,6 +18,7 @@ import { AboutUs } from './src/screens/AboutUs';
 import { Feedback } from './src/screens/Feedback';
 import {ViewReview} from './src/screens/ViewReview';
 import {DetailScreen} from './src/screens/DetailScreen';
+import {AddReview} from './src/screens/AddReview'
 
 
 let persistor = persistStore(store);
@@ -26,7 +27,7 @@ const App = () => {
   return (
     <Provider store={store}>
     <PersistGate persistor={persistor}>
-       <DetailScreen />
+       <AddReview />
       </PersistGate>
     </Provider>
   );
