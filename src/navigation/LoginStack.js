@@ -5,6 +5,7 @@ import { Login } from '../screens/LoginScreen';
 import { VerifyOtp } from '../screens/VerifyOtp';
 import { Home } from '../screens/HomeScreen';
 import { DetailScreen } from '../screens/DetailScreen';
+import { ViewReview } from '../screens/ViewReview';
 import {NavigationContainer} from '@react-navigation/native';
 import { CardStyleInterpolators ,createStackNavigator} from '@react-navigation/stack';
 const Stack = createStackNavigator();
@@ -61,6 +62,16 @@ export const LoginStack = () => {
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
+        
+      />
+      <Stack.Screen
+        name="ViewReviews"
+        component={ViewReview}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        }}
+        
       />
     </Stack.Navigator>
     </NavigationContainer>

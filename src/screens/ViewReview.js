@@ -16,10 +16,12 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ReviewViewComponent } from '../components/ReviewComponent';
 
 export const ViewReview = ({navigation}) => {
+  const {height,width} = useWindowDimensions();
   return (
-    <View style={{flex: 1}}>
+    <ScrollView style={{flex: 1}}>
       <View style={styles.topbar}>
         <SafeAreaView>
           <View
@@ -33,32 +35,45 @@ export const ViewReview = ({navigation}) => {
               style={styles.menu}
               source={require('../assets/images/back_icon.png')}
             />
-            <Text style={{fontFamily:'Avenir Book',fontSize:26,color:'#fff',marginTop:-5,}}>
-               About us
+            <Text
+              style={{
+                fontFamily: 'Avenir Book',
+                fontSize: 22,
+                color: '#fff',
+                marginTop: -5,
+              }}>
+              Attil
             </Text>
             <Icon name="home-outline" size={28} color="#fff" />
-            </View>
+          </View>
         </SafeAreaView>
       </View>
-      <View style={{backgroundColor:'white',flex:1}}>
-      <View style={{flex:1,marginHorizontal:15,marginVertical:15,backgroundColor:'white'}}>
-        <Text style={{fontFamily:'Avenir Book',fontSize:18,color:'#7A7A7A',letterSpacing:0.9,lineHeight:28}}>
-            hgjdfkhgldfshgsjdfvbfdvbdfvbfhushdfuhsd dfhusdhfhsud usdhfusdhfus usdhfuasdhfuajsdh usdhfusdhfuasdhf asfhsdukfhasdkl fsudhfujkasd fasduhfsjdh
-        </Text>
-      </View>
-      </View>
-    </View>
+      <View style={{backgroundColor: 'white', flex: 1}}>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        <ReviewViewComponent/>
+        </View>
+       
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-    topbar: {
-        height:Platform.OS === 'ios' ?  110:100,
-        backgroundColor: '#370F24',
-        
-      },
-      menu:{
-        height:22,
-        width:22
-      }
+  topbar: {
+    height: Platform.OS === 'ios' ? 110 : 100,
+    backgroundColor: '#370F24',
+  },
+  menu: {
+    height: 22,
+    width: 22,
+  },
 });
