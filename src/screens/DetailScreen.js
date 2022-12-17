@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useDebugValue} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -18,6 +18,7 @@ import {
 import Maps from '../components/Maps';
 
 export const DetailScreen = ({navigation}) => {
+  const {width, height} = useWindowDimensions();
   return (
     <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
       <ImageBackground
@@ -29,15 +30,16 @@ export const DetailScreen = ({navigation}) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
               marginHorizontal: 15,
-              marginTop: Platform.OS === 'android' ? 30:10,
+              marginTop: Platform.OS === 'android' ? 30 : 10,
             }}>
-              <TouchableOpacity onPress={()=>{
-                navigation.goBack()
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
               }}>
-            <Image
-              source={require('../assets/images/back_icon.png')}
-              style={{height: 22, width: 26}}
-            />
+              <Image
+                source={require('../assets/images/back_icon.png')}
+                style={{height: 22, width: 26}}
+              />
             </TouchableOpacity>
             <Text
               style={{
@@ -61,7 +63,24 @@ export const DetailScreen = ({navigation}) => {
               />
             </View>
           </View>
-          <View style={{marginTop: 120, marginHorizontal: 25}}>
+          <View
+            style={{
+              marginTop:
+                width > height
+                  ? Platform.OS === 'ios'
+                    ? 160
+                    : 130
+                  : Platform.OS === 'ios'
+                  ? 120
+                  : 120,
+              marginHorizontal:  width > height
+                  ? Platform.OS === 'ios'
+                    ? 160
+                    : 200
+                  : Platform.OS === 'ios'
+                  ? 25
+                  : 25,
+            }}>
             <Text
               style={{
                 fontFamily: 'Avenir Medium',
@@ -127,29 +146,28 @@ export const DetailScreen = ({navigation}) => {
         </Text>
         <Text
           style={{
-         marginLeft:25,
+            marginLeft: 25,
             fontFamily: 'Avenir Book',
             fontSize: 18,
             color: '#8D8D8D',
             lineHeight: 23,
             marginTop: 10,
-            marginRight:20,
+            marginRight: 20,
           }}>
           It is a long established fact that a reader will be distracted by the
           readable content of a page when looking at its layout. The point of
-          using Lorem Ipsum is that it has a more-or-less normal    readable content of a page when looking at its layout. The point of
-          using Lorem Ipsum is that it has a more-or-less normal
+          using Lorem Ipsum is that it has a more-or-less normal readable
+          content of a page when looking at its layout. The point of using Lorem
+          Ipsum is that it has a more-or-less normal
         </Text>
-        <View style={{height:230,marginTop:20}}>
-            <Maps/>
+        <View style={{height: 230, marginTop: 20}}>
+          <Maps />
         </View>
         <View style={styles.buttonbody}>
-                <Pressable onPress={()=>{}} style={styles.button}>
-                  <Text style={styles.buttontext}>Submit</Text>
-                </Pressable>
-              </View>
-
-
+          <Pressable onPress={() => {}} style={styles.button}>
+            <Text style={styles.buttontext}>Add Review</Text>
+          </Pressable>
+        </View>
       </View>
     </ScrollView>
   );
@@ -171,7 +189,6 @@ const styles = StyleSheet.create({
   },
   buttontext: {
     height: 28,
-    width: 80,
     color: '#FFFFFF',
     fontSize: 20,
     textAlign: 'center',

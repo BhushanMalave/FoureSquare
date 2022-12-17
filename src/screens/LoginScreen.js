@@ -35,9 +35,10 @@ export const Login = ({navigation}) => {
     };
     const response = await forgotPasswordApi(obj);
     if (response?.message === 'Otp sent, please check your mail') {
+      console.log("gooo")
       navigation.navigate('Verification', {Email});
     } else {
-      console.log(response.message);
+      console.log("====",response?.message);
     }
   };
   const signinValidationSchema = yup.object().shape({
@@ -91,7 +92,6 @@ export const Login = ({navigation}) => {
                   } else {
                     console.log(res.message);
                   }
-                  navigation.navigate('Home');
                 }}>
                 {({
                   handleChange,

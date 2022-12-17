@@ -80,7 +80,7 @@ export const forgotPasswordApi = async objBody => {
       return response.data;
     }
   } catch (error) {
-    console.log('mpPasword', error.data);
+    console.log('Pasword', error.response.data);
   }
 };
 

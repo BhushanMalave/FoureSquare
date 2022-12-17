@@ -17,6 +17,7 @@ import { LoginStack } from './src/navigation/LoginStack';
 import { AboutUs } from './src/screens/AboutUs';
 import { Feedback } from './src/screens/Feedback';
 import {ViewReview} from './src/screens/ViewReview';
+import {DetailScreen} from './src/screens/DetailScreen';
 
 
 let persistor = persistStore(store);
@@ -25,7 +26,7 @@ const App = () => {
   return (
     <Provider store={store}>
     <PersistGate persistor={persistor}>
-       <ViewReview />
+       <DetailScreen />
       </PersistGate>
     </Provider>
   );

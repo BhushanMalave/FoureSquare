@@ -21,7 +21,7 @@ import Maps from '../components/Maps';
 export const NearYou = ({navigation}) => {
     return(
         <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{height:230}}>
+        <View style={{height:200}}>
         <Maps/>
         </View>
          <HotelViewComponent onPress={()=>{navigation.navigate('DetailScreen')}}/>
