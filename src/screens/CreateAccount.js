@@ -84,7 +84,7 @@ export const CreateAccount = () => {
                   if(response?.message === "User registered successfully")
                   {
                     dispatch(setToken(response.access_Token));
-                    navigation.navigate('Home');
+                    navigation.navigate('HomeStack');
                     resetForm({initialValues: ''});
                   }else{
                     console.log('error')

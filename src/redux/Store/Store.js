@@ -3,6 +3,7 @@ import {persistReducer} from 'redux-persist';
 import {combineReducers} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import userDetailsReducer from '../ReduxPersist/User'
+import stateReducer from '../ReduxPersist/States'
 
 
 const persistConfig = {
@@ -14,6 +15,7 @@ const persistConfig = {
 const reducer = combineReducers({
 
   userDetails: userDetailsReducer,
+  status: stateReducer,
 
 });
 

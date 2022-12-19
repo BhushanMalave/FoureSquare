@@ -87,7 +87,7 @@ export const Login = ({navigation}) => {
 
                   if (res?.message === 'Login successful') {
                     dispatch(setToken(res.access_token));
-                    navigation.navigate('Home');
+                    navigation.navigate('HomeStack');
                     resetForm({initialValues: ''});
                   } else {
                     console.log(res.message);

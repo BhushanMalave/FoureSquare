@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import TopTabNav from '../navigation/TopTabNavigation';
 
-export const Home = () => {
+export const Home = ({navigation}) => {
   return (
     <View style={{flex: 1}}>
       <View style={styles.topbar}>
@@ -27,7 +27,9 @@ export const Home = () => {
             <Image style={styles.logo}  source={require('../assets/images/logo.png')} />
             <View style={{flexDirection:'row'}}>
             <Image style={styles.filter}  source={require('../assets/images/filter_icon.png')} />
+            <TouchableOpacity onPress={() => {navigation.navigate('Search')}}>
             <Image style={styles.search}  source={require('../assets/images/search_icon.png')} />
+            </TouchableOpacity>
             </View>
           </View>
         </SafeAreaView>
