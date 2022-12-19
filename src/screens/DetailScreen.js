@@ -119,7 +119,7 @@ export const DetailScreen = ({navigation}) => {
             />
             <Text style={{color: '#7A7A7A', marginTop: 3}}>Rating</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=>{navigation.navigate('PhotosGallery')}}>
             <Image
               source={require('../assets/images/photos_icon.png')}
               style={{height: 40, width: 40}}

@@ -67,13 +67,15 @@ export const AddReview = ({navigation}) => {
                 marginHorizontal: 20,
                 justifyContent: 'space-between',
               }}>
-
-              <TouchableOpacity onPress={()=>{navigation.goBack()}}>
-            <Image
-              style={styles.menu}
-              source={require('../assets/images/back_icon.png')}
-            />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}>
+                <Image
+                  style={styles.menu}
+                  source={require('../assets/images/back_icon.png')}
+                />
+              </TouchableOpacity>
               <Text
                 style={{
                   fontFamily: 'Avenir Book',
@@ -132,14 +134,16 @@ export const AddReview = ({navigation}) => {
             flex: 1,
             flexDirection: 'row',
           }}>
-          <Image
-             source={{uri: image}} 
-            style={{height: 90, width: 90, borderRadius: 10}}
-          />
+          {image !== null  && (
+            <Image
+              source={{uri: image}}
+              style={{height: 90, width: 90, borderRadius: 10,marginRight:20,}}
+            />
+          )}
           <TouchableOpacity onPress={() => changeProfileImageFromLibrary()}>
             <Image
               source={require('../assets/images/images.jpeg')}
-              style={{height: 90, width: 90, marginLeft: 20}}
+              style={{height: 90, width: 90,}}
             />
           </TouchableOpacity>
         </View>

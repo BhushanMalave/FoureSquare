@@ -27,7 +27,7 @@ const App = () => {
   return (
     <Provider store={store}>
     <PersistGate persistor={persistor}>
-       <AddReview />
+       <LoginStack />
       </PersistGate>
     </Provider>
   );
