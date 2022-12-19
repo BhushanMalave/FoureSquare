@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const AddReview = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -57,7 +58,7 @@ export const AddReview = ({navigation}) => {
   };
   return (
     <View style={{flex: 1}}>
-      <ScrollView>
+      <ScrollView style={{flex: 1}}>
         <View style={styles.topbar}>
           <SafeAreaView>
             <View
@@ -134,18 +135,32 @@ export const AddReview = ({navigation}) => {
             flex: 1,
             flexDirection: 'row',
           }}>
-          {image !== null  && (
+          {image !== null && (
             <Image
               source={{uri: image}}
-              style={{height: 90, width: 90, borderRadius: 10,marginRight:20,}}
+              style={{height: 80, width: 80, borderRadius: 10, marginRight: 20}}
             />
           )}
-          <TouchableOpacity onPress={() => changeProfileImageFromLibrary()}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{height: 90, width: 90,}}
+          <View
+            style={{
+              height: 80,
+              width: 80,
+              borderRadius: 10,
+              alignContent: 'center',
+              alignItems: 'center',
+              backgroundColor: '#cccccc',
+              marginBottom:80,
+            }}>
+            <Icon
+              name="camera-plus-outline"
+              size={40}
+              color="#301934"
+              style={{alignSelf: 'center', marginTop: 18}}
+              onPress={() => {
+                changeProfileImageFromLibrary();
+              }}
             />
-          </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
       <View style={styles.buttonbody}>

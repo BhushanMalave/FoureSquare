@@ -18,9 +18,16 @@ import {
 import {MapsDetails} from '../components/MapsDetails';
 import LinearGradient from 'react-native-linear-gradient';
 import Maps from '../components/Maps';
+import {Rating, AirbnbRating} from 'react-native-ratings';
+import {useSelector, useDispatch} from 'react-redux';
+import { RatingModel } from '../components/RatingModel';
+import { setRatingState } from '../redux/ReduxPersist/States';
+
 
 export const DetailScreen = ({navigation}) => {
   const {width, height} = useWindowDimensions();
+  const state = useSelector(state => state.status.ratingState);
+  const dispatch = useDispatch();
   return (
     <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
       <ImageBackground
@@ -42,7 +49,7 @@ export const DetailScreen = ({navigation}) => {
               }}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.goBack()
+                  navigation.goBack();
                 }}>
                 <Image
                   source={require('../assets/images/back_icon.png')}
@@ -93,13 +100,23 @@ export const DetailScreen = ({navigation}) => {
               <Text
                 style={{
                   fontFamily: 'Avenir Medium',
-                  fontSize: 22,
+                  fontSize: 20,
                   color: 'white',
                   justifyContent: 'center',
                   textAlign: 'center',
                 }}>
                 Indian Restaurant , Indian Restaurant and Indian Restaurant
               </Text>
+              <View style={{marginTop:0}}>
+              <AirbnbRating
+                count={5}
+                defaultRating={3}
+                size={20}
+                isDisabled={true}
+                showRating={false}
+              
+              />
+              </View>
             </View>
           </SafeAreaView>
         </LinearGradient>
@@ -112,21 +129,32 @@ export const DetailScreen = ({navigation}) => {
             justifyContent: 'space-between',
             marginTop: 20,
           }}>
-          <TouchableOpacity>
+         <TouchableOpacity
+          onPress={() => {
+            {
+              dispatch(setRatingState());
+            }
+          }}>
             <Image
               source={require('../assets/images/rating_icon.png')}
               style={{height: 40, width: 40}}
             />
             <Text style={{color: '#7A7A7A', marginTop: 3}}>Rating</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>{navigation.navigate('PhotosGallery')}}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('PhotosGallery');
+            }}>
             <Image
               source={require('../assets/images/photos_icon.png')}
               style={{height: 40, width: 40}}
             />
             <Text style={{color: '#7A7A7A', marginTop: 3}}>Photos</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>{navigation.navigate('ViewReviews')}}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ViewReviews');
+            }}>
             <Image
               source={require('../assets/images/review_icon.png')}
               style={{height: 40, width: 40}}
@@ -172,38 +200,70 @@ export const DetailScreen = ({navigation}) => {
         </Text>
         <View
           style={{height: Platform.OS === 'ios' ? 180 : 230, marginTop: 20}}>
-          <Maps/>
+          <Maps />
         </View>
         <LinearGradient
-            start={{x: 0, y: 1}}
-            end={{x: 1, y: 1}}
-            locations={[0.4, 0.8]}
-            colors={['rgba(249, 245, 238 ,1)', 'rgba(249, 245, 238,0)']}
-            style={{
-              height: Platform.OS === 'ios' ? 180 : 230,
-              marginTop:Platform.OS === 'ios' ? -180 : -230,
-            }}>
-              <View>
-                <Text style={{fontFamily:'Avenir Medium',fontSize:18,color:'#7A7A7A',fontWeight:'500',marginTop:20,}}>
-                  Daffodils,Laxmindra
-                </Text>
-                <Text style={{fontFamily:'Avenir Medium',fontSize:18,color:'#7A7A7A',fontWeight:'500'}}>
-                  Nargar, 2nd Cross Udupi
-                </Text>
-                <Text style={{fontFamily:'Avenir Medium',fontSize:18,color:'#7A7A7A',fontWeight:'500',marginTop:20}}>
-                  +91 9884537389
-                </Text>
-                <Text style={{fontFamily:'Avenir Medium',fontSize:18,color:'#7A7A7A',fontWeight:'500',marginTop:20}}>
-                  Drive : 5km
-                </Text>
-              </View>
-            </LinearGradient>
+          start={{x: 0, y: 1}}
+          end={{x: 1, y: 1}}
+          locations={[0.4, 0.8]}
+          colors={['rgba(249, 245, 238 ,1)', 'rgba(249, 245, 238,0)']}
+          style={{
+            height: Platform.OS === 'ios' ? 180 : 230,
+            marginTop: Platform.OS === 'ios' ? -180 : -230,
+          }}>
+          <View>
+            <Text
+              style={{
+                fontFamily: 'Avenir Medium',
+                fontSize: 18,
+                color: '#7A7A7A',
+                fontWeight: '500',
+                marginTop: 20,
+              }}>
+              Daffodils,Laxmindra
+            </Text>
+            <Text
+              style={{
+                fontFamily: 'Avenir Medium',
+                fontSize: 18,
+                color: '#7A7A7A',
+                fontWeight: '500',
+              }}>
+              Nargar, 2nd Cross Udupi
+            </Text>
+            <Text
+              style={{
+                fontFamily: 'Avenir Medium',
+                fontSize: 18,
+                color: '#7A7A7A',
+                fontWeight: '500',
+                marginTop: 20,
+              }}>
+              +91 9884537389
+            </Text>
+            <Text
+              style={{
+                fontFamily: 'Avenir Medium',
+                fontSize: 18,
+                color: '#7A7A7A',
+                fontWeight: '500',
+                marginTop: 20,
+              }}>
+              Drive : 5km
+            </Text>
+          </View>
+        </LinearGradient>
         <View style={styles.buttonbody}>
-          <TouchableOpacity  onPress={()=>{navigation.navigate('AddReviews')}} style={styles.button}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('AddReviews');
+            }}
+            style={styles.button}>
             <Text style={styles.buttontext}>Add Review</Text>
           </TouchableOpacity>
         </View>
       </View>
+      <RatingModel/>
     </ScrollView>
   );
 };
