@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/AntDesign';
 import { ReviewViewComponent } from '../components/ReviewComponent';
 
 export const ViewReview = ({navigation}) => {
@@ -47,7 +47,7 @@ export const ViewReview = ({navigation}) => {
               }}>
               Attil
             </Text>
-            <Icon name="home-outline" size={28} color="#fff" />
+            <Icon name="addfile" size={24} color="#fff"   onPress={()=>{navigation.navigate('AddReviews')}} />
           </View>
         </SafeAreaView>
       </View>
