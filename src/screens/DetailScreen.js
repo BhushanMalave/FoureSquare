@@ -1,4 +1,5 @@
-import React, {useDebugValue} from 'react';
+import React, {useState,useEffect} from 'react';
+import Toast from 'react-native-simple-toast';
 import {
   ImageBackground,
   SafeAreaView,
@@ -14,20 +15,105 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  PermissionsAndroid,
 } from 'react-native';
-import {MapsDetails} from '../components/MapsDetails';
 import LinearGradient from 'react-native-linear-gradient';
 import Maps from '../components/Maps';
 import {Rating, AirbnbRating} from 'react-native-ratings';
 import {useSelector, useDispatch} from 'react-redux';
 import { RatingModel } from '../components/RatingModel';
 import { setRatingState } from '../redux/ReduxPersist/States';
+import Geolocation from '@react-native-community/geolocation';
+import { useRef } from 'react';
 
 
 export const DetailScreen = ({navigation}) => {
   const {width, height} = useWindowDimensions();
   const state = useSelector(state => state.status.ratingState);
   const dispatch = useDispatch();
+  const [
+    currentLongitude,
+    setCurrentLongitude
+  ] = useState('');
+  const [
+    currentLatitude,
+    setCurrentLatitude
+  ] = useState('');
+ 
+  const mapRef =useRef(null);
+
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      if (Platform.OS === 'ios') {
+        getOneTimeLocation();
+      } else {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: 'Location Access Required',
+              message: 'This App needs to Access your location',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            //To Check, If Permission is granted
+            getOneTimeLocation();
+          } else {
+            Toast.show('Permission Denied');
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+    };
+    requestLocationPermission();
+  }, []);
+
+  const getOneTimeLocation = () => {
+    Toast.show('Getting Location ...');
+    Geolocation.getCurrentPosition(
+      //Will give you the current location
+      position => {
+        setTimeout(() => {
+          try {
+            mapRef.current.animateToRegion(
+              {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.2,
+              },
+              3 * 1000,
+            );
+          } catch (error) {
+           // Toast.show('Failed to animate direction');
+          }
+        }, 500);
+       // Toast.show('You are Here');
+
+        //getting the Longitude from the location json
+        const currentLongitude = position.coords.longitude;
+
+        //getting the Latitude from the location json
+        const currentLatitude = position.coords.latitude;
+
+        //Setting Longitude state
+        setCurrentLongitude(currentLongitude);
+
+        //Setting Longitude state
+        setCurrentLatitude(currentLatitude);
+      },
+      error => {
+        Toast.show(error.message);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 30000,
+        maximumAge: 1000,
+      },
+    );
+  };
+
   return (
     <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
       <ImageBackground
@@ -114,7 +200,6 @@ export const DetailScreen = ({navigation}) => {
                 size={20}
                 isDisabled={true}
                 showRating={false}
-              
               />
               </View>
             </View>
@@ -200,7 +285,9 @@ export const DetailScreen = ({navigation}) => {
         </Text>
         <View
           style={{height: Platform.OS === 'ios' ? 180 : 230, marginTop: 20}}>
-          <Maps />
+           {currentLatitude && currentLongitude !== '' ? (
+           <Maps latitude={currentLatitude} longitude={currentLongitude} mapRef={mapRef}/>
+          ) : null}
         </View>
         <LinearGradient
           start={{x: 0, y: 1}}
@@ -219,17 +306,10 @@ export const DetailScreen = ({navigation}) => {
                 color: '#7A7A7A',
                 fontWeight: '500',
                 marginTop: 20,
+                width:'50%',
+                marginLeft:Platform.OS === 'ios' ? 10:15,
               }}>
-              Daffodils,Laxmindra
-            </Text>
-            <Text
-              style={{
-                fontFamily: 'Avenir Medium',
-                fontSize: 18,
-                color: '#7A7A7A',
-                fontWeight: '500',
-              }}>
-              Nargar, 2nd Cross Udupi
+              Daffodils,Laxmindra  Nargar, 2nd Cross Udupi
             </Text>
             <Text
               style={{
@@ -238,6 +318,7 @@ export const DetailScreen = ({navigation}) => {
                 color: '#7A7A7A',
                 fontWeight: '500',
                 marginTop: 20,
+                marginLeft:Platform.OS === 'ios' ? 10:15,
               }}>
               +91 9884537389
             </Text>
@@ -248,6 +329,7 @@ export const DetailScreen = ({navigation}) => {
                 color: '#7A7A7A',
                 fontWeight: '500',
                 marginTop: 20,
+                marginLeft:Platform.OS === 'ios' ? 10:15,
               }}>
               Drive : 5km
             </Text>

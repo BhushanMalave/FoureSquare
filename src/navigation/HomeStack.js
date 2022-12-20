@@ -6,12 +6,13 @@ import { AddReview } from '../screens/AddReview';
 import { PhotosGallery } from '../screens/PhotosGallery';
 import { ViewPhoto } from '../screens/ViewPhoto';
 import { Search } from '../screens/SearchScreen';
+import { Favourite } from '../screens/FavouriteScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import { CardStyleInterpolators ,createStackNavigator} from '@react-navigation/stack';
 const Stack = createStackNavigator();
 export const HomeStack = () => {
   return (
-    <NavigationContainer>
+
     <Stack.Navigator initialRouteName='HomeStack'>
         <Stack.Screen
         name="Home"
@@ -70,7 +71,8 @@ export const HomeStack = () => {
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       />
+  
     </Stack.Navigator>
-    </NavigationContainer>
+
   );
 };

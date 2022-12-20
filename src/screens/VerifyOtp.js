@@ -27,18 +27,13 @@ export const VerifyOtp = ({navigation,route}) => {
   const Email= route.params.Email;
   const handleResendOtp = async () => {
     const obj ={
-      "email": "dhaminij0217@gmail.com"
+      "email": Email,
   }
   const response = await resendOtpApi(obj);
   console.log(response);
 
   }
-  const signinValidationSchema = yup.object().shape({
-    password: yup
-      .string()
-      .matches(/\d\d\d\d\d/)
-      .max(5),
-  });
+ 
 
   return (
     <View style={{flex: 1}}>
@@ -57,10 +52,9 @@ export const VerifyOtp = ({navigation,route}) => {
             </View>
             <View style={styles.viewTextInput}>
               <Formik
-                validationSchema={signinValidationSchema}
-                initialValues={{otp: ''}}
+               
+                initialValues={{otp:''}}
                 onSubmit={async (values, {resetForm}) => {
-                  console.log(values);
                 
                   resetForm({initialValues: ''});
                   const obj ={
@@ -70,12 +64,10 @@ export const VerifyOtp = ({navigation,route}) => {
                 }
                 const response = await verifyOtpApi(obj);
                 console.log(response);
-                if(response?.message === true)
+                if(response?.message === false)
                 {
                   navigation.navigate('Forgot Password',{Email})
                   resetForm({initialValues: ''});
-                  } else {
-                    console.log(response.message);
                   }
                
                 }}>
@@ -84,7 +76,6 @@ export const VerifyOtp = ({navigation,route}) => {
                   handleBlur,
                   handleSubmit,
                   values,
-                  errors,
                   isValid,
                 }) => (
                   <>
@@ -123,12 +114,7 @@ export const VerifyOtp = ({navigation,route}) => {
                         height: 50,
                         paddingTop: Platform.OS === 'ios' ? 2 : 4,
                       }}
-                      containerStyle={
-                        {
-                          // height:200,
-                          // borderWidth:1,
-                        }
-                      }
+                    
                     />
 
                     <TouchableOpacity style={{}} onPress={handleResendOtp}>

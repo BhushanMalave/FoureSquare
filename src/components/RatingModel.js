@@ -43,8 +43,8 @@ export const RatingModel = () => {
                     dispatch(setRatingState());
                 }
                 
-            }} style={{height:30,width:30}} >
-            <Image source={require('../assets/images/close_icon_grey_mdpi.png')} style={{height:20,width:20,}}/>
+            }} style={{height:30,width:30,borderWidth:1,marginTop:-20,marginLeft:15,backgroundColor:'white',borderRadius:50}} >
+            <Image source={require('../assets/images/close_icon_grey_mdpi.png')} style={{height:15,width:15 ,marginTop:6,marginLeft:6,}}/>
             </TouchableOpacity>
             </View>
           <Text
@@ -85,7 +85,7 @@ export const RatingModel = () => {
               count={5}
               defaultRating={3}
               size={40}
-              isDisabled={true}
+             // isDisabled={true}
               showRating={false}
             />
           </View>
@@ -94,7 +94,7 @@ export const RatingModel = () => {
               borderWidth: 0.7,
               height: 65,
               borderColor: '#7A7A7A',
-              marginTop:Platform.OS === 'ios' ? 52 :43,
+              marginTop:Platform.OS === 'ios' ? 73 :64,
             }}>
             <TouchableOpacity onPress={()=>{console.log('=-=-')}}>
               <Text
