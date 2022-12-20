@@ -8,7 +8,7 @@ import { CardStyleInterpolators ,createStackNavigator} from '@react-navigation/s
 const Stack = createStackNavigator();
 export const LoginStack = () => {
   return (
-    <NavigationContainer>
+    
     <Stack.Navigator initialRouteName='Login'>
       <Stack.Screen
         name="Login"
@@ -46,6 +46,6 @@ export const LoginStack = () => {
       />
        
     </Stack.Navigator>
-    </NavigationContainer>
+  
   );
 };

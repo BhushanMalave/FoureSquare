@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useLayoutEffect} from 'react';
+import React from 'react';
 
 import {
   ImageBackground,
@@ -9,185 +9,274 @@ import {
   Pressable,
   Alert,
   Platform,
+  useWindowDimensions,
+  TouchableOpacity,
 } from 'react-native';
+import { useSelector,useDispatch } from 'react-redux';
+import {Dimensions} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import Icons from 'react-native-vector-icons/Ionicons';
 import {
+  createDrawerNavigator,
   DrawerContentScrollView,
-  DrawerItemList,
+  DrawerItem,
 } from '@react-navigation/drawer';
-import {useSelector, useDispatch} from 'react-redux';
-import {setToken} from '../redux/ReduxPersist/UserDetails';
-import {useIsFocused} from '@react-navigation/native';
-import {drawerDataApiCall} from '../redux/ThunkToolkit/DrawerDataApi/DrawerData';
+import {
+  Avatar,
+  Title,
+  Caption,
+  Paragraph,
+  Drawer,
+  TouchableRipple,
+  Switch,
+} from 'react-native-paper';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {color} from 'react-native-reanimated';
 
-export const CustomDrawerComponent = props => {
-  const token = useSelector(state => state.userDetails.token);
-  const dispatch = useDispatch();
-  const data = useSelector(state => state.drawerData.data);
-  const log = () => {
-    props.navigation.goBack();
-    Alert.alert('', 'Are you sure want to Logout?', [
-      {
-        text: 'Cancel',
-        onPress: () => {},
-      },
-      {
-        text: 'Logout',
-        onPress: () => {
-          dispatch(setToken(null));
-        },
-      },
-    ]);
-  };
-  const focus = useIsFocused();
-
-  useLayoutEffect(() => {
-    dispatch(drawerDataApiCall(token));
-  }, [focus]);
-
-
-
+export const DrawerContent = ({navigation, props}) => {
+  const login = useSelector(state=>state.status.loginState)
   return (
-    <View style={{flex: 1, marginTop: Platform.OS === 'ios' ? -52 : -4}}>
+    <ImageBackground
+      source={require('../assets/images/backgroundcopy.png')}
+      style={{flex: 1}}>
       <DrawerContentScrollView {...props}>
-        <ImageBackground
-          source={{uri: data?.profilePhoto}}
-          style={styles.backgroundimg}>
-          <View style={styles.backgroundImgBlur}>
-            <View style={styles.topinfo}>
-              <Image
-                source={{uri: data?.profilePhoto}}
-                style={styles.imgprofile}
-              />
-              <View style={styles.topinfotext}>
-                <Text style={styles.textname}>{data?.fullName}</Text>
-                <Text style={styles.textdesc}>{data?.occupation}</Text>
-              </View>
-            </View>
-          </View>
-        </ImageBackground>
-        <DrawerItemList {...props} />
-        {data?.notificationCount > 0 ? (
-          <>
-            <View style={styles.notify}>
-              <Text style={styles.notifyText}>{data?.notificationCount}</Text>
-            </View>
-            <Pressable style={{marginTop: 95}} onPress={log}>
-              <View style={styles.ViewText}>
-                <Image
-                  source={require('../assets/images/icn_logout_menu.png')}
-                  style={{
-                    height: 16,
-                    width: 15,
-                    marginBottom: 0,
-                    tintColor: 'black',
-                  }}
-                />
-                <Text style={styles.textlog}>Logout</Text>
-              </View>
-            </Pressable>
-          </>
-        ) : (
-          <Pressable style={{marginTop: 20}} onPress={log}>
-            <View style={styles.ViewText}>
-              <Image
-                source={require('../assets/images/icn_logout_menu.png')}
-                style={{
-                  height: 16,
-                  width: 15,
-                  marginBottom: 0,
-                  tintColor: 'black',
+        <SafeAreaView style={{flex: 1}}>
+          {login ? (  <View
+            style={{
+              alignContent: 'center',
+              alignItems: 'center',
+              marginTop: Platform.OS === 'ios' ? 0 : 60,
+            }}>
+            <Image
+              source={require('../assets/images/images.jpeg')}
+              style={{height: 110, width: 110, borderRadius: 50}}
+            />
+            <Text
+              style={{
+                fontFamily: 'Avenir Medium',
+                fontSize: 24,
+                color: '#fff',
+                marginTop: 20,
+              }}>
+              Swaroop Kumar
+            </Text>
+          </View>) : (  <View
+            style={{
+              alignContent: 'center',
+              alignItems: 'center',
+              marginTop: Platform.OS === 'ios' ? 0 : 60,
+            }}>
+            <Image
+              source={require('../assets/images/login.webp')}
+              style={{height: 110, width: 110, borderRadius: 50}}
+            />
+            <TouchableOpacity onPress={() => {navigation.navigate('LoginStack')}}>
+            <Text
+              style={{
+                fontFamily: 'Avenir Medium',
+                fontSize: 24,
+                color: '#fff',
+                marginTop: 20,
+              }}>
+             Login
+            </Text>
+            </TouchableOpacity>
+          </View>)}
+          
+          <View
+            style={{
+              marginHorizontal: 20,
+            }}>
+              {login ? ( <View
+              style={{
+                marginTop: Platform.OS === 'ios' ? 60 : 80,
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Favourite');
                 }}
-              />
-              <Text style={styles.textlog}>Logout</Text>
+                style={{
+                  flexDirection: 'row',
+                  borderBottomColor: '#52434D',
+                  borderBottomWidth: 2,
+                  height: 60,
+                }}>
+                <Image
+                  source={require('../assets/images/favourite_iconcopy.png')}
+                  style={{height: 24, width: 26, marginLeft: 20}}
+                />
+                <Text
+                  style={{
+                    color: 'white',
+                    fontFamily: 'Avenir Medium',
+                    fontWeight: '500',
+                    fontSize: 24,
+                    marginTop: -5,
+                    marginLeft: 20,
+                  }}>
+                  Favourites
+                </Text>
+              </TouchableOpacity>
+            </View>):( <View
+              style={{
+                marginTop: Platform.OS === 'ios' ? 60 : 80,
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  
+                }}
+                style={{
+                  flexDirection: 'row',
+                  borderBottomColor: '#52434D',
+                  borderBottomWidth: 2,
+                  height: 60,
+                }}>
+                <Image
+                  source={require('../assets/images/favourite_iconcopy.png')}
+                  style={{height: 24, width: 26, marginLeft: 20,tintColor: '#474049'}}
+                />
+                <Text
+                  style={{
+                    color: 'white',
+                    fontFamily: 'Avenir Medium',
+                    fontWeight: '500',
+                    fontSize: 24,
+                    marginTop: -5,
+                    marginLeft: 20,
+                    color: '#474049'
+                  }}>
+                  Favourites
+                </Text>
+              </TouchableOpacity>
+            </View>)}
+           
+            <View
+              style={{
+                marginTop: Platform.OS === 'ios' ? 40 : 40,
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Feedback');
+                }}
+                style={{
+                  flexDirection: 'row',
+                  borderBottomColor: '#52434D',
+                  borderBottomWidth: 2,
+                  height: 60,
+                }}>
+                <Image
+                  source={require('../assets/images/feedback.png')}
+                  style={{height: 24, width: 26, marginLeft: 20}}
+                />
+                <Text
+                  style={{
+                    color: 'white',
+                    fontFamily: 'Avenir Medium',
+                    fontWeight: '500',
+                    fontSize: 24,
+                    marginTop: -5,
+                    marginLeft: 20,
+                  }}>
+                  Feedback
+                </Text>
+              </TouchableOpacity>
             </View>
-          </Pressable>
-        )}
+            <View
+              style={{
+                marginTop: Platform.OS === 'ios' ? 40 : 40,
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('AboutUs');
+                }}
+                style={{
+                  flexDirection: 'row',
+                  borderBottomColor: '#52434D',
+                  borderBottomWidth: 2,
+                  height: 60,
+                }}>
+                <Image
+                  source={require('../assets/images/about.png')}
+                  style={{height: 24, width: 26, marginLeft: 20}}
+                />
+                <Text
+                  style={{
+                    color: 'white',
+                    fontFamily: 'Avenir Medium',
+                    fontWeight: '500',
+                    fontSize: 24,
+                    marginTop: -5,
+                    marginLeft: 20,
+                  }}>
+                 About us
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {login ? (<View
+              style={{
+                marginTop: Platform.OS === 'ios' ? 40 : 40,
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}
+                style={{
+                  flexDirection: 'row',
+                  borderBottomColor: '#52434D',
+                  borderBottomWidth: 2,
+                  height: 60,
+                }}>
+                <Image
+                  source={require('../assets/images/logout.png')}
+                  style={{height: 24, width: 26, marginLeft: 20}}
+                />
+                <Text
+                  style={{
+                    color: 'white',
+                    fontFamily: 'Avenir Medium',
+                    fontWeight: '500',
+                    fontSize: 24,
+                    marginTop: -5,
+                    marginLeft: 20,
+                  }}>
+                 Logout
+                </Text>
+              </TouchableOpacity>
+            </View>) : (<View
+              style={{
+                marginTop: Platform.OS === 'ios' ? 40 : 40,
+              }}>
+              <View
+               
+                style={{
+                  flexDirection: 'row',
+                  borderBottomColor: '#52434D',
+                  borderBottomWidth: 2,
+                  height: 60,
+                }}>
+                <Image
+                  source={require('../assets/images/logout.png')}
+                  style={{height: 24, width: 26, marginLeft: 20,tintColor: '#474049'}}
+                />
+                <Text
+                  style={{
+                    color: '#474049',
+                    fontFamily: 'Avenir Medium',
+                    fontWeight: '500',
+                    fontSize: 24,
+                    marginTop: -5,
+                    marginLeft: 20,
+                  }}>
+                 Logout
+                </Text>
+              </View>
+            </View>)}
+            
+          </View>
+        </SafeAreaView>
       </DrawerContentScrollView>
-    </View>
+    </ImageBackground>
   );
 };
 
-const styles = StyleSheet.create({
-  backgroundimg: {
-    height: 188,
-    marginBottom: 30,
-  },
-  backgroundImgBlur: {
-    backgroundColor: '#042C5C',
-    opacity: 0.9,
-    height: 188,
-  },
-  topinfo: {
-    flexDirection: 'row',
-    marginHorizontal: 20,
-    marginTop: 80,
-  },
-  topinfotext: {
-    marginLeft: 15,
-  },
-  viewinfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 24,
-    marginTop: 25,
-  },
-  viewpass: {
-    height: 56,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 24,
-    marginVertical: 30,
-    backgroundColor: '#FEFEFF',
-    shadowOpacity: 0.1,
-    borderRadius: 6,
-  },
-  ViewText: {
-    marginLeft: 20,
-    flexDirection: 'row',
-  },
-  textname: {
-    color: '#FFFFFF',
-    fontWeight: Platform.OS == 'ios' ? 'bold' : 'normal',
-    fontFamily: Platform.OS == 'ios' ? 'Biko' : 'Biko_Bold',
-    fontSize: 16,
-    marginTop: 15,
-    textAlign: 'left',
-  },
-  textdesc: {
-    color: '#FFFFFF',
-    fontFamily: Platform.OS === 'ios' ? 'Proxima Nova' : 'proximanova-semibold',
-    fontWeight: Platform.OS == 'ios' ? 'bold' : 'normal',
-    fontSize: 12,
-    marginTop: 10,
-  },
-  textlog: {
-    color: '#373737',
-    fontFamily: Platform.OS === 'ios' ? 'Proxima Nova' : 'ProximaNova-Regular',
-    fontWeight: Platform.OS == 'ios' ? 'bold' : '500',
-    fontSize: 16,
-    marginLeft: 21,
-    marginTop: Platform.OS === 'ios' ? 1 : -3,
-  },
-  notifyText: {
-    color: '#FFFFFF',
-    fontFamily: Platform.OS === 'ios' ? 'Proxima Nova' : 'proximanova-semibold',
-    fontWeight: Platform.OS == 'ios' ? 'bold' : 'normal',
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: Platform.OS === 'ios' ? 4 : 1,
-  },
-  notify: {
-    height: 19,
-    width: 28,
-    borderRadius: 15,
-    backgroundColor: '#E83F3F',
-    marginLeft: 165,
-    marginTop: Platform.OS === 'ios' ? -95 : -95,
-  },
-  imgprofile: {
-    height: 58,
-    width: 58,
-    marginTop: 5,
-    borderRadius: 6,
-  },
-});
+const styles = StyleSheet.create({});

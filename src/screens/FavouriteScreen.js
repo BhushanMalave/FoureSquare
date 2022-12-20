@@ -15,22 +15,15 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
-  PermissionsAndroid,
 } from 'react-native';
+import { FavouriteViewComponent } from '../components/FavouriteViewComponent';
 
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {SearchViewComponent} from '../components/SearchViewComponent';
-import Maps from '../components/Maps';
-import Geolocation from '@react-native-community/geolocation';
-import {useRef} from 'react';
-export const Search = ({navigation}) => {
+export const Favourite = ({navigation}) => {
   const {height, width} = useWindowDimensions();
   const [text, setText] = useState('');
   const [text1, setText1] = useState(null);
   const [text2, setText2] = useState(null);
   const [iconState, setIconState] = useState(true);
-  const [onFocus, setOnFocus] = useState(0);
-  const [buttonView, setButtonView] = useState(0);
   const [price, setPrice] = useState({
     one: false,
     tens: false,
@@ -53,113 +46,17 @@ export const Search = ({navigation}) => {
     parking: false,
     wifi: false,
   });
-  const handleText = string => {
-    setText(string);
-  };
+
   const handleText1 = string => {
     setText1(string);
   };
   const handleText2 = string => {
     setText2(string);
   };
-  const setOnFocus1 = () => {
-    setOnFocus(1);
-    setIconState(true);
-  };
-
-  const setOnFocus2 = () => {
-    setOnFocus(2);
-    setIconState(true);
-  };
-  const handleMapView = () => {
-    setButtonView(2);
-    setOnFocus(0);
-  };
-  const handleListView = () => {
-    setButtonView(1);
-    setOnFocus(0);
-  };
 
   const handleSearch = () => {
-    setButtonView(1);
-    setOnFocus(0);
-  };
 
-  const [currentLongitude, setCurrentLongitude] = useState('');
-  const [currentLatitude, setCurrentLatitude] = useState('');
 
-  const mapRef = useRef(null);
-
-  useEffect(() => {
-    const requestLocationPermission = async () => {
-      if (Platform.OS === 'ios') {
-        getOneTimeLocation();
-      } else {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Access Required',
-              message: 'This App needs to Access your location',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //To Check, If Permission is granted
-            getOneTimeLocation();
-          } else {
-            Toast.show('Permission Denied');
-          }
-        } catch (err) {
-          console.warn(err);
-        }
-      }
-    };
-    requestLocationPermission();
-  }, []);
-
-  const getOneTimeLocation = () => {
-    Toast.show('Getting Location ...');
-    Geolocation.getCurrentPosition(
-      //Will give you the current location
-      position => {
-        setTimeout(() => {
-          try {
-            mapRef.current.animateToRegion(
-              {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.2,
-              },
-              3 * 1000,
-            );
-          } catch (error) {
-            Toast.show('Failed to animate direction');
-          }
-        }, 500);
-        Toast.show('You are Here');
-
-        //getting the Longitude from the location json
-        const currentLongitude = position.coords.longitude;
-
-        //getting the Latitude from the location json
-        const currentLatitude = position.coords.latitude;
-
-        //Setting Longitude state
-        setCurrentLongitude(currentLongitude);
-
-        //Setting Longitude state
-        setCurrentLatitude(currentLatitude);
-      },
-      error => {
-        Toast.show(error.message);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 30000,
-        maximumAge: 1000,
-      },
-    );
   };
 
   return (
@@ -183,40 +80,21 @@ export const Search = ({navigation}) => {
                   source={require('../assets/images/back_icon.png')}
                 />
               </TouchableOpacity>
-              <View
+              <Text
                 style={{
-                  height: 40,
-                  width:
-                    width > height
-                      ? Platform.OS === 'ios'
-                        ? '85%'
-                        : '85%'
-                      : '75%',
-                  backgroundColor: 'white',
-                  alignSelf: 'center',
-                  marginTop: -10,
-                  borderRadius: 5,
-                  flexDirection: 'row',
+                  color: 'white',
+                  fontFamily: 'Avenir Medium',
+                  fontSize: 28,
+                  marginTop: -5,
+                  fontWeight: '500',
                 }}>
-                <Image
-                  source={require('../assets/images/search_icon.png')}
-                  style={{tintColor: '#cccccc', marginTop: 12, marginLeft: 20}}
-                />
-                <TextInput
-                  name="search"
-                  placeholder="Search"
-                  placeholderTextColor={'#ccc'}
-                  style={styles.textInput}
-                  onChangeText={handleText}
-                  onFocus={setOnFocus1}
-                  onChange={handleSearch}
-                />
-              </View>
+                Favourites
+              </Text>
+
               {iconState ? (
                 <TouchableOpacity
                   onPress={() => {
                     setIconState(false);
-                    setOnFocus(0);
                   }}>
                   <Image
                     style={styles.filter}
@@ -227,7 +105,6 @@ export const Search = ({navigation}) => {
                 <TouchableOpacity
                   onPress={() => {
                     setIconState(true);
-                    setOnFocus(0);
                   }}>
                   <Text
                     style={{
@@ -257,211 +134,34 @@ export const Search = ({navigation}) => {
                 flexDirection: 'row',
               }}>
               <Image
-                source={require('../assets/images/near_me_mdpi.png')}
-                style={{marginTop: 12, marginLeft: 20, height: 18, width: 18}}
+                source={require('../assets/images/search_icon.png')}
+                style={{tintColor: '#cccccc', marginTop: 12, marginLeft: 20}}
               />
               <TextInput
-                name="nearMe"
-                placeholder="Near Me"
+                name="search"
+                placeholder="Search"
                 placeholderTextColor={'#ccc'}
                 style={styles.textInput}
                 onChangeText={handleText1}
-                onFocus={setOnFocus2}
+                onChange={handleSearch}
               />
             </View>
           </SafeAreaView>
         </View>
 
-        <View style={{flex: 1, marginBottom: 80}}>
-          {onFocus === 1 && (
-            <>
-              <View style={{flex: 1}}>
-                <View style={{height: 60}}>
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Medium',
-                      fontSize: 22,
-                      color: '#7A7A7A',
-                      marginTop: 15,
-                      marginLeft: 20,
-                    }}>
-                    Near by places
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 0.7,
-                    borderBottomColor: '#ccc',
-                    marginTop: 0,
-                    backgroundColor: '#fff',
-                    height: 90,
-                  }}>
-                  <Image
-                    source={require('../assets/images/images.jpeg')}
-                    style={{
-                      height: 60,
-                      width: 60,
-                      marginLeft: 20,
-                      marginTop: 15,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginTop: 25,
-                      color: 'black',
-                      marginLeft: 20,
-                    }}>
-                    Santhekatte
-                  </Text>
-                </View>
+        <View>
+              <>
+               {false && (
+                <>
+                <FavouriteViewComponent/>
+                <FavouriteViewComponent/>
+                <FavouriteViewComponent/>
+                <FavouriteViewComponent/>
+                </>
 
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 0.7,
-                    borderBottomColor: '#ccc',
-                    marginTop: 0,
-                    backgroundColor: '#fff',
-                    height: 90,
-                  }}>
-                  <Image
-                    source={require('../assets/images/images.jpeg')}
-                    style={{
-                      height: 60,
-                      width: 60,
-                      marginLeft: 20,
-                      marginTop: 15,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginTop: 25,
-                      color: 'black',
-                      marginLeft: 20,
-                    }}>
-                    Santhekatte
-                  </Text>
-                </View>
-              </View>
-              <View style={{}}>
-                <View style={{height: 60}}>
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Medium',
-                      fontSize: 22,
-                      color: '#7A7A7A',
-                      marginTop: 15,
-                      marginLeft: 20,
-                    }}>
-                    Suggesstions
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 0.7,
-                    borderBottomColor: '#ccc',
-                    marginTop: 0,
-                    height: 60,
-                    backgroundColor: '#fff',
-                  }}>
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginTop: 10,
-                      color: 'black',
-                      marginLeft: 20,
-                    }}>
-                    Top Picks
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 0.7,
-                    borderBottomColor: '#ccc',
-                    marginTop: 0,
-                    height: 70,
-                    backgroundColor: '#fff',
-                  }}>
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginTop: 20,
-                      color: 'black',
-                      marginLeft: 20,
-                    }}>
-                    Popular
-                  </Text>
-                </View>
-              </View>
-            </>
-          )}
+               )}
 
-          {onFocus === 2 && (
-            <>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  borderBottomWidth: 0.7,
-                  borderBottomColor: '#ccc',
-                  marginTop: 10,
-                  height: 80,
-                  flexDirection: 'row',
-                }}>
-                <Image
-                  source={require('../assets/images/location_icon.png')}
-                  style={{height: 30, width: 30, marginTop: 15, marginLeft: 30}}
-                />
-
-                <Text
-                  style={{
-                    fontFamily: 'Avenir Book',
-                    fontSize: 22,
-                    marginTop: 15,
-                    color: 'black',
-                    marginLeft: 30,
-                  }}>
-                  Use my current location
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  borderBottomWidth: 0.7,
-                  borderBottomColor: '#ccc',
-                  marginTop: 10,
-                  height: 80,
-                  flexDirection: 'row',
-                }}>
-                <Image
-                  source={require('../assets/images/map_icon.png')}
-                  style={{height: 30, width: 30, marginTop: 15, marginLeft: 30}}
-                />
-
-                <Text
-                  style={{
-                    fontFamily: 'Avenir Book',
-                    fontSize: 22,
-                    marginTop: 15,
-                    color: 'black',
-                    marginLeft: 30,
-                  }}>
-                  Select Search area on map
-                </Text>
-              </View>
-            </>
-          )}
-
-          {iconState === false && (
+              {iconState === false && (
             <>
               <View>
                 <View style={{height: 60}}>
@@ -1379,47 +1079,13 @@ export const Search = ({navigation}) => {
               </View>
             </>
           )}
-          {buttonView === 2 && (
-            <>
-              {currentLatitude && currentLongitude !== '' ? (
-                <View style={{ height: 1000}}>
-                  <Maps
-                    latitude={currentLatitude}
-                    longitude={currentLongitude}
-                    mapRef={mapRef}
-                  />
-                  <SearchViewComponent />
-                  <SearchViewComponent />
-                </View>
-              ) : null}
-            </>
-          )}
-          {buttonView === 1 && (
-            <View>
-              <SearchViewComponent />
-              <SearchViewComponent />
-              <SearchViewComponent />
-              <SearchViewComponent />
-              <SearchViewComponent />
-              <SearchViewComponent />
-            </View>
-          )}
+              
+              </>
+
+
+
         </View>
       </ScrollView>
-      {buttonView === 1 && (
-        <View style={styles.buttonbody}>
-          <TouchableOpacity onPress={handleMapView} style={styles.button}>
-            <Text style={styles.buttontext}>Map View</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-      {buttonView === 2 && (
-        <View style={styles.buttonbody}>
-          <TouchableOpacity onPress={handleListView} style={styles.button}>
-            <Text style={styles.buttontext}>List View</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 };
@@ -1439,26 +1105,5 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 2,
     color: '#2B2B2B',
-  },
-  button: {
-    height: 60,
-    backgroundColor: '#301934',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonbody: {
-    width: '100%',
-    flex: 1,
-    // justifyContent: 'flex-end',
-    position: 'absolute',
-    bottom: 0,
-  },
-  buttontext: {
-    height: 28,
-    width: 100,
-    color: '#FFFFFF',
-    fontSize: 20,
-    textAlign: 'center',
-    fontFamily: 'Avenir Book',
   },
 });

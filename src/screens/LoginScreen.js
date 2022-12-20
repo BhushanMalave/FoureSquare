@@ -22,6 +22,7 @@ import {signInApi} from '../authorization/Auth';
 import {forgotPasswordApi} from '../authorization/Auth';
 import {setToken} from '../redux/ReduxPersist/User';
 import {useDispatch} from 'react-redux';
+import {setLoginState} from '../redux/ReduxPersist/States';
 
 export const Login = ({navigation}) => {
   const {width, height} = useWindowDimensions();
@@ -35,10 +36,7 @@ export const Login = ({navigation}) => {
     };
     const response = await forgotPasswordApi(obj);
     if (response?.message === 'Otp sent, please check your mail') {
-      console.log("gooo")
       navigation.navigate('Verification', {Email});
-    } else {
-      console.log("====",response?.message);
     }
   };
   const signinValidationSchema = yup.object().shape({
@@ -65,7 +63,13 @@ export const Login = ({navigation}) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <SafeAreaView style={{flex: 1, marginHorizontal: 30}}>
             <View style={styles.viewTop}>
-              <Text style={styles.textskip}>Skip {'>'}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  dispatch(setLoginState(false));
+                  navigation.navigate('Drawer');
+                }}>
+                <Text style={styles.textskip}>Skip {'>'}</Text>
+              </TouchableOpacity>
             </View>
             <View style={{alignItems: 'center', marginTop: 30}}>
               <Image
@@ -87,10 +91,9 @@ export const Login = ({navigation}) => {
 
                   if (res?.message === 'Login successful') {
                     dispatch(setToken(res.access_token));
-                    navigation.navigate('HomeStack');
+                    navigation.navigate('Drawer');
+                    dispatch(setLoginState(false));
                     resetForm({initialValues: ''});
-                  } else {
-                    console.log(res.message);
                   }
                 }}>
                 {({

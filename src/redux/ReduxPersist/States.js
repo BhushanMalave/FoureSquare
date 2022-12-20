@@ -1,22 +1,23 @@
 import {createSlice} from '@reduxjs/toolkit';
+import { act } from 'react-test-renderer';
 
 export const StateSlice = createSlice({
   name: 'status',
   initialState: {
     ratingState: false,
-    mockState: false,
+    loginState: false,
   },
   reducers: {
     setRatingState: (state, action) => {
       state.ratingState = !state.ratingState;
     },
-    setMockstate: (state, action) => {
-      state.mockState = !state.mockState;
+    setLoginState: (state, action) => {
+      state.loginState = action.payload;
     },
    
   },
 });
 
-export const {setRatingState, setMockstate} = StateSlice.actions;
+export const {setRatingState, setLoginState} = StateSlice.actions;
 
 export default StateSlice.reducer;

@@ -29,7 +29,7 @@ export const Feedback = ({navigation}) => {
   };
   return (
     <View style={{flex: 1}}>
-      <ScrollView >
+      <ScrollView>
         <View style={styles.topbar}>
           <SafeAreaView>
             <View
@@ -39,10 +39,15 @@ export const Feedback = ({navigation}) => {
                 marginHorizontal: 20,
                 justifyContent: 'space-between',
               }}>
-              <Image
-                style={styles.menu}
-                source={require('../assets/images/back_icon.png')}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}>
+                <Image
+                  style={styles.menu}
+                  source={require('../assets/images/back_icon.png')}
+                />
+              </TouchableOpacity>
               <Text
                 style={{
                   fontFamily: 'Avenir Book',
@@ -52,7 +57,7 @@ export const Feedback = ({navigation}) => {
                 }}>
                 Feedback
               </Text>
-              <Icon name="home-outline" size={28} color="#fff" />
+              <Icon name="home-outline" size={28} color="#fff"  onPress={()=> {navigation.navigate('HomeStack')}}/>
             </View>
           </SafeAreaView>
         </View>
@@ -79,9 +84,9 @@ export const Feedback = ({navigation}) => {
         </View>
       </ScrollView>
       <View style={styles.buttonbody}>
-        <Pressable onPress={handleSubmit} style={styles.button}>
+        <TouchableOpacity onPress={handleSubmit} style={styles.button}>
           <Text style={styles.buttontext}>Submit</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );

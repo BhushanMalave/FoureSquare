@@ -29,19 +29,21 @@ export const AboutUs = ({navigation}) => {
               marginHorizontal: 20,
               justifyContent: 'space-between',
             }}>
+              <TouchableOpacity onPress={() => {navigation.goBack()}}>
             <Image
               style={styles.menu}
               source={require('../assets/images/back_icon.png')}
             />
+            </TouchableOpacity>
             <Text style={{fontFamily:'Avenir Book',fontSize:26,color:'#fff',marginTop:-5,}}>
                About us
             </Text>
-            <Icon name="home-outline" size={28} color="#fff" />
+            <Icon name="home-outline" size={28} color="#fff" onPress={()=> {navigation.navigate('HomeStack')}} />
             </View>
         </SafeAreaView>
       </View>
-      <View style={{backgroundColor:'white',flex:1}}>
-      <View style={{flex:1,marginHorizontal:15,marginVertical:15,backgroundColor:'white'}}>
+      <View style={{flex:1}}>
+      <View style={{flex:1,marginHorizontal:15,marginVertical:15,}}>
         <Text style={{fontFamily:'Avenir Book',fontSize:18,color:'#7A7A7A',letterSpacing:0.9,lineHeight:28}}>
             hgjdfkhgldfshgsjdfvbfdvbdfvbfhushdfuhsd dfhusdhfhsud usdhfusdhfus usdhfuasdhfuajsdh usdhfusdhfuasdhf asfhsdukfhasdkl fsudhfujkasd fasduhfsjdh
         </Text>
