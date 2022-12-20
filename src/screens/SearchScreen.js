@@ -59,10 +59,12 @@ export const Search = ({navigation}) => {
   };
   const setOnFocus1 = () => {
     setOnFocus(1);
+    setIconState(true);
   };
 
   const setOnFocus2 = () => {
     setOnFocus(2);
+    setIconState(true);
   };
   const handleMapView = () => {};
 
@@ -544,7 +546,7 @@ export const Search = ({navigation}) => {
                     Fliter by
                   </Text>
                 </View>
-                <View style={{height: 100, backgroundColor: 'white'}}>
+                <View style={{height:Platform.OS === 'ios' ? 100: 120, backgroundColor: 'white'}}>
                   <Text
                     style={{
                       fontFamily: 'Avenir Medium',
@@ -562,14 +564,15 @@ export const Search = ({navigation}) => {
                       borderBottomWidth: 1,
                       borderBottomColor: '#ccc',
                       marginRight:20,
+                      marginTop:-10
                     }}>
                     <TextInput
                       name="radius"
                       style={{
                         fontFamily: 'Avenir Book',
                         width: 30,
-                        marginBottom: 20,
-                        marginTop: 5,
+                        marginBottom:Platform.OS === 'ios' ? 10 : 0,
+                        marginTop:Platform.OS === 'ios' ? 15 : 3,
                         color:'black'
                       }}
                       onChangeText={handleText2}
@@ -578,8 +581,8 @@ export const Search = ({navigation}) => {
                       style={{
                         fontFamily: 'Avenir Book',
                         width: 30,
-                        marginBottom: 20,
-                        marginTop: 5,
+                        marginBottom: 10,
+                        marginTop: 15,
                         color:'black'
                       }}>
                       km
