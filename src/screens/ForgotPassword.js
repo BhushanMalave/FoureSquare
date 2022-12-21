@@ -32,11 +32,11 @@ export const ForgotPassword = ({navigation,route}) => {
       .matches(/\w*[A-Z]\w*/, 'Password must have a capital letter')
       .matches(/\d/, 'Password must have a number')
       .min(6, ({min}) => `Password must be at least ${min} characters`)
-      .required(''),
+      .required(),
     confirmPassword: yup
       .string()
       .oneOf([yup.ref('password')], 'Password do not match')
-      .required(''),
+      .required(),
   });
 
   return (

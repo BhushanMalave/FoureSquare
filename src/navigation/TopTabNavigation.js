@@ -6,7 +6,7 @@ import {TopPicks} from '../screens/TopPicks';
 import {NearYou} from '../screens/NearYou';
 import {Popular} from '../screens/Popular';
 import {Lunch} from '../screens/Lunch';
-import {Coffee} from '../screens/Coffee';
+import {Cafe} from '../screens/Cafe';
 import {Platform} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 
@@ -35,7 +35,7 @@ const TopTabNav = () => {
         <Tab.Screen name="Toppicks" component={TopPicks} />
         <Tab.Screen name="Popular" component={Popular} />
         <Tab.Screen name="Lunch" component={Lunch} />
-        <Tab.Screen name="Coffee" component={Coffee} />
+        <Tab.Screen name="Cafe" component={Cafe} />
       </Tab.Navigator>
   
   );

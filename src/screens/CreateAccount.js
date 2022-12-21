@@ -75,7 +75,7 @@ export const CreateAccount = () => {
                   const obj = {  
                     "email": values.email,
                     "mobileNumber":values.mobileNumber,
-                    "fullName":"Bhushan",
+                    "fullName":"Bhushan Malave",
                     "password": values.password,              
                 }
                 console.log(obj)

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React,{useState,useEffect} from 'react';
 import Toast from 'react-native-simple-toast';
 import {
   ImageBackground,
@@ -18,11 +18,13 @@ import {
   ActivityIndicator,
   PermissionsAndroid,
 } from 'react-native';
-import {HotelViewComponent} from '../components/HotelViewComponent';
-import {popularPlaces} from '../authorization/Auth';
+import { HotelViewComponent } from '../components/HotelViewComponent';
+import { placeCategory } from '../authorization/Auth';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
-export const Popular = ({navigation}) => {
+
+export const Cafe = ({navigation}) => {
+
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
 
@@ -71,8 +73,9 @@ export const Popular = ({navigation}) => {
             const obj = {
               latitude: currentLatitude,
               longitude: currentLongitude,
+              category:'cafe'
             };
-            const data = await popularPlaces(obj);
+            const data = await placeCategory(obj);
             setData(data);
           } catch (error) {
             // Toast.show('Failed to animate direction');
@@ -121,7 +124,9 @@ export const Popular = ({navigation}) => {
         </>
       )}
     </ScrollView>
-  );
-};
+    )
+}
 
-const styles = StyleSheet.create({});
+const styles =StyleSheet.create({
+
+})

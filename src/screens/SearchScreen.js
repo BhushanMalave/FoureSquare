@@ -16,7 +16,11 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   PermissionsAndroid,
+  FlatList,
+  Animated,
+  scrollX,
 } from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {SearchViewComponent} from '../components/SearchViewComponent';
@@ -84,6 +88,8 @@ export const Search = ({navigation}) => {
     setButtonView(1);
     setOnFocus(0);
   };
+
+  const [data, setData] = useState(null);
 
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
@@ -166,7 +172,7 @@ export const Search = ({navigation}) => {
     <View style={{flex: 1}}>
       <ScrollView style={{flex: 1}}>
         <View style={styles.topbar}>
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView >
             <View
               style={{
                 marginTop: Platform.OS === 'ios' ? 20 : 30,
@@ -272,7 +278,7 @@ export const Search = ({navigation}) => {
           </SafeAreaView>
         </View>
 
-        <View style={{flex: 1, marginBottom: 80}}>
+        <View style={{flex: 1, marginBottom: 40,borderWidth:1,height:700}}>
           {onFocus === 1 && (
             <>
               <View style={{flex: 1}}>
@@ -1380,19 +1386,19 @@ export const Search = ({navigation}) => {
             </>
           )}
           {buttonView === 2 && (
-            <>
+              <View style={{flex:1,borderWidth:1}}>
               {currentLatitude && currentLongitude !== '' ? (
-                <View style={{ height: 1000}}>
+              
                   <Maps
                     latitude={currentLatitude}
                     longitude={currentLongitude}
                     mapRef={mapRef}
+                    viewStyle={{flex:1}}
                   />
-                  <SearchViewComponent />
-                  <SearchViewComponent />
-                </View>
+               
               ) : null}
-            </>
+              <SearchViewComponent/>
+           </View>
           )}
           {buttonView === 1 && (
             <View>
@@ -1461,4 +1467,241 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Avenir Book',
   },
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#E5E5E5',
+    marginBottom: 20,
+  },
+  mapContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  mapStyle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
 });
+
+const mapStyle = [
+  {
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#ebe3cd',
+      },
+    ],
+  },
+  {
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#523735',
+      },
+    ],
+  },
+  {
+    elementType: 'labels.text.stroke',
+    stylers: [
+      {
+        color: '#f5f1e6',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#c9b2a6',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.land_parcel',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#dcd2be',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.land_parcel',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#ae9e90',
+      },
+    ],
+  },
+  {
+    featureType: 'landscape.natural',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dfd2ae',
+      },
+    ],
+  },
+  {
+    featureType: 'poi',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dfd2ae',
+      },
+    ],
+  },
+  {
+    featureType: 'poi',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#93817c',
+      },
+    ],
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'geometry.fill',
+    stylers: [
+      {
+        color: '#a5b076',
+      },
+    ],
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#447530',
+      },
+    ],
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#f5f1e6',
+      },
+    ],
+  },
+  {
+    featureType: 'road.arterial',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#fdfcf8',
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#f8c967',
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#e9bc62',
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway.controlled_access',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#e98d58',
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway.controlled_access',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#db8555',
+      },
+    ],
+  },
+  {
+    featureType: 'road.local',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#806b63',
+      },
+    ],
+  },
+  {
+    featureType: 'transit.line',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dfd2ae',
+      },
+    ],
+  },
+  {
+    featureType: 'transit.line',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#8f7d77',
+      },
+    ],
+  },
+  {
+    featureType: 'transit.line',
+    elementType: 'labels.text.stroke',
+    stylers: [
+      {
+        color: '#ebe3cd',
+      },
+    ],
+  },
+  {
+    featureType: 'transit.station',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dfd2ae',
+      },
+    ],
+  },
+  {
+    featureType: 'water',
+    elementType: 'geometry.fill',
+    stylers: [
+      {
+        color: '#b9d3c2',
+      },
+    ],
+  },
+  {
+    featureType: 'water',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#92998d',
+      },
+    ],
+  },
+];

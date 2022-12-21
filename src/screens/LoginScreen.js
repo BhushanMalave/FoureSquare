@@ -82,24 +82,29 @@ export const Login = ({navigation}) => {
                 validationSchema={signinValidationSchema}
                 initialValues={{email: '', password: ''}}
                 onSubmit={async (values, {resetForm}) => {
+               
                   Email = values.email;
-                  const obj = {
-                    email: values.email,
-                    password: values.password,
-                  };
-                  const res = await signInApi(obj);
+                
+                    const obj = {
+                      email: values.email,
+                      password: values.password,
+                    };
+                    const res = await signInApi(obj);
 
-                  if (res?.message === 'Login successful') {
-                    dispatch(setToken(res.access_token));
-                    navigation.navigate('Drawer');
-                    dispatch(setLoginState(false));
-                    resetForm({initialValues: ''});
-                  }
+                    if (res?.message === 'Login successful') {
+                      dispatch(setToken(res.access_token));
+                      navigation.navigate('Drawer');
+                      dispatch(setLoginState(true));
+                      resetForm({initialValues: ''});
+                    }
+                  
+                 
                 }}>
                 {({
                   handleChange,
                   handleBlur,
                   handleSubmit,
+                  handleReset,
                   values,
                   errors,
                   isValid,
@@ -196,12 +201,20 @@ export const Login = ({navigation}) => {
                       </Text>
                     )}
 
-                    <TouchableOpacity style={{}} onPress={handleForgotPassword}>
+                    <TouchableOpacity
+                      style={{}}
+                      onPress={() => {
+                        handleForgotPassword();
+                        handleReset();
+                      }}>
                       <Text style={styles.text}>Forgot Password?</Text>
                     </TouchableOpacity>
                     <View style={styles.container}>
                       <TouchableOpacity
-                        onPress={handleSubmit}
+                        onPress={() => {
+                        
+                          handleSubmit();
+                        }}
                         style={styles.button}
                         disabled={!isValid}>
                         <Text style={styles.textbutton}>Login</Text>

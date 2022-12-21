@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -16,10 +16,23 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { aboutUsApi } from '../authorization/Auth';
 
 export const AboutUs = ({navigation}) => {
+
+  const [data,setData]= useState(null);
+
+  const call = async () =>{
+    const res = await aboutUsApi();
+    setData(res);
+  }
+
+  useEffect(() => {
+    call();
+  }, []);
+
   return (
-    <ScrollView style={{flex: 1}}>
+    <ScrollView contentContainerStyle={{flex:1}}>
       <View style={styles.topbar}>
         <SafeAreaView>
           <View
@@ -42,10 +55,10 @@ export const AboutUs = ({navigation}) => {
             </View>
         </SafeAreaView>
       </View>
-      <View style={{flex:1}}>
+      <View style={{flex:1,backgroundColor:'white'}}>
       <View style={{flex:1,marginHorizontal:15,marginVertical:15,}}>
-        <Text style={{fontFamily:'Avenir Book',fontSize:18,color:'#7A7A7A',letterSpacing:0.9,lineHeight:28}}>
-            hgjdfkhgldfshgsjdfvbfdvbdfvbfhushdfuhsd dfhusdhfhsud usdhfusdhfus usdhfuasdhfuajsdh usdhfusdhfuasdhf asfhsdukfhasdkl fsudhfujkasd fasduhfsjdh
+        <Text style={{fontFamily:'Avenir Book',fontSize:18,color:'#7A7A7A',letterSpacing:0.9,lineHeight:28,textAlign:'justify'}}>
+           {data}
         </Text>
       </View>
       </View>

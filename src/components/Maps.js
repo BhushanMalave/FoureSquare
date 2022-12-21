@@ -1,14 +1,13 @@
 import React from 'react';
 // Import required components
-import {SafeAreaView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, StyleSheet, View,} from 'react-native';
 
 // Import Map and Marker
 import MapView, {Marker} from 'react-native-maps';
 
-const Maps = ({longitude, latitude, mapRef}) => {
+const Maps = ({longitude, latitude, mapRef,viewStyle={}}) => {
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={styles.container}>
+      <View style={[styles.container,{...viewStyle}]}>
         <MapView style={styles.mapStyle} customMapStyle={mapStyle} ref={mapRef}>
           <Marker
             draggable
@@ -23,7 +22,6 @@ const Maps = ({longitude, latitude, mapRef}) => {
           />
         </MapView>
       </View>
-    </SafeAreaView>
   );
 };
 

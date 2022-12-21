@@ -33,8 +33,6 @@ export const VerifyOtp = ({navigation,route}) => {
   console.log(response);
 
   }
- 
-
   return (
     <View style={{flex: 1}}>
       <ImageBackground
@@ -56,7 +54,6 @@ export const VerifyOtp = ({navigation,route}) => {
                 initialValues={{otp:''}}
                 onSubmit={async (values, {resetForm}) => {
                 
-                  resetForm({initialValues: ''});
                   const obj ={
                     "email":Email,
                     "otp":values.otp,
@@ -64,7 +61,7 @@ export const VerifyOtp = ({navigation,route}) => {
                 }
                 const response = await verifyOtpApi(obj);
                 console.log(response);
-                if(response?.message === false)
+                if(response?.message == true)
                 {
                   navigation.navigate('Forgot Password',{Email})
                   resetForm({initialValues: ''});
