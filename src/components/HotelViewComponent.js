@@ -10,37 +10,38 @@ import {
   Alert,
   Platform,
   useWindowDimensions,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 
-export const HotelViewComponent = ({onPress}) => {
+export const HotelViewComponent = ({onPress, item}) => {
   const {height, width} = useWindowDimensions();
   return (
     <TouchableOpacity style={styles.Container} onPress={onPress}>
-      <Image
-        source={require('../assets/images/images.jpeg')}
-        style={styles.hotelimg}
-      />
-      <View style={{marginHorizontal: 13,marginVertical:6,}}>
+      <Image source={{uri: item?.placeImages?.url}} style={styles.hotelimg} />
+      <View style={{flex: 1,paddingLeft:7,paddingRight:7,paddingTop:7,paddingBottom:7,}}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            width: width > height ? '66%' : '60%',
+            // justifyContent:'flex-end',
+            //  width: width > height ? '70%' : '80%',
+          
           }}>
           <Text
             style={{
               fontFamily: 'Avenir Light',
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: 'bold',
               color: 'black',
             }}>
-            Attil
+            {item?.placeName}
           </Text>
+          <TouchableOpacity onPress={() => {}}>
           <Image
-            source={require('../assets/images/favourite.png')}
+            source={require('../assets/images/favourite_iconcopy.png')}
             style={styles.star}
           />
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -59,28 +60,33 @@ export const HotelViewComponent = ({onPress}) => {
               color: 'white',
               marginTop: 2,
             }}>
-            8.5
+            {item?.totalrating ? item?.totalrating : '-'}
           </Text>
         </View>
         <View style={{marginTop: 5}}>
           <Text
             style={{
               fontFamily: 'Avenir Book',
-              fontSize: 16,
+              fontSize: 14,
               color: '#7A7A7A',
               fontWeight: '500',
             }}>
-            Indian{'·'}
+            Indian {'·'} {item?.priceRange}{' '}
+            {Math.round(item?.dist?.calculated / 1.609, 2 * 100) / 100}
+            {'km'}
           </Text>
-          <Text
-            style={{
-              fontFamily: 'Avenir Book',
-              fontSize: 16,
-              color: '#7A7A7A',
-              fontWeight: '500',
-            }}>
-            fhgjdkfhgsdfkjghfdhjg
-          </Text>
+          <View style={{}}>
+            <Text
+              style={{
+                fontFamily: 'Avenir Book',
+                fontSize: 14,
+                color: '#7A7A7A',
+                fontWeight: '500',
+                flexShrink:1,
+              }}>
+              {item?.address?.length >20 ? item?.address.substring(0,25)+"..." : item?.address}
+            </Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -89,6 +95,7 @@ export const HotelViewComponent = ({onPress}) => {
 
 const styles = StyleSheet.create({
   Container: {
+    flex: 1,
     flexDirection: 'row',
     marginHorizontal: 8,
     marginVertical: 4,
@@ -98,6 +105,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 5,
+    height: 140,
   },
   hotelimg: {
     height: 140,
@@ -105,5 +113,6 @@ const styles = StyleSheet.create({
   },
   star: {
     tintColor: 'red',
+    height:20,width:22,
   },
 });

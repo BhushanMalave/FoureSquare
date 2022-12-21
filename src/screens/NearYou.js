@@ -83,10 +83,8 @@ export const NearYou = ({navigation}) => {
               latitude: currentLatitude,
               longitude: currentLongitude,
             };
-            console.log(obj);
             const data = await nearYouPlaces(obj);
             setData(data);
-            console.log(data);
           } catch (error) {
             // Toast.show('Failed to animate direction');
           }
@@ -128,14 +126,24 @@ export const NearYou = ({navigation}) => {
         {loading ? <ActivityIndicator size="large" color="#7A7A7A" /> : null}
       </View>
 
-      {data ? (
+      {!data ? (
         <ActivityIndicator size="large" color="#7A7A7A" />
       ) : (
-        <HotelViewComponent
-          onPress={() => {
-            navigation.navigate('DetailScreen');
+        <>
+        {data?.map(item => (
+          <View key={item?._id} >
+             <HotelViewComponent
+             item={item}
+             onPress={() => {
+            navigation.navigate('DetailScreen',{item});
           }}
         />
+
+          </View>
+        ))}
+       
+        </>
+       
       )}
     </ScrollView>
   );

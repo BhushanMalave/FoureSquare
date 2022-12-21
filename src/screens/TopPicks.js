@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import Toast from 'react-native-simple-toast';
 import {
   ImageBackground,
@@ -19,8 +19,8 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import {HotelViewComponent} from '../components/HotelViewComponent';
-import Geolocation from '@react-native-community/geolocation';
 import {topPickPlaces} from '../authorization/Auth';
+import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
 
 export const TopPicks = ({navigation}) => {
@@ -67,42 +67,30 @@ export const TopPicks = ({navigation}) => {
       position => {
         setTimeout(async () => {
           try {
-            mapRef.current.animateToRegion(
-              {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.2,
-              },
-              3 * 1000,
-            );
-            
+           
             setLoading(false);
-
             const obj = {
               latitude: currentLatitude,
               longitude: currentLongitude,
             };
-            console.log(obj);
             const data = await topPickPlaces(obj);
             setData(data);
-            console.log(data);
           } catch (error) {
             // Toast.show('Failed to animate direction');
           }
         }, 500);
         // Toast.show('You are Here');
-        //getting the Longitude from the location json
-        const currentLongitude = position.coords.longitude;
+           //getting the Longitude from the location json
+           const currentLongitude = position.coords.longitude;
 
-        //getting the Latitude from the location json
-        const currentLatitude = position.coords.latitude;
+           //getting the Latitude from the location json
+           const currentLatitude = position.coords.latitude;
 
-        //Setting Longitude state
-        setCurrentLongitude(currentLongitude);
+           //Setting Longitude state
+           setCurrentLongitude(currentLongitude);
 
-        //Setting Longitude state
-        setCurrentLatitude(currentLatitude);
+           //Setting Longitude state
+           setCurrentLatitude(currentLatitude);
       },
       error => {
         Toast.show(error.message);
@@ -120,14 +108,19 @@ export const TopPicks = ({navigation}) => {
       {!data ? (
         <ActivityIndicator size="large" color="#7A7A7A" />
       ) : (
-        <HotelViewComponent
-          onPress={() => {
-            navigation.navigate('DetailScreen');
-          }}
-        />
+        <>
+          {data?.map(item => (
+            <View key={item?._id}>
+              <HotelViewComponent
+                item={item}
+                onPress={() => {
+                  navigation.navigate('DetailScreen',{item});
+                }}
+              />
+            </View>
+          ))}
+        </>
       )}
-     
-     
     </ScrollView>
   );
 };

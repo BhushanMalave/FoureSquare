@@ -29,7 +29,7 @@ export const Feedback = ({navigation}) => {
   };
   return (
     <View style={{flex: 1}}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={{flex:1}}>
         <View style={styles.topbar}>
           <SafeAreaView>
             <View

@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import Toast from 'react-native-simple-toast';
 import {
   ImageBackground,
@@ -21,26 +21,31 @@ import LinearGradient from 'react-native-linear-gradient';
 import Maps from '../components/Maps';
 import {Rating, AirbnbRating} from 'react-native-ratings';
 import {useSelector, useDispatch} from 'react-redux';
-import { RatingModel } from '../components/RatingModel';
-import { setRatingState } from '../redux/ReduxPersist/States';
+import {RatingModel} from '../components/RatingModel';
+import {setRatingState} from '../redux/ReduxPersist/States';
 import Geolocation from '@react-native-community/geolocation';
-import { useRef } from 'react';
+import {useRef} from 'react';
+import {placeDetails} from '../authorization/Auth';
 
-
-export const DetailScreen = ({navigation}) => {
+export const DetailScreen = ({navigation, route}) => {
   const {width, height} = useWindowDimensions();
   const state = useSelector(state => state.status.ratingState);
+  const [data, setData] = useState(null);
   const dispatch = useDispatch();
-  const [
-    currentLongitude,
-    setCurrentLongitude
-  ] = useState('');
-  const [
-    currentLatitude,
-    setCurrentLatitude
-  ] = useState('');
- 
-  const mapRef =useRef(null);
+  const item = route.params.item;
+  const [currentLongitude, setCurrentLongitude] = useState('');
+  const [currentLatitude, setCurrentLatitude] = useState('');
+
+  const mapRef = useRef(null);
+  const call = async () => {
+    const obj = {
+      placeName: item.placeName,
+      placeId: item._id,
+    };
+    const data = await placeDetails(obj);
+    setData(data);
+    // console.log(data)
+  };
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -67,6 +72,7 @@ export const DetailScreen = ({navigation}) => {
       }
     };
     requestLocationPermission();
+    call();
   }, []);
 
   const getOneTimeLocation = () => {
@@ -74,7 +80,7 @@ export const DetailScreen = ({navigation}) => {
     Geolocation.getCurrentPosition(
       //Will give you the current location
       position => {
-        setTimeout(() => {
+        setTimeout(async () => {
           try {
             mapRef.current.animateToRegion(
               {
@@ -86,10 +92,10 @@ export const DetailScreen = ({navigation}) => {
               3 * 1000,
             );
           } catch (error) {
-           // Toast.show('Failed to animate direction');
+            // Toast.show('Failed to animate direction');
           }
         }, 500);
-       // Toast.show('You are Here');
+        // Toast.show('You are Here');
 
         //getting the Longitude from the location json
         const currentLongitude = position.coords.longitude;
@@ -117,7 +123,7 @@ export const DetailScreen = ({navigation}) => {
   return (
     <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
       <ImageBackground
-        source={require('../assets/images/images.jpeg')}
+        source={{uri: item?.placeImages?.url}}
         style={styles.hotelimg}>
         <LinearGradient
           start={{x: 1, y: 0}}
@@ -145,12 +151,12 @@ export const DetailScreen = ({navigation}) => {
               <Text
                 style={{
                   fontFamily: 'Avenir Medium',
-                  fontSize: 30,
+                  fontSize: 22,
                   color: '#FFF',
                   marginLeft: 30,
                   marginTop: -5,
                 }}>
-                Attil
+                {data?.placeName}
               </Text>
               <View
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -173,7 +179,7 @@ export const DetailScreen = ({navigation}) => {
                       : 130
                     : Platform.OS === 'ios'
                     ? 120
-                    : 120,
+                    : 140,
                 marginHorizontal:
                   width > height
                     ? Platform.OS === 'ios'
@@ -190,17 +196,18 @@ export const DetailScreen = ({navigation}) => {
                   color: 'white',
                   justifyContent: 'center',
                   textAlign: 'center',
+                  height:60,
                 }}>
-                Indian Restaurant , Indian Restaurant and Indian Restaurant
+                {data?.placeName}
               </Text>
-              <View style={{marginTop:0}}>
-              <AirbnbRating
-                count={5}
-                defaultRating={3}
-                size={20}
-                isDisabled={true}
-                showRating={false}
-              />
+              <View style={{marginTop: 0}}>
+                <AirbnbRating
+                  count={5}
+                  defaultRating={3}
+                  size={20}
+                  isDisabled={true}
+                  showRating={false}
+                />
               </View>
             </View>
           </SafeAreaView>
@@ -214,12 +221,12 @@ export const DetailScreen = ({navigation}) => {
             justifyContent: 'space-between',
             marginTop: 20,
           }}>
-         <TouchableOpacity
-          onPress={() => {
-            {
-              dispatch(setRatingState());
-            }
-          }}>
+          <TouchableOpacity
+            onPress={() => {
+              {
+                dispatch(setRatingState());
+              }
+            }}>
             <Image
               source={require('../assets/images/rating_icon.png')}
               style={{height: 40, width: 40}}
@@ -267,6 +274,7 @@ export const DetailScreen = ({navigation}) => {
           }}>
           Overview
         </Text>
+        <ScrollView>
         <Text
           style={{
             marginLeft: 25,
@@ -276,17 +284,19 @@ export const DetailScreen = ({navigation}) => {
             lineHeight: 23,
             marginTop: 10,
             marginRight: 20,
+            height:115,
           }}>
-          It is a long established fact that a reader will be distracted by the
-          readable content of a page when looking at its layout. The point of
-          using Lorem Ipsum is that it has a more-or-less normal readable
-          content of a page when looking at its layout. The point of using Lorem
-          Ipsum is that it has a more-or-less normal
+         {data?.overview}
         </Text>
+        </ScrollView>
         <View
           style={{height: Platform.OS === 'ios' ? 180 : 230, marginTop: 20}}>
-           {currentLatitude && currentLongitude !== '' ? (
-           <Maps latitude={currentLatitude} longitude={currentLongitude} mapRef={mapRef}/>
+          {currentLatitude && currentLongitude !== '' ? (
+            <Maps
+              latitude={currentLatitude}
+              longitude={currentLongitude}
+              mapRef={mapRef}
+            />
           ) : null}
         </View>
         <LinearGradient
@@ -306,10 +316,10 @@ export const DetailScreen = ({navigation}) => {
                 color: '#7A7A7A',
                 fontWeight: '500',
                 marginTop: 20,
-                width:'50%',
-                marginLeft:Platform.OS === 'ios' ? 10:15,
+                width: '50%',
+                marginLeft: Platform.OS === 'ios' ? 10 : 15,
               }}>
-              Daffodils,Laxmindra  Nargar, 2nd Cross Udupi
+             {data?.address?.length > 45 ? data?.address?.substring(0,45)+'...' : data?.address}
             </Text>
             <Text
               style={{
@@ -318,9 +328,9 @@ export const DetailScreen = ({navigation}) => {
                 color: '#7A7A7A',
                 fontWeight: '500',
                 marginTop: 20,
-                marginLeft:Platform.OS === 'ios' ? 10:15,
+                marginLeft: Platform.OS === 'ios' ? 10 : 15,
               }}>
-              +91 9884537389
+              +91 {data?.phoneNumber}
             </Text>
             <Text
               style={{
@@ -329,7 +339,7 @@ export const DetailScreen = ({navigation}) => {
                 color: '#7A7A7A',
                 fontWeight: '500',
                 marginTop: 20,
-                marginLeft:Platform.OS === 'ios' ? 10:15,
+                marginLeft: Platform.OS === 'ios' ? 10 : 15,
               }}>
               Drive : 5km
             </Text>
@@ -345,7 +355,7 @@ export const DetailScreen = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </View>
-      <RatingModel/>
+      <RatingModel />
     </ScrollView>
   );
 };

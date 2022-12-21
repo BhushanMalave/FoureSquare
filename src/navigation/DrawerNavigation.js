@@ -19,6 +19,7 @@ export const DrawerNav = ({navigation}) => {
         drawerStyle: {
           width: Dimensions.get('window').width / 1.25,
         },
+        drawerType:'slide'
       }}
       drawerContent={ (props) => <DrawerContent {...props} />}>
       <Drawer.Screen
