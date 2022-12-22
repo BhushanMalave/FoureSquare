@@ -16,7 +16,7 @@ import {
 export const ReviewViewComponent = ({item}) => {
   const {height, width} = useWindowDimensions();
   return (
-    <TouchableOpacity style={styles.Container} onPress={onPress}>
+    <TouchableOpacity style={styles.Container} >
       <View style={{backgroundColor: 'white',}}>
         <View
           style={{
@@ -27,27 +27,35 @@ export const ReviewViewComponent = ({item}) => {
           }}>
           <Image
             source={require('../assets/images/images.jpeg')}
-            style={{height: 45, width: 45, borderRadius: 50}}
+            style={{height: 50, width: 50, borderRadius: 50}}
           />
           <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
-            <View style={{width: '60%', marginLeft: 20}}>
+            <View style={{width: '60%', marginLeft: 15}}>
               <Text
                 style={{
                   fontFamily: 'Avenir Medium',
                   fontSize: 20,
                   fontWeight: '500',
                   color: 'black',
+                  textTransform:'capitalize',
                 }}>
-               {item?.data?.userId?.fullName}
+               {item?.userId?.fullName}
               </Text>
               <Text
                 style={{
                   fontFamily: 'Avenir Book',
-                  fontSize: 16,
+                  fontSize: 14,
                   color: '#7A7A7A',
                   marginTop: 0,
+                  textTransform:'capitalize',
+                  height:60,
+                  textAlign:'justify',
+                  width:width>height ? '150%':"100%",
+
                 }}>
-                Must try crab soup and oyester cooked in ghee !!
+            {item?.review?.length > 100
+                ? item?.review.substring(0, 100) + '...'
+                : item?.review}
               </Text>
             </View>
             <View>

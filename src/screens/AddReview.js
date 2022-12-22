@@ -19,6 +19,7 @@ import {
 
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { setInitialState } from '../redux/ReduxPersist/States';
 
 export const AddReview = ({navigation}) => {
   const {height, width} = useWindowDimensions();

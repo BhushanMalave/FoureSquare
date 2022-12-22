@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -14,12 +14,34 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ReviewViewComponent} from '../components/ReviewComponent';
+import {useDispatch, useSelector} from 'react-redux';
+import { viewPhotoApi } from '../authorization/Auth';
 
-export const PhotosGallery = ({navigation}) => {
+export const PhotosGallery = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();
+  const [data, setData] = useState('');
+  const state = useSelector(state => state.status.initialState);
+  const dispatch = useDispatch();
+  const item = route.params.data._id;
+  const name = route.params.data.placeName;
+  const call = async () => {
+    const body = {
+      placeId: item,
+    };
+    const res = await viewPhotoApi(body);
+    
+    setData(res.reviews[0]);
+    console.log("====",data.reviewImage.urls)
+  };
+
+  useEffect(() => {
+    call();
+  }, []);
+
   return (
     <View style={{flex: 1}}>
       <View style={styles.topbar}>
@@ -34,6 +56,7 @@ export const PhotosGallery = ({navigation}) => {
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
+                dispatch(setInitialState);
               }}>
               <Image
                 style={styles.menu}
@@ -48,7 +71,7 @@ export const PhotosGallery = ({navigation}) => {
                 color: '#fff',
                 marginTop: -5,
               }}>
-              Attil
+              {name.length > 15 ? name.substring(0, 15) + '...' : name}
             </Text>
             <Icon name="camera-plus-outline" size={24} color="#fff" />
           </View>
@@ -56,134 +79,30 @@ export const PhotosGallery = ({navigation}) => {
       </View>
       <ScrollView style={{flex: 1, backgroundColor: 'black'}}>
         <View style={styles.container}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123: 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123 : 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123 : 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123: 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123 : 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123 : 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123: 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123 : 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ViewPhoto');
-            }}>
-            <Image
-              source={require('../assets/images/images.jpeg')}
-              style={{
-                height: Platform.OS === 'ios' ? 123 : 135,
-                width: Platform.OS === 'ios' ? 123 : 135,
-                marginVertical: 3,
-                marginHorizontal:3,
-              }}
-            />
-          </TouchableOpacity>
-        
 
+        {!data ? (
+        <ActivityIndicator size="large" color="#7A7A7A" />
+      ) : (
+        <>
+          {data?.reviewImage?.urls.map(item => (
+             <TouchableOpacity
+             onPress={() => {
+               navigation.navigate('ViewPhoto',{});
+             }}>
+             <Image
+               source={{uri:item}}
+               style={{
+                 height: Platform.OS === 'ios' ? 123 : 135,
+                 width: Platform.OS === 'ios' ? 123 : 135,
+                 marginVertical: 3,
+                 marginHorizontal: 3,
+               }}
+             />
+           </TouchableOpacity>
+          ))}
+        </> 
+      )}
+         
         </View>
       </ScrollView>
     </View>
@@ -205,6 +124,5 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexWrap: 'wrap',
     height: '100%',
-    
   },
 });

@@ -28,6 +28,8 @@ import {useRef} from 'react';
 import {placeDetails} from '../authorization/Auth';
 import { addFavouriteApi } from '../authorization/Auth';
 import { setInitialState } from '../redux/ReduxPersist/States';
+import { setOverallRating } from '../redux/ReduxPersist/User';
+import { setPlaceId } from '../redux/ReduxPersist/User';
 
 
 export const DetailScreen = ({navigation, route}) => {
@@ -59,6 +61,8 @@ export const DetailScreen = ({navigation, route}) => {
    
     const no = (item?.totalrating)/2;
     setRating(no);
+    dispatch(setOverallRating(rating));
+    dispatch(setPlaceId(item._id));
   
   };
 
@@ -107,6 +111,7 @@ export const DetailScreen = ({navigation, route}) => {
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
+                  dispatch(setInitialState);
                 }}>
                 <Image
                   source={require('../assets/images/back_icon.png')}
@@ -239,7 +244,7 @@ export const DetailScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('PhotosGallery');
+              navigation.navigate('PhotosGallery',{data});
             }}>
             <Image
               source={require('../assets/images/photos_icon.png')}

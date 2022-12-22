@@ -106,6 +106,7 @@ export const Favourite = ({navigation}) => {
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
+                  dispatch(setInitialState);
                 }}>
                 <Image
                   style={styles.menu}

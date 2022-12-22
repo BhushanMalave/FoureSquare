@@ -8,15 +8,35 @@ import {
   View,
   Platform,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {setRatingState} from '../redux/ReduxPersist/States';
 import {Rating, AirbnbRating} from 'react-native-ratings';
+import { addRatingApi } from '../authorization/Auth';
+import { setInitialState } from '../redux/ReduxPersist/States';
 
 export const RatingModel = () => {
   const state = useSelector(state => state.status.ratingState);
+  const token = useSelector(state=>state.userDetails.token);
   const dispatch = useDispatch();
+  const rating = useSelector(state => state.userDetails.overAllRating);
+  const id = useSelector(state => state.userDetails.placeId);
+  const [Rate, setRate] = useState(null);
+
+  const setRating = rate => {
+    setRate(rate);
+  };
+
+  const addReview = async () => {
+    const body = {
+      star: Rate,
+      placeId: id,
+    };
+    const res = await addRatingApi(token,body);
+    dispatch(setRatingState());
+    dispatch(setInitialState);
+  };
   return (
     <Modal
       animationType="fade"
@@ -37,16 +57,32 @@ export const RatingModel = () => {
             borderWidth: 0.7,
             borderColor: '#7A7A7A',
           }}>
-            <View style={{marginTop:5,marginLeft:Platform.OS === 'ios' ? 320:350}}>
-            <TouchableOpacity onPress={() => {
+          <View
+            style={{
+              marginTop: 5,
+              marginLeft: Platform.OS === 'ios' ? 320 : 350,
+            }}>
+            <TouchableOpacity
+              onPress={() => {
                 {
-                    dispatch(setRatingState());
+                  dispatch(setRatingState());
                 }
-                
-            }} style={{height:30,width:30,borderWidth:1,marginTop:-20,marginLeft:15,backgroundColor:'white',borderRadius:50}} >
-            <Image source={require('../assets/images/close_icon_grey_mdpi.png')} style={{height:15,width:15 ,marginTop:6,marginLeft:6,}}/>
+              }}
+              style={{
+                height: 30,
+                width: 30,
+                borderWidth: 1,
+                marginTop: -20,
+                marginLeft: 15,
+                backgroundColor: 'white',
+                borderRadius: 50,
+              }}>
+              <Image
+                source={require('../assets/images/close_icon_grey_mdpi.png')}
+                style={{height: 15, width: 15, marginTop: 6, marginLeft: 6}}
+              />
             </TouchableOpacity>
-            </View>
+          </View>
           <Text
             style={{
               fontFamily: 'Avenir Medium',
@@ -67,7 +103,7 @@ export const RatingModel = () => {
               textAlign: 'center',
               marginTop: 20,
             }}>
-            8.5
+            {rating * 2}
           </Text>
 
           <Text
@@ -83,10 +119,11 @@ export const RatingModel = () => {
           <View style={{marginTop: 30}}>
             <AirbnbRating
               count={5}
-              defaultRating={3}
+              defaultRating={0}
               size={40}
-             // isDisabled={true}
+              // isDisabled={true}
               showRating={false}
+              onFinishRating={rate => setRating(rate)}
             />
           </View>
           <View
@@ -94,9 +131,13 @@ export const RatingModel = () => {
               borderWidth: 0.7,
               height: 65,
               borderColor: '#7A7A7A',
-              marginTop:Platform.OS === 'ios' ? 73 :64,
+              marginTop: Platform.OS === 'ios' ? 73 : 64,
             }}>
-            <TouchableOpacity onPress={()=>{console.log('=-=-')}}>
+            <TouchableOpacity
+              onPress={() => {
+                console.log(Rate);
+                addReview();
+              }}>
               <Text
                 style={{
                   fontFamily: 'Avenir Medium',
