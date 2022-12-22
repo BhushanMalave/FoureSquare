@@ -97,7 +97,7 @@ export const DrawerContent = ({navigation, props}) => {
               }}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('Favourite');
+                  navigation.navigate('FavouriteStack');
                 }}
                 style={{
                   flexDirection: 'row',

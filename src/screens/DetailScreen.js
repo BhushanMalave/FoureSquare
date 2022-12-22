@@ -26,11 +26,16 @@ import {setRatingState} from '../redux/ReduxPersist/States';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
 import {placeDetails} from '../authorization/Auth';
+import { addFavouriteApi } from '../authorization/Auth';
+import { setInitialState } from '../redux/ReduxPersist/States';
 
 
 export const DetailScreen = ({navigation, route}) => {
   const {width, height} = useWindowDimensions();
   const state = useSelector(state => state.status.ratingState);
+  const login = useSelector(state => state.status.loginState);
+  const token = useSelector(state => state.userDetails.token);
+  const favData = useSelector(state => state.userDetails.userFavData);
   const [data, setData] = useState(null);
   const dispatch = useDispatch();
   const item = route.params.item;
@@ -48,33 +53,36 @@ export const DetailScreen = ({navigation, route}) => {
     setData(data);
     setCurrentLongitude(data?.location?.coordinates[0]);
     setCurrentLatitude(data?.location?.coordinates[1]);
+
+
+   
    
     const no = (item?.totalrating)/2;
     setRating(no);
-    // mapRef.current.animateToRegion(
-    //   {
-    //     latitude: currentLatitude,
-    //     longitude: currentLongitude,
-    //     latitudeDelta: 0.05,
-    //     longitudeDelta: 0.2,
-    //   },
-    // );  
-    // mapanimate();
+  
   };
-  const mapanimate = () => {
-    mapRef.current.animateToRegion(
-      {
-        latitude: currentLatitude,
-        longitude: currentLongitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.2,
-      },
-    );  
-  }
+
+  const addToFavourite = async id => {
+    const body = {
+      placeId: id,
+    };
+    const res = await addFavouriteApi(token, body);
+    console.log(res);
+    dispatch(setInitialState());
+  };
+  
+  const removeFromFavourite = async id => {
+    const body = {
+      placeId: id,
+    };
+    const res = await addFavouriteApi(token, body);
+    console.log(res);
+    dispatch(setInitialState());
+  };
 
   useEffect( () => {
     call();
-  }, []);
+  }, [state]);
 
   return (
     <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
@@ -122,12 +130,48 @@ export const DetailScreen = ({navigation, route}) => {
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Image
                   source={require('../assets/images/share_icon.png')}
-                  style={{height: 22, width: 26}}
+                  style={{height: 22, width: 26,marginRight:5,}}
                 />
+               {login === 1 ? (
+            <Pressable>
+              <Image
+                source={require('../assets/images/favourite_star.png')}
+                style={styles.star}
+              />
+            </Pressable>
+          ) : favData?.length > 0 ? (
+            favData.filter(ele => ele._id === item._id)?.length > 0 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  addToFavourite(data?._id);
+                }}>
                 <Image
-                  source={require('../assets/images/favourite_iconcopy.png')}
-                  style={{height: 24, width: 26, marginLeft: 20}}
+                  source={require('../assets/images/favourite_icon.png')}
+                  style={styles.star}
                 />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  removeFromFavourite(data?._id);
+                }}>
+                <Image
+                  source={require('../assets/images/favourite_star.png')}
+                  style={styles.star}
+                />
+              </TouchableOpacity>
+            )
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                removeFromFavourite(data?._id);
+              }}>
+              <Image
+                source={require('../assets/images/favourite_star.png')}
+                style={styles.star}
+              />
+            </TouchableOpacity>
+          )}
               </View>
             </View>
             <View
@@ -343,4 +387,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Avenir Book',
   },
+  star:{
+    height:24,
+    width:28,
+  }
 });

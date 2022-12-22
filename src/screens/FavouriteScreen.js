@@ -18,11 +18,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {FaviouriteViewComponent} from '../components/FavouriteViewComponent';
-import { getFavouriteApi } from '../authorization/Auth';
-import { setUserFavData } from '../redux/ReduxPersist/User';
-import { useDispatch,useSelector } from 'react-redux';
-import { addFavouriteApi } from '../authorization/Auth';
-import { setInitialState } from '../redux/ReduxPersist/States';
+import {getFavouriteApi} from '../authorization/Auth';
+import {setUserFavData} from '../redux/ReduxPersist/User';
+import {useDispatch, useSelector} from 'react-redux';
+import {addFavouriteApi} from '../authorization/Auth';
+import {setInitialState} from '../redux/ReduxPersist/States';
 
 export const Favourite = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -30,13 +30,12 @@ export const Favourite = ({navigation}) => {
   const [text1, setText1] = useState(null);
   const [text2, setText2] = useState(null);
   const [iconState, setIconState] = useState(true);
-  const data= useSelector(state => state.userDetails.userFavData);
-  const state = useSelector(state=> state.status.initialState);
-  const dispatch=useDispatch();
-  const token = useSelector(state=>state.userDetails.token);
-  const latitude = useSelector(state=>state.userDetails.userlatitude);
-  const longitude =useSelector(state=>state.userDetails.userlongitude);
-
+  const data = useSelector(state => state.userDetails.userFavData);
+  const state = useSelector(state => state.status.initialState);
+  const dispatch = useDispatch();
+  const token = useSelector(state => state.userDetails.token);
+  const latitude = useSelector(state => state.userDetails.userlatitude);
+  const longitude = useSelector(state => state.userDetails.userlongitude);
 
   const [price, setPrice] = useState({
     one: false,
@@ -49,7 +48,7 @@ export const Favourite = ({navigation}) => {
     popular: false,
     distance: false,
     rating: false,
-  });  
+  });
   const [features, setFeatures] = useState({
     acceptCC: false,
     deliver: false,
@@ -70,28 +69,27 @@ export const Favourite = ({navigation}) => {
 
   const handleSearch = () => {};
 
-  const favouriteDataCall = async() => {
-    const body ={
-      'latitude':latitude,
-      "longitude":longitude,
-    }
-    const res = await getFavouriteApi(token,body);
-     dispatch(setUserFavData(res));  
-     console.log("hdhs")  ;
-}
-const removeFromFavourite = async (id) => {
-  const body ={
-    "placeId":id,
-  }
-  const res = await addFavouriteApi(token,body);
-  console.log(res);
-}
+  const favouriteDataCall = async () => {
+    const body = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const res = await getFavouriteApi(token, body);
+    dispatch(setUserFavData(res));
+  };
+  const removeFromFavourite = async id => {
+    const body = {
+      placeId: id,
+    };
+    const res = await addFavouriteApi(token, body);
+    console.log(res);
+    dispatch(setInitialState());
+    favouriteDataCall();
+  };
 
-
-useEffect(() => {
-  favouriteDataCall(); 
-}, [state]);
-
+  useEffect(() => {
+    favouriteDataCall();
+  }, [state]);
 
   return (
     <View style={{flex: 1}}>
@@ -194,10 +192,10 @@ useEffect(() => {
                     <View key={item?._id}>
                       <FaviouriteViewComponent
                         item={item}
-                        onPress={()=>{ navigation.navigate('DetailScreen', {item})}}
-                        onLongPress={() => {removeFromFavourite(item?._id);
-                          dispatch(setInitialState());
-                          }}
+                        navigation={navigation}
+                        onPress={() => {
+                          removeFromFavourite(item?._id);
+                        }}
                       />
                     </View>
                   ))}

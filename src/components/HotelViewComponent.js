@@ -15,25 +15,25 @@ import {
 
 import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
-import { setInitialState } from '../redux/ReduxPersist/States';
+import {setInitialState} from '../redux/ReduxPersist/States';
 
-export const HotelViewComponent = ({onPress, item,state}) => {
+export const HotelViewComponent = ({onPress, item, state}) => {
   const {height, width} = useWindowDimensions();
   const login = useSelector(state => state.status.loginState);
-  const token = useSelector(state=>state.userDetails.token);
-  const favData = useSelector(state=> state.userDetails.userFavData)
-  const [fav,setFav] = useState(false);
-  const dispatch=useDispatch();
- // console.log("====",favData);
+  const token = useSelector(state => state.userDetails.token);
+  const favData = useSelector(state => state.userDetails.userFavData);
+  const [fav, setFav] = useState(false);
+  const dispatch = useDispatch();
+  // console.log("====",favData);
 
   const favDatacompare = () => {
-    favData?.map(item=>{
-          if( item._id === fav._id)
-          {
-            setFav(true);
-          }
-    }) 
-  }
+    favData?.map(item => {
+      if (item._id === favData._id) {
+        setFav(true);
+        console.log(fav);
+      }
+    });
+  };
 
   const convertPriceRange = number => {
     if (number < 10) {
@@ -46,28 +46,23 @@ export const HotelViewComponent = ({onPress, item,state}) => {
       return '₹₹₹₹';
     }
   };
-  const addToFavourite = async (id) => {
-    const body ={
-      "placeId":id,
-    }
-    const res = await addFavouriteApi(token,body);
+  const addToFavourite = async id => {
+    const body = {
+      placeId: id,
+    };
+    const res = await addFavouriteApi(token, body);
     console.log(res);
     dispatch(setInitialState());
-
-  }
-  const removeFromFavourite = async (id) => {
-    const body ={
-      "placeId":id,
-    }
-    const res = await addFavouriteApi(token,body);
+  };
+  const removeFromFavourite = async id => {
+    const body = {
+      placeId: id,
+    };
+    const res = await addFavouriteApi(token, body);
     console.log(res);
     dispatch(setInitialState());
-  }
-  
+  };
 
-  useEffect(() => {
-  // favDatacompare();
-  }, [state]);
   return (
     <TouchableOpacity style={styles.Container} onPress={onPress}>
       <Image source={{uri: item?.placeImages?.url}} style={styles.hotelimg} />
@@ -100,29 +95,42 @@ export const HotelViewComponent = ({onPress, item,state}) => {
           {login === 1 ? (
             <Pressable>
               <Image
-                source={require('../assets/images/favourite_iconcopy.png')}
+                source={require('../assets/images/favourite_star.png')}
                 style={styles.star}
               />
             </Pressable>
+          ) : favData?.length > 0 ? (
+            favData.filter(ele => ele._id === item._id)?.length > 0 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  addToFavourite(item?._id);
+                }}>
+                <Image
+                  source={require('../assets/images/favourite_icon.png')}
+                  style={styles.star}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  removeFromFavourite(item?._id);
+                }}>
+                <Image
+                  source={require('../assets/images/favourite_star.png')}
+                  style={styles.star}
+                />
+              </TouchableOpacity>
+            )
           ) : (
-            <>
-              {fav === false && (
-                <TouchableOpacity onPress={() => {addToFavourite(item?._id)}}>
-                  <Image
-                    source={require('../assets/images/favourite_star.png')}
-                    style={styles.star}
-                  />
-                </TouchableOpacity>
-              )}
-                 {fav === true && (
-                <TouchableOpacity onPress={() => {removeFromFavourite(item?._id)}}>
-                  <Image
-                    source={require('../assets/images/favourite_icon.png')}
-                    style={styles.star}
-                  />
-                </TouchableOpacity>
-              )}
-            </>
+            <TouchableOpacity
+              onPress={() => {
+                removeFromFavourite(item?._id);
+              }}>
+              <Image
+                source={require('../assets/images/favourite_star.png')}
+                style={styles.star}
+              />
+            </TouchableOpacity>
           )}
         </View>
         <View

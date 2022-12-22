@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import { setInitialState } from '../redux/ReduxPersist/States';
 
-export const FaviouriteViewComponent = ({item,onPress,onLongPress}) => {
+export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
   const token = useSelector(state=>state.userDetails.token);
   const state = useSelector(state=> state.status.initialState);
   const dispatch=useDispatch();
@@ -42,7 +42,7 @@ export const FaviouriteViewComponent = ({item,onPress,onLongPress}) => {
 
 
   return (
-    <TouchableOpacity style={styles.Container} onPress={onPress}>
+    <TouchableOpacity style={styles.Container}   onPress={()=>{ navigation.navigate('DetailScreen', {item})}}>
       <Image source={{uri: item?.placeImages?.url}} style={styles.hotelimg} />
       <View
         style={{
@@ -70,7 +70,7 @@ export const FaviouriteViewComponent = ({item,onPress,onLongPress}) => {
             }}>
             {item?.placeName}
           </Text>
-                <TouchableOpacity onLongPress={onLongPress}>
+                <TouchableOpacity onPress={onPress}>
                   <Image
                     source={require('../assets/images/close_icon_grey_mdpi.png')}
                     style={styles.star}
@@ -107,7 +107,7 @@ export const FaviouriteViewComponent = ({item,onPress,onLongPress}) => {
             }}>
             Indian {' · '} {`${convertPriceRange(item?.priceRange)}`}
             {'   '}
-            {Math.round(item?.dist?.calculated / 1.609, 3 * 1000) / 1000}
+            {Math.round(item?.dist?.calculated, 2 )}
             {'km'}
           </Text>
           <View style={{}}>

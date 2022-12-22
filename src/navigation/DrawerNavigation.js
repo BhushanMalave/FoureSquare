@@ -8,7 +8,7 @@ import {DrawerContent} from '../components/CustomDrawerComponent';
 import { HomeStack } from './HomeStack';
 import { Feedback } from '../screens/Feedback';
 import { AboutUs } from '../screens/AboutUs';
-import { Favourite } from '../screens/FavouriteScreen';
+import { FavouriteStack } from './FavouriteStack';
 export const Drawer = createDrawerNavigator();
 
 export const DrawerNav = ({navigation}) => {
@@ -44,8 +44,8 @@ export const DrawerNav = ({navigation}) => {
         }}
       />
         <Drawer.Screen
-        name="Favourite"
-        component={Favourite}
+        name="FavouriteStack"
+        component={FavouriteStack}
         options={{
           headerStyle: {
             height: 80,

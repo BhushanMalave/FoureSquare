@@ -22,10 +22,12 @@ import {HotelViewComponent} from '../components/HotelViewComponent';
 import {topPickPlaces} from '../authorization/Auth';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
+import { useDispatch,useSelector } from 'react-redux';
 
 export const TopPicks = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
+  const state = useSelector(state=> state.status.initialState);
 
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
@@ -60,7 +62,7 @@ export const TopPicks = ({navigation}) => {
   }, []);
 
   const getOneTimeLocation = async () => {
-    Toast.show('Getting Location ...');
+    //Toast.show('Getting Location ...');
     setLoading(true);
     Geolocation.getCurrentPosition(
       //Will give you the current location
@@ -113,6 +115,7 @@ export const TopPicks = ({navigation}) => {
             <View key={item?._id}>
               <HotelViewComponent
                 item={item}
+                state={state}
                 onPress={() => {
                   navigation.navigate('DetailScreen',{item});
                 }}

@@ -362,7 +362,7 @@ export const addFavouriteApi = async (token, body) => {
       return response.data;
     }
   } catch (error) {
-    Toast.show(error.response.data.message, Toast.SHORT);
+   // Toast.show(error.response.data.message, Toast.SHORT);
     console.log('add favourite', error);
   }
 };
@@ -379,7 +379,7 @@ export const getFavouriteApi = async (token,body) => {
       body,
       options,
     );
-   // Toast.show(response.data.message, Toast.SHORT);
+    Toast.show(response.data.message, Toast.SHORT);
     if (response.data) {
       return response.data;
     }
