@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -14,12 +14,29 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { ReviewViewComponent } from '../components/ReviewComponent';
+import { viewReviewApi } from '../authorization/Auth';
 
-export const ViewReview = ({navigation}) => {
+export const ViewReview = ({navigation,route}) => {
   const {height,width} = useWindowDimensions();
+  const [data,setData] = useState('');
+  const item =route.params.data._id;
+  console.log(item);
+  const call = async () =>{
+    const body={
+      "placeId":item,
+    }
+    const res = await viewReviewApi(body);
+    setData(res);
+    console.log(data);
+  }
+
+  useEffect(() => {
+    call();
+  }, []);
   return (
     <ScrollView style={{flex: 1}}>
       <View style={styles.topbar}>
@@ -51,20 +68,21 @@ export const ViewReview = ({navigation}) => {
           </View>
         </SafeAreaView>
       </View>
-      <View style={{backgroundColor: 'white', flex: 1}}>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        <ReviewViewComponent/>
-        </View>
+      <View style={{flex:1}}>
+      {!data ? (
+        <ActivityIndicator size="large" color="#7A7A7A" />
+      ) : (
+        <>
+          {/* {data?.reviews.map(item => (
+            <View key={item?._id}>
+              <ReviewViewComponent
+                item={item} 
+              />
+            </View>
+          ))} */}
+        </> 
+      )}
+    </View>
        
     </ScrollView>
   );

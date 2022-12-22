@@ -8,7 +8,14 @@ import MapView, {Marker} from 'react-native-maps';
 const Maps = ({longitude, latitude, mapRef,viewStyle={}}) => {
   return (
       <View style={[styles.container,{...viewStyle}]}>
-        <MapView style={styles.mapStyle} customMapStyle={mapStyle} ref={mapRef}>
+        <MapView style={styles.mapStyle} initialRegion={{
+             latitude: latitude,
+            longitude: longitude,
+             latitudeDelta: 0.0922,
+           longitudeDelta: 0.0421,
+          }} customMapStyle={mapStyle} ref={mapRef}>
+
+        
           <Marker
             draggable
             coordinate={{
@@ -17,6 +24,7 @@ const Maps = ({longitude, latitude, mapRef,viewStyle={}}) => {
               latitudeDelta: 0.53,
               longitudeDelta: 0.01,
             }}
+
             onDragEnd={e => alert(JSON.stringify(e.nativeEvent.coordinate))}
             title={'Test Marker'}
           />

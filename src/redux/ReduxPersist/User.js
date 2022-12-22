@@ -4,22 +4,26 @@ export const UserDetailsSlice = createSlice({
   name: 'userDetails',
   initialState: {
     token: null,
-    newUser: true,
-    userData: null,
+    userFavData: null,
+    userlatitude:null,
+    userlongitude:null,
   },
   reducers: {
     setToken: (state, action) => {
       state.token = action.payload;
     },
-    setUserData: (state, action) => {
-      state.userData = action.payload;
+    setUserFavData: (state, action) => {
+      state.userFavData = action.payload;
     },
-    setNewUser: (state, action) => {
-      state.newUser = action.payload;
+    setuserlatitude: (state, action) => {
+      state.userlatitude = action.payload;
+    },
+    setuserlongitude: (state, action) => {
+      state.userlongitude = action.payload;
     },
   },
 });
 
-export const {setToken, setUserData, setNewUser} = UserDetailsSlice.actions;
+export const {setToken, setUserFavData,setuserlatitude,setuserlongitude} = UserDetailsSlice.actions;
 
 export default UserDetailsSlice.reducer;

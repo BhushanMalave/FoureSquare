@@ -27,6 +27,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
 import {placeDetails} from '../authorization/Auth';
 
+
 export const DetailScreen = ({navigation, route}) => {
   const {width, height} = useWindowDimensions();
   const state = useSelector(state => state.status.ratingState);
@@ -35,6 +36,7 @@ export const DetailScreen = ({navigation, route}) => {
   const item = route.params.item;
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
+  const [rating,setRating] =useState("");
 
   const mapRef = useRef(null);
   const call = async () => {
@@ -44,81 +46,35 @@ export const DetailScreen = ({navigation, route}) => {
     };
     const data = await placeDetails(obj);
     setData(data);
-    // console.log(data)
+    setCurrentLongitude(data?.location?.coordinates[0]);
+    setCurrentLatitude(data?.location?.coordinates[1]);
+   
+    const no = (item?.totalrating)/2;
+    setRating(no);
+    // mapRef.current.animateToRegion(
+    //   {
+    //     latitude: currentLatitude,
+    //     longitude: currentLongitude,
+    //     latitudeDelta: 0.05,
+    //     longitudeDelta: 0.2,
+    //   },
+    // );  
+    // mapanimate();
   };
+  const mapanimate = () => {
+    mapRef.current.animateToRegion(
+      {
+        latitude: currentLatitude,
+        longitude: currentLongitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.2,
+      },
+    );  
+  }
 
-  useEffect(() => {
-    const requestLocationPermission = async () => {
-      if (Platform.OS === 'ios') {
-        getOneTimeLocation();
-      } else {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Access Required',
-              message: 'This App needs to Access your location',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //To Check, If Permission is granted
-            getOneTimeLocation();
-          } else {
-            Toast.show('Permission Denied');
-          }
-        } catch (err) {
-          console.warn(err);
-        }
-      }
-    };
-    requestLocationPermission();
+  useEffect( () => {
     call();
   }, []);
-
-  const getOneTimeLocation = () => {
-    Toast.show('Getting Location ...');
-    Geolocation.getCurrentPosition(
-      //Will give you the current location
-      position => {
-        setTimeout(async () => {
-          try {
-            mapRef.current.animateToRegion(
-              {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.2,
-              },
-              3 * 1000,
-            );
-          } catch (error) {
-            // Toast.show('Failed to animate direction');
-          }
-        }, 500);
-        // Toast.show('You are Here');
-
-        //getting the Longitude from the location json
-        const currentLongitude = position.coords.longitude;
-
-        //getting the Latitude from the location json
-        const currentLatitude = position.coords.latitude;
-
-        //Setting Longitude state
-        setCurrentLongitude(currentLongitude);
-
-        //Setting Longitude state
-        setCurrentLatitude(currentLatitude);
-      },
-      error => {
-        Toast.show(error.message);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 30000,
-        maximumAge: 1000,
-      },
-    );
-  };
 
   return (
     <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
@@ -138,6 +94,7 @@ export const DetailScreen = ({navigation, route}) => {
                 justifyContent: 'space-between',
                 marginHorizontal: 15,
                 marginTop: Platform.OS === 'android' ? 30 : 10,
+                height:130,
               }}>
               <TouchableOpacity
                 onPress={() => {
@@ -151,10 +108,13 @@ export const DetailScreen = ({navigation, route}) => {
               <Text
                 style={{
                   fontFamily: 'Avenir Medium',
-                  fontSize: 22,
+                  fontSize: 24,
                   color: '#FFF',
                   marginLeft: 30,
                   marginTop: -5,
+                  height:100,
+                  width:'60%',
+                  textAlign:'center',
                 }}>
                 {data?.placeName}
               </Text>
@@ -175,11 +135,11 @@ export const DetailScreen = ({navigation, route}) => {
                 marginTop:
                   width > height
                     ? Platform.OS === 'ios'
-                      ? 160
-                      : 130
+                      ? 60
+                      : 30
                     : Platform.OS === 'ios'
-                    ? 120
-                    : 140,
+                    ? 30
+                    : 50,
                 marginHorizontal:
                   width > height
                     ? Platform.OS === 'ios'
@@ -196,14 +156,14 @@ export const DetailScreen = ({navigation, route}) => {
                   color: 'white',
                   justifyContent: 'center',
                   textAlign: 'center',
-                  height:60,
+                  height: 40,
                 }}>
-                {data?.placeName}
+                {data?.keywords}
               </Text>
               <View style={{marginTop: 0}}>
                 <AirbnbRating
                   count={5}
-                  defaultRating={3}
+                  defaultRating={rating}
                   size={20}
                   isDisabled={true}
                   showRating={false}
@@ -245,7 +205,7 @@ export const DetailScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ViewReviews');
+              navigation.navigate('ViewReviews',{data});
             }}>
             <Image
               source={require('../assets/images/review_icon.png')}
@@ -275,19 +235,19 @@ export const DetailScreen = ({navigation, route}) => {
           Overview
         </Text>
         <ScrollView>
-        <Text
-          style={{
-            marginLeft: 25,
-            fontFamily: 'Avenir Book',
-            fontSize: 18,
-            color: '#8D8D8D',
-            lineHeight: 23,
-            marginTop: 10,
-            marginRight: 20,
-            height:115,
-          }}>
-         {data?.overview}
-        </Text>
+          <Text
+            style={{
+              marginLeft: 25,
+              fontFamily: 'Avenir Book',
+              fontSize: 18,
+              color: '#8D8D8D',
+              lineHeight: 23,
+              marginTop: 10,
+              marginRight: 20,
+              height: 115,
+            }}>
+            {data?.overview}
+          </Text>
         </ScrollView>
         <View
           style={{height: Platform.OS === 'ios' ? 180 : 230, marginTop: 20}}>
@@ -295,7 +255,7 @@ export const DetailScreen = ({navigation, route}) => {
             <Maps
               latitude={currentLatitude}
               longitude={currentLongitude}
-              mapRef={mapRef}
+           
             />
           ) : null}
         </View>
@@ -319,7 +279,9 @@ export const DetailScreen = ({navigation, route}) => {
                 width: '50%',
                 marginLeft: Platform.OS === 'ios' ? 10 : 15,
               }}>
-             {data?.address?.length > 45 ? data?.address?.substring(0,45)+'...' : data?.address}
+              {data?.address?.length > 45
+                ? data?.address?.substring(0, 45) + '...'
+                : data?.address}
             </Text>
             <Text
               style={{
@@ -348,7 +310,7 @@ export const DetailScreen = ({navigation, route}) => {
         <View style={styles.buttonbody}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('AddReviews');
+              navigation.navigate('AddReviews',{data});
             }}
             style={styles.button}>
             <Text style={styles.buttontext}>Add Review</Text>

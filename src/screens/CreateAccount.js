@@ -21,6 +21,7 @@ import {TextField} from 'rn-material-ui-textfield';
 import { signUpApi } from '../authorization/Auth';
 import { setToken } from '../redux/ReduxPersist/User';
 import { useDispatch } from 'react-redux';
+import { setLoginState } from '../redux/ReduxPersist/States';
 
 export const CreateAccount = () => {
   const {width, height} = useWindowDimensions();
@@ -83,8 +84,8 @@ export const CreateAccount = () => {
                 console.log(response)
                   if(response?.message === "User registered successfully")
                   {
-                    dispatch(setToken(response.access_Token));
-                    navigation.navigate('HomeStack');
+                    dispatch(setToken(res.access_token));
+                    dispatch(setLoginState(2));
                     resetForm({initialValues: ''});
                   }else{
                     console.log('error')

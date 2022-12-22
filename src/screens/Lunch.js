@@ -19,7 +19,7 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import {HotelViewComponent} from '../components/HotelViewComponent';
-import {placeCategory} from '../authorization/Auth';
+import {placeCategoryLunch} from '../authorization/Auth';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
 
@@ -60,7 +60,7 @@ export const Lunch = ({navigation}) => {
   }, []);
 
   const getOneTimeLocation = async () => {
-    Toast.show('Getting Location ...');
+    //Toast.show('Getting Location ...');
     setLoading(true);
     Geolocation.getCurrentPosition(
       //Will give you the current location
@@ -71,9 +71,9 @@ export const Lunch = ({navigation}) => {
             const obj = {
               latitude: currentLatitude,
               longitude: currentLongitude,
-              category:'lunch',
+              
             };
-            const data = await placeCategory(obj);
+            const data = await placeCategoryLunch(obj);
             setData(data);
           } catch (error) {
             // Toast.show('Failed to animate direction');

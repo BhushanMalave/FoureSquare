@@ -18,14 +18,27 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Formik} from 'formik';
+import { giveFeedBack } from '../authorization/Auth';
+import { useSelector } from 'react-redux';
 
 export const Feedback = ({navigation}) => {
   const [text, setText] = useState('');
+  const token = useSelector(state=>state.userDetails.token);
   const handleText = string => {
     setText(string);
   };
-  const handleSubmit = () => {
-    console.log(text);
+  const handleSubmit =async() => {
+    const body=
+     {
+      feedback:text,
+     };
+
+    const res = await giveFeedBack(token,body);
+    navigation.goBack();
+   
+
+
+
   };
   return (
     <View style={{flex: 1}}>

@@ -19,17 +19,37 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {HotelViewComponent} from '../components/HotelViewComponent';
+import { useDispatch,useSelector } from 'react-redux';
 import Maps from '../components/Maps';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
 import {nearYouPlaces} from '../authorization/Auth';
+import { getFavouriteApi } from '../authorization/Auth';
+import { setUserFavData } from '../redux/ReduxPersist/User';
+import { setuserlatitude } from '../redux/ReduxPersist/User';
+import { setuserlongitude } from '../redux/ReduxPersist/User';
 
 export const NearYou = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
+  const token = useSelector(state=>state.userDetails.token);
+  const favData = useSelector(state=> state.userDetails.userFavData);
+  const state = useSelector(state=> state.status.initialState);
+  const dispatch = useDispatch();
+  const latitude = useSelector(state=>state.userDetails.userlatitude);
+  const longitude =useSelector(state=>state.userDetails.userlongitude);
 
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
+
+  const favouriteDataCall = async() => {
+    const body ={
+      'latitude':currentLatitude,
+      "longitude":currentLongitude,
+    }
+        const res = await getFavouriteApi(token,body);
+         dispatch(setUserFavData(res));     
+  }
 
   const mapRef = useRef(null);
 
@@ -53,15 +73,16 @@ export const NearYou = ({navigation}) => {
             Toast.show('Permission Denied');
           }
         } catch (err) {
-          console.warn(err);
+          console.warn(err); 
         }
       }
     };
     requestLocationPermission();
-  }, []);
+    favouriteDataCall(); 
+  }, [state]);
 
   const getOneTimeLocation = async () => {
-    Toast.show('Getting Location ...');
+    //Toast.show('Getting Location ...');
     setLoading(true);
     Geolocation.getCurrentPosition(
       //Will give you the current location
@@ -98,9 +119,11 @@ export const NearYou = ({navigation}) => {
 
            //Setting Longitude state
            setCurrentLongitude(currentLongitude);
+           dispatch(setuserlatitude(currentLatitude))
 
            //Setting Longitude state
            setCurrentLatitude(currentLatitude);
+           dispatch(setuserlongitude(currentLongitude));
       },
       error => {
         Toast.show(error.message);
@@ -120,6 +143,7 @@ export const NearYou = ({navigation}) => {
           <Maps
             latitude={currentLatitude}
             longitude={currentLongitude}
+          
             mapRef={mapRef}
           />
         ) : null}
@@ -134,6 +158,7 @@ export const NearYou = ({navigation}) => {
           <View key={item?._id} >
              <HotelViewComponent
              item={item}
+             state={state}
              onPress={() => {
             navigation.navigate('DetailScreen',{item});
           }}

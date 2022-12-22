@@ -24,14 +24,16 @@ export const AddReview = ({navigation}) => {
   const {height, width} = useWindowDimensions();
   const [text, setText] = useState('');
   const [image, setImage] = useState(null);
-  const [profilePhoto, setProfilePhoto] = useState(null);
+
+  const [imgData, setImgData] = useState([]);
+  console.log(imgData);
+  console.log(imgData);
   const handleText = string => {
     setText(string);
   };
   const handleSubmit = () => {
     console.log(text);
-    console.log(image);
-    console.log(profilePhoto);
+    console.log(imgData);
   };
 
   const changeProfileImageFromLibrary = () => {
@@ -42,7 +44,7 @@ export const AddReview = ({navigation}) => {
     }).then(img => {
       setImage(img.path);
       const {filename, mime, path} = img;
-      setProfilePhoto({filename, mime, path});
+      setImgData([...imgData, {image: {filename, mime, path}}]);
     });
   };
   const changeProfileImageFromCamera = () => {
@@ -53,7 +55,6 @@ export const AddReview = ({navigation}) => {
     }).then(img => {
       setImage(img.path);
       const {filename, mime, path} = img;
-      setProfilePhoto({filename, mime, path});
     });
   };
   return (
@@ -131,16 +132,22 @@ export const AddReview = ({navigation}) => {
         <View
           style={{
             marginHorizontal: 15,
-            marginVertical: 0,
             flex: 1,
             flexDirection: 'row',
+            flexWrap: 'wrap',
           }}>
-          {image !== null && (
+          {imgData?.map(item => (
             <Image
-              source={{uri: image}}
-              style={{height: 80, width: 80, borderRadius: 10, marginRight: 20}}
+              source={{uri: item?.image?.path}}
+              style={{
+                height: 80,
+                width: 80,
+                borderRadius: 10,
+                marginRight: 10,
+                marginTop: 10,
+              }}
             />
-          )}
+          ))}
           <View
             style={{
               height: 80,
@@ -149,7 +156,9 @@ export const AddReview = ({navigation}) => {
               alignContent: 'center',
               alignItems: 'center',
               backgroundColor: '#cccccc',
-              marginBottom:80,
+              marginBottom: 80,
+              marginTop: 10,
+              marginRight: 10,
             }}>
             <Icon
               name="camera-plus-outline"
