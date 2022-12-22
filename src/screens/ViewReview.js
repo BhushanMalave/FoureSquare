@@ -19,24 +19,27 @@ import {
 import Icon from 'react-native-vector-icons/AntDesign';
 import { ReviewViewComponent } from '../components/ReviewComponent';
 import { viewReviewApi } from '../authorization/Auth';
+import { useDispatch,useSelector } from 'react-redux';
+
 
 export const ViewReview = ({navigation,route}) => {
   const {height,width} = useWindowDimensions();
   const [data,setData] = useState('');
+  const state = useSelector(state=> state.status.initialState);
+  const dispatch = useDispatch();
   const item =route.params.data._id;
-  console.log(item);
+  const name =route.params.data.placeName;
   const call = async () =>{
     const body={
       "placeId":item,
     }
     const res = await viewReviewApi(body);
-    setData(res);
-    console.log(data);
+    setData(res.reviews);
   }
 
   useEffect(() => {
     call();
-  }, []);
+  }, [state]);
   return (
     <ScrollView style={{flex: 1}}>
       <View style={styles.topbar}>
@@ -62,7 +65,7 @@ export const ViewReview = ({navigation,route}) => {
                 color: '#fff',
                 marginTop: -5,
               }}>
-              Attil
+            {name.length >15 ? name.substring(0,15)+'...':name}
             </Text>
             <Icon name="addfile" size={24} color="#fff"   onPress={()=>{navigation.navigate('AddReviews')}} />
           </View>
@@ -73,13 +76,13 @@ export const ViewReview = ({navigation,route}) => {
         <ActivityIndicator size="large" color="#7A7A7A" />
       ) : (
         <>
-          {/* {data?.reviews.map(item => (
+          {data?.map(item => (
             <View key={item?._id}>
               <ReviewViewComponent
                 item={item} 
               />
             </View>
-          ))} */}
+          ))}
         </> 
       )}
     </View>

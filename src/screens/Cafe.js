@@ -22,6 +22,7 @@ import { HotelViewComponent } from '../components/HotelViewComponent';
 import { placeCategoryCafe } from '../authorization/Auth';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
+import { useDispatch,useSelector } from 'react-redux';
 
 export const Cafe = ({navigation}) => {
 
@@ -30,6 +31,7 @@ export const Cafe = ({navigation}) => {
 
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
+  const state = useSelector(state=> state.status.initialState);
 
   const mapRef = useRef(null);
 
@@ -61,7 +63,7 @@ export const Cafe = ({navigation}) => {
   }, []);
 
   const getOneTimeLocation = async () => {
-    Toast.show('Getting Location ...');
+   // Toast.show('Getting Location ...');
     setLoading(true);
     Geolocation.getCurrentPosition(
       //Will give you the current location
@@ -115,6 +117,7 @@ export const Cafe = ({navigation}) => {
             <View key={item?._id}>
               <HotelViewComponent
                 item={item}
+                state={state}
                 onPress={() => {
                   navigation.navigate('DetailScreen',{item});
                 }}

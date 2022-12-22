@@ -22,9 +22,11 @@ import {HotelViewComponent} from '../components/HotelViewComponent';
 import {popularPlaces} from '../authorization/Auth';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
+import { useDispatch,useSelector } from 'react-redux';
 export const Popular = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
+  const state = useSelector(state=> state.status.initialState);
 
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
@@ -112,6 +114,7 @@ export const Popular = ({navigation}) => {
             <View key={item?._id}>
               <HotelViewComponent
                 item={item}
+                state={state}
                 onPress={() => {
                   navigation.navigate('DetailScreen',{item});
                 }}

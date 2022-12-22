@@ -19,6 +19,8 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { aboutUsApi } from '../authorization/Auth';
 
+
+
 export const AboutUs = ({navigation}) => {
 
   const [data,setData]= useState(null);
@@ -43,7 +45,8 @@ export const AboutUs = ({navigation}) => {
               marginHorizontal: 20,
               justifyContent: 'space-between',
             }}>
-              <TouchableOpacity onPress={() => {navigation.goBack()}}>
+              <TouchableOpacity onPress={() => {navigation.goBack(); 
+              }}>
             <Image
               style={styles.menu}
               source={require('../assets/images/back_icon.png')}

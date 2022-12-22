@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -17,9 +17,28 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ReviewViewComponent} from '../components/ReviewComponent';
+import { useDispatch,useSelector } from 'react-redux';
 
-export const ViewPhoto = ({navigation}) => {
+export const ViewPhoto = ({navigation,route}) => {
   const {height, width} = useWindowDimensions();
+  const [data,setData] = useState('');
+  const state = useSelector(state=> state.status.initialState);
+  const dispatch = useDispatch();
+  const item =route.params.data._id;
+  const name =route.params.data.placeName;
+  const call = async () =>{
+    const body={
+      "placeId":item,
+    }
+    const res = await viewReviewApi(body);
+    setData(res.reviews);
+  }
+
+  useEffect(() => {
+    //call();
+  },[]);
+
+
   return (
     <ImageBackground
       source={require('../assets/images/images.jpeg')}
@@ -50,7 +69,7 @@ export const ViewPhoto = ({navigation}) => {
               marginLeft: 30,
               marginTop: -5,
             }}>
-            Attil
+          {name.length >15 ? name.substring(0,15)+'...':name}
           </Text>
           <Image
             source={require('../assets/images/share_icon.png')}

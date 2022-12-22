@@ -331,15 +331,57 @@ export const viewReviewApi = async body => {
 
   try {
     const response = await axios.post(
-      'https://assesment-seven.vercel.app/getReviewsByPlace',
+      'https://assesment-seven.vercel.app//getOnlyReviewsText',
       body,
     );
-    if (response.data) {
-      return response.data;
+    if (response.data.data) {
+      return response.data.data;
     }
   } catch (error) {
     // Toast.show(error.response.data.message, Toast.SHORT);
-    console.log('placeCategory', error.response.data);
+    console.log('viewreview', error.response.data);
+  }
+};
+
+export const viewPhotoApi = async body => {
+  body = body;
+
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/getImagesByPlaceId',
+      body,
+    );
+    if (response.data.data) {
+      return response.data.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('viewphotos', error.response.data);
+  }
+};
+
+export const addRatingApi = async (token,body) => {
+ 
+  const options = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  try {
+    const response = await axios.put(
+      'https://assesment-seven.vercel.app/addRating',
+      body,
+      options,
+    );
+  
+    if (response.data) {
+      Toast.show(response.data.message, Toast.SHORT);
+      return response.data.message;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('add ratings', error.response.data);
   }
 };
 
@@ -362,7 +404,7 @@ export const addFavouriteApi = async (token, body) => {
       return response.data;
     }
   } catch (error) {
-    Toast.show(error.response.data.message, Toast.SHORT);
+   // Toast.show(error.response.data.message, Toast.SHORT);
     console.log('add favourite', error);
   }
 };
@@ -379,7 +421,7 @@ export const getFavouriteApi = async (token,body) => {
       body,
       options,
     );
-   // Toast.show(response.data.message, Toast.SHORT);
+    Toast.show(response.data.message, Toast.SHORT);
     if (response.data) {
       return response.data;
     }
