@@ -1,17 +1,19 @@
 import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import { LoginStack } from './LoginStack';
-import { DrawerNav } from './DrawerNavigation';
+import {LoginStack} from './LoginStack';
+import {DrawerNav} from './DrawerNavigation';
 
-
-import { CardStyleInterpolators ,createStackNavigator} from '@react-navigation/stack';
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
 export const Router = () => {
   const dispatch = useDispatch();
   const token = useSelector(state => state.userDetails.token);
-  const newUser = useSelector(state => state.userDetails.newUser);
+  const login = useSelector(state => state.status.loginState);
 
   useEffect(() => {
     // setTimeout(async () => {
@@ -32,26 +34,40 @@ export const Router = () => {
   }, []);
 
   return (
-    <NavigationContainer >
+    <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen
+        {login === 0 && (
+          <Stack.Screen
             name="LoginStack"
             component={LoginStack}
             options={{
-          headerShown: false,
-          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-        }}
+              headerShown: false,
+              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+            }}
           />
-        
+        )}
+
+        {login === 1 && (
           <Stack.Screen
             name="Drawer"
             component={DrawerNav}
             options={{
-          headerShown: false,
-          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-        }}
+              headerShown: false,
+              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+            }}
           />
-     
+        )}
+
+        {login === 2 && (
+          <Stack.Screen
+            name="Drawer"
+            component={DrawerNav}
+            options={{
+              headerShown: false,
+              cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+            }}
+          />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

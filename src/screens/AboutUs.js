@@ -14,6 +14,7 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { aboutUsApi } from '../authorization/Auth';
@@ -56,11 +57,19 @@ export const AboutUs = ({navigation}) => {
         </SafeAreaView>
       </View>
       <View style={{flex:1,backgroundColor:'white'}}>
-      <View style={{flex:1,marginHorizontal:15,marginVertical:15,}}>
-        <Text style={{fontFamily:'Avenir Book',fontSize:18,color:'#7A7A7A',letterSpacing:0.9,lineHeight:28,textAlign:'justify'}}>
-           {data}
-        </Text>
-      </View>
+        { data ? (
+           <View style={{flex:1,marginHorizontal:15,marginVertical:15,}}>
+           <Text style={{fontFamily:'Avenir Book',fontSize:18,color:'#7A7A7A',letterSpacing:0.9,lineHeight:28,textAlign:'justify'}}>
+              {data}
+           </Text>
+         </View>
+        ) : (
+          <ActivityIndicator size="large" color="#7A7A7A" />
+
+        )
+
+        }
+     
       </View>
     </ScrollView>
   );

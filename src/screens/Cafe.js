@@ -19,7 +19,7 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import { HotelViewComponent } from '../components/HotelViewComponent';
-import { placeCategory } from '../authorization/Auth';
+import { placeCategoryCafe } from '../authorization/Auth';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
 
@@ -73,9 +73,9 @@ export const Cafe = ({navigation}) => {
             const obj = {
               latitude: currentLatitude,
               longitude: currentLongitude,
-              category:'cafe'
+              
             };
-            const data = await placeCategory(obj);
+            const data = await placeCategoryCafe(obj);
             setData(data);
           } catch (error) {
             // Toast.show('Failed to animate direction');

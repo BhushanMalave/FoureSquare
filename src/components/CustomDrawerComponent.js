@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React,{useEffect,useState} from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -13,42 +12,45 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useSelector,useDispatch } from 'react-redux';
-import {Dimensions} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
-import Icons from 'react-native-vector-icons/Ionicons';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-import {
-  Avatar,
-  Title,
-  Caption,
-  Paragraph,
-  Drawer,
-  TouchableRipple,
-  Switch,
-} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {color} from 'react-native-reanimated';
-
+import { gettProfile } from '../authorization/Auth';
+import { logoutApi } from '../authorization/Auth';
+import { setToken } from '../redux/ReduxPersist/User';
+import { setLoginState } from '../redux/ReduxPersist/States';
 export const DrawerContent = ({navigation, props}) => {
   const login = useSelector(state=>state.status.loginState)
+  const token = useSelector(state=>state.userDetails.token);
+  const [data,setData] =useState(null); 
+  const dispatch=useDispatch(null);
+
+  const call = async() => {
+    const res = await gettProfile(token);
+    setData(res);
+  }
+
+  useEffect(() => {
+    call();
+   
+  }, []);
   return (
     <ImageBackground
       source={require('../assets/images/backgroundcopy.png')}
       style={{flex: 1}}>
       <DrawerContentScrollView {...props}>
         <SafeAreaView style={{flex: 1}}>
-          {login ? (  <View
+          {login === 2 ? (  <View
             style={{
               alignContent: 'center',
               alignItems: 'center',
               marginTop: Platform.OS === 'ios' ? 0 : 60,
             }}>
             <Image
-              source={require('../assets/images/images.jpeg')}
+              source={{uri:data?.profileImage?.public_id}}
               style={{height: 110, width: 110, borderRadius: 50}}
             />
             <Text
@@ -58,7 +60,7 @@ export const DrawerContent = ({navigation, props}) => {
                 color: '#fff',
                 marginTop: 20,
               }}>
-              Swaroop Kumar
+             {data?.fullName}
             </Text>
           </View>) : (  <View
             style={{
@@ -70,7 +72,9 @@ export const DrawerContent = ({navigation, props}) => {
               source={require('../assets/images/login.webp')}
               style={{height: 110, width: 110, borderRadius: 50}}
             />
-            <TouchableOpacity onPress={() => {navigation.navigate('LoginStack')}}>
+            <TouchableOpacity onPress={() => {
+              dispatch(setLoginState(0));
+            }}>
             <Text
               style={{
                 fontFamily: 'Avenir Medium',
@@ -87,7 +91,7 @@ export const DrawerContent = ({navigation, props}) => {
             style={{
               marginHorizontal: 20,
             }}>
-              {login ? ( <View
+              {login === 2 ? ( <View
               style={{
                 marginTop: Platform.OS === 'ios' ? 60 : 80,
               }}>
@@ -121,10 +125,7 @@ export const DrawerContent = ({navigation, props}) => {
               style={{
                 marginTop: Platform.OS === 'ios' ? 60 : 80,
               }}>
-              <TouchableOpacity
-                onPress={() => {
-                  
-                }}
+              <View
                 style={{
                   flexDirection: 'row',
                   borderBottomColor: '#52434D',
@@ -147,39 +148,66 @@ export const DrawerContent = ({navigation, props}) => {
                   }}>
                   Favourites
                 </Text>
-              </TouchableOpacity>
+              </View>
             </View>)}
            
             <View
               style={{
                 marginTop: Platform.OS === 'ios' ? 40 : 40,
               }}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('Feedback');
-                }}
-                style={{
-                  flexDirection: 'row',
-                  borderBottomColor: '#52434D',
-                  borderBottomWidth: 2,
-                  height: 60,
-                }}>
-                <Image
-                  source={require('../assets/images/feedback.png')}
-                  style={{height: 24, width: 26, marginLeft: 20}}
-                />
-                <Text
+                {login === 2 ? (
+                   <TouchableOpacity
+                   onPress={() => {
+                     navigation.navigate('Feedback');
+                   }}
+                   style={{
+                     flexDirection: 'row',
+                     borderBottomColor: '#52434D',
+                     borderBottomWidth: 2,
+                     height: 60,
+                   }}>
+                   <Image
+                     source={require('../assets/images/feedback.png')}
+                     style={{height: 24, width: 26, marginLeft: 20}}
+                   />
+                   <Text
+                     style={{
+                       color: 'white',
+                       fontFamily: 'Avenir Medium',
+                       fontWeight: '500',
+                       fontSize: 24,
+                       marginTop: -5,
+                       marginLeft: 20,
+                     }}>
+                     Feedback
+                   </Text>
+                 </TouchableOpacity>
+                ):(
+                  <View
                   style={{
-                    color: 'white',
-                    fontFamily: 'Avenir Medium',
-                    fontWeight: '500',
-                    fontSize: 24,
-                    marginTop: -5,
-                    marginLeft: 20,
+                    flexDirection: 'row',
+                    borderBottomColor: '#52434D',
+                    borderBottomWidth: 2,
+                    height: 60,
                   }}>
-                  Feedback
-                </Text>
-              </TouchableOpacity>
+                  <Image
+                    source={require('../assets/images/feedback.png')}
+                    style={{height: 24, width: 26, marginLeft: 20,tintColor:'#474049'}}
+                  />
+                  <Text
+                    style={{
+                      color: '#474049',
+                      fontFamily: 'Avenir Medium',
+                      fontWeight: '500',
+                      fontSize: 24,
+                      marginTop: -5,
+                      marginLeft: 20,
+                    }}>
+                    Feedback
+                  </Text>
+                </View>
+                )}
+             
             </View>
             <View
               style={{
@@ -212,13 +240,17 @@ export const DrawerContent = ({navigation, props}) => {
                 </Text>
               </TouchableOpacity>
             </View>
-            {login ? (<View
+            {login === 2 ? (<View
               style={{
                 marginTop: Platform.OS === 'ios' ? 40 : 40,
               }}>
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
+                  dispatch(setLoginState(0));
+                  const res = logoutApi(token);
+                  dispatch(setToken(null));
+
                 }}
                 style={{
                   flexDirection: 'row',

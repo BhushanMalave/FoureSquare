@@ -59,7 +59,7 @@ export const Popular = ({navigation}) => {
   }, []);
 
   const getOneTimeLocation = async () => {
-    Toast.show('Getting Location ...');
+   // Toast.show('Getting Location ...');
     setLoading(true);
     Geolocation.getCurrentPosition(
       //Will give you the current location

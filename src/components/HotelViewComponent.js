@@ -13,19 +13,78 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-export const HotelViewComponent = ({onPress, item}) => {
+import {useDispatch, useSelector} from 'react-redux';
+import {addFavouriteApi} from '../authorization/Auth';
+import { setInitialState } from '../redux/ReduxPersist/States';
+
+export const HotelViewComponent = ({onPress, item,state}) => {
   const {height, width} = useWindowDimensions();
+  const login = useSelector(state => state.status.loginState);
+  const token = useSelector(state=>state.userDetails.token);
+  const favData = useSelector(state=> state.userDetails.userFavData)
+  const [fav,setFav] = useState(false);
+  const dispatch=useDispatch();
+ // console.log("====",favData);
+
+  const favDatacompare = () => {
+    favData?.map(item=>{
+          if( item._id === fav._id)
+          {
+            setFav(true);
+          }
+    }) 
+  }
+
+  const convertPriceRange = number => {
+    if (number < 10) {
+      return '₹';
+    } else if (number < 100) {
+      return '₹₹';
+    } else if (number < 1000) {
+      return '₹₹₹';
+    } else {
+      return '₹₹₹₹';
+    }
+  };
+  const addToFavourite = async (id) => {
+    const body ={
+      "placeId":id,
+    }
+    const res = await addFavouriteApi(token,body);
+    console.log(res);
+    dispatch(setInitialState());
+
+  }
+  const removeFromFavourite = async (id) => {
+    const body ={
+      "placeId":id,
+    }
+    const res = await addFavouriteApi(token,body);
+    console.log(res);
+    dispatch(setInitialState());
+  }
+  
+
+  useEffect(() => {
+  // favDatacompare();
+  }, [state]);
   return (
     <TouchableOpacity style={styles.Container} onPress={onPress}>
       <Image source={{uri: item?.placeImages?.url}} style={styles.hotelimg} />
-      <View style={{flex: 1,paddingLeft:7,paddingRight:7,paddingTop:7,paddingBottom:7,}}>
+      <View
+        style={{
+          flex: 1,
+          paddingLeft: 7,
+          paddingRight: 7,
+          paddingTop: 7,
+          paddingBottom: 7,
+        }}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
             // justifyContent:'flex-end',
             //  width: width > height ? '70%' : '80%',
-          
           }}>
           <Text
             style={{
@@ -33,23 +92,46 @@ export const HotelViewComponent = ({onPress, item}) => {
               fontSize: 16,
               fontWeight: 'bold',
               color: 'black',
+              width: '70%',
+              height: 60,
             }}>
             {item?.placeName}
           </Text>
-          <TouchableOpacity onPress={() => {}}>
-          <Image
-            source={require('../assets/images/favourite_iconcopy.png')}
-            style={styles.star}
-          />
-          </TouchableOpacity>
+          {login === 1 ? (
+            <Pressable>
+              <Image
+                source={require('../assets/images/favourite_iconcopy.png')}
+                style={styles.star}
+              />
+            </Pressable>
+          ) : (
+            <>
+              {fav === false && (
+                <TouchableOpacity onPress={() => {addToFavourite(item?._id)}}>
+                  <Image
+                    source={require('../assets/images/favourite_star.png')}
+                    style={styles.star}
+                  />
+                </TouchableOpacity>
+              )}
+                 {fav === true && (
+                <TouchableOpacity onPress={() => {removeFromFavourite(item?._id)}}>
+                  <Image
+                    source={require('../assets/images/favourite_icon.png')}
+                    style={styles.star}
+                  />
+                </TouchableOpacity>
+              )}
+            </>
+          )}
         </View>
         <View
           style={{
-            backgroundColor: '#76B947',
+            backgroundColor: '#74d434',
             height: 23,
             width: 25,
             borderRadius: 4,
-            marginTop: 25,
+            marginTop: 0,
           }}>
           <Text
             style={{
@@ -60,7 +142,7 @@ export const HotelViewComponent = ({onPress, item}) => {
               color: 'white',
               marginTop: 2,
             }}>
-            {item?.totalrating ? item?.totalrating : '-'}
+            {item?.totalrating / 2}
           </Text>
         </View>
         <View style={{marginTop: 5}}>
@@ -71,8 +153,9 @@ export const HotelViewComponent = ({onPress, item}) => {
               color: '#7A7A7A',
               fontWeight: '500',
             }}>
-            Indian {'·'} {item?.priceRange}{' '}
-            {Math.round(item?.dist?.calculated / 1.609, 2 * 100) / 100}
+            Indian {' · '} {`${convertPriceRange(item?.priceRange)}`}
+            {'   '}
+            {Math.round(item?.dist?.calculated, 2 * 1) / 1}
             {'km'}
           </Text>
           <View style={{}}>
@@ -82,9 +165,11 @@ export const HotelViewComponent = ({onPress, item}) => {
                 fontSize: 14,
                 color: '#7A7A7A',
                 fontWeight: '500',
-                flexShrink:1,
+                flexShrink: 1,
               }}>
-              {item?.address?.length >20 ? item?.address.substring(0,25)+"..." : item?.address}
+              {item?.address?.length > 20
+                ? item?.address.substring(0, 25) + '...'
+                : item?.address}
             </Text>
           </View>
         </View>
@@ -112,7 +197,9 @@ const styles = StyleSheet.create({
     width: 140,
   },
   star: {
-    tintColor: 'red',
-    height:20,width:22,
+    height: 20,
+    width: 22,
+    marginTop: 8,
+    marginRight: 8,
   },
 });

@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-export const ReviewViewComponent = ({onPress}) => {
+export const ReviewViewComponent = ({item}) => {
   const {height, width} = useWindowDimensions();
   return (
     <TouchableOpacity style={styles.Container} onPress={onPress}>
@@ -38,7 +38,7 @@ export const ReviewViewComponent = ({onPress}) => {
                   fontWeight: '500',
                   color: 'black',
                 }}>
-                Saish Balu
+               {item?.data?.userId?.fullName}
               </Text>
               <Text
                 style={{

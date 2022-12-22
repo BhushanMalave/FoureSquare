@@ -3,6 +3,7 @@ import {ForgotPassword} from '../screens/ForgotPassword';
 import { CreateAccount } from '../screens/CreateAccount';
 import { Login } from '../screens/LoginScreen';
 import { VerifyOtp } from '../screens/VerifyOtp';
+import {DrawerNav} from '../navigation/DrawerNavigation';
 import {NavigationContainer} from '@react-navigation/native';
 import { CardStyleInterpolators ,createStackNavigator} from '@react-navigation/stack';
 const Stack = createStackNavigator();
@@ -44,7 +45,6 @@ export const LoginStack = () => {
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
         }}
       />
-       
     </Stack.Navigator>
   
   );

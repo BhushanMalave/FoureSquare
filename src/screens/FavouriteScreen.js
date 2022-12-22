@@ -15,8 +15,14 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
-import { FavouriteViewComponent } from '../components/FavouriteViewComponent';
+import {FaviouriteViewComponent} from '../components/FavouriteViewComponent';
+import { getFavouriteApi } from '../authorization/Auth';
+import { setUserFavData } from '../redux/ReduxPersist/User';
+import { useDispatch,useSelector } from 'react-redux';
+import { addFavouriteApi } from '../authorization/Auth';
+import { setInitialState } from '../redux/ReduxPersist/States';
 
 export const Favourite = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -24,6 +30,14 @@ export const Favourite = ({navigation}) => {
   const [text1, setText1] = useState(null);
   const [text2, setText2] = useState(null);
   const [iconState, setIconState] = useState(true);
+  const data= useSelector(state => state.userDetails.userFavData);
+  const state = useSelector(state=> state.status.initialState);
+  const dispatch=useDispatch();
+  const token = useSelector(state=>state.userDetails.token);
+  const latitude = useSelector(state=>state.userDetails.userlatitude);
+  const longitude =useSelector(state=>state.userDetails.userlongitude);
+
+
   const [price, setPrice] = useState({
     one: false,
     tens: false,
@@ -35,7 +49,7 @@ export const Favourite = ({navigation}) => {
     popular: false,
     distance: false,
     rating: false,
-  });
+  });  
   const [features, setFeatures] = useState({
     acceptCC: false,
     deliver: false,
@@ -54,10 +68,30 @@ export const Favourite = ({navigation}) => {
     setText2(string);
   };
 
-  const handleSearch = () => {
+  const handleSearch = () => {};
+
+  const favouriteDataCall = async() => {
+    const body ={
+      'latitude':latitude,
+      "longitude":longitude,
+    }
+    const res = await getFavouriteApi(token,body);
+     dispatch(setUserFavData(res));  
+     console.log("hdhs")  ;
+}
+const removeFromFavourite = async (id) => {
+  const body ={
+    "placeId":id,
+  }
+  const res = await addFavouriteApi(token,body);
+  console.log(res);
+}
 
 
-  };
+useEffect(() => {
+  favouriteDataCall(); 
+}, [state]);
+
 
   return (
     <View style={{flex: 1}}>
@@ -150,940 +184,994 @@ export const Favourite = ({navigation}) => {
         </View>
 
         <View>
-              <>
-               {false && (
+          <>
+            <View showsVerticalScrollIndicator={false}>
+              {!data ? (
+                <ActivityIndicator size="large" color="#7A7A7A" />
+              ) : (
                 <>
-                <FavouriteViewComponent/>
-                <FavouriteViewComponent/>
-                <FavouriteViewComponent/>
-                <FavouriteViewComponent/>
+                  {data?.map(item => (
+                    <View key={item?._id}>
+                      <FaviouriteViewComponent
+                        item={item}
+                        onPress={()=>{ navigation.navigate('DetailScreen', {item})}}
+                        onLongPress={() => {removeFromFavourite(item?._id);
+                          dispatch(setInitialState());
+                          }}
+                      />
+                    </View>
+                  ))}
                 </>
+              )}
+            </View>
 
-               )}
-
-              {iconState === false && (
-            <>
-              <View>
-                <View style={{height: 60}}>
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Medium',
-                      fontSize: 18,
-                      color: '#7A7A7A',
-                      marginTop: 15,
-                      marginLeft: 20,
-                    }}>
-                    Sort by
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    borderTopColor: '#351347',
-                    borderTopWidth: 1,
-                    borderBottomColor: '#351347',
-                    borderBottomWidth: 1,
-                    height: 60,
-                    flexDirection: 'row',
-                  }}>
-                  {!sortBy.popular ? (
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: 'white',
-                        width: '33.333%',
-                        borderRightWidth: 1,
-                        borderRightColor: '#351347',
-                      }}
-                      onPress={() => {
-                        setSortBy({
-                          popular: true,
-
-                          distance: false,
-                          rating: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: '#351347',
-                        }}>
-                        Popular
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={{backgroundColor: '#351347', width: '33.333%'}}
-                      onPress={() => {
-                        setSortBy({
-                          popular: false,
-                          distance: false,
-                          rating: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: 'white',
-                        }}>
-                        Popular
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {!sortBy.distance ? (
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: 'white',
-                        width: '33.333%',
-                        borderRightWidth: 1,
-                        borderRightColor: '#351347',
-                      }}
-                      onPress={() => {
-                        setSortBy({
-                          popular: false,
-                          distance: true,
-                          rating: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: '#351347',
-                        }}>
-                        Distance
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={{backgroundColor: '#351347', width: '33.333%'}}
-                      onPress={() => {
-                        setSortBy({
-                          popular: false,
-                          distance: false,
-                          rating: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: 'white',
-                        }}>
-                        Distance
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {!sortBy.rating ? (
-                    <TouchableOpacity
-                      style={{backgroundColor: 'white', width: '33.333%'}}
-                      onPress={() => {
-                        setSortBy({
-                          popular: false,
-                          distance: false,
-                          rating: true,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: '#351347',
-                        }}>
-                        Rating
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={{backgroundColor: '#351347', width: '33.333%'}}
-                      onPress={() => {
-                        setSortBy({
-                          popular: false,
-                          distance: false,
-                          rating: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: 'white',
-                        }}>
-                        Rating
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-                <View style={{height: 60}}>
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Medium',
-                      fontSize: 18,
-                      color: '#7A7A7A',
-                      marginTop: 15,
-                      marginLeft: 20,
-                    }}>
-                    Fliter by
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    height: Platform.OS === 'ios' ? 100 : 120,
-                    backgroundColor: 'white',
-                  }}>
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Medium',
-                      fontSize: 14,
-                      color: '#7A7A7A',
-                      marginTop: 20,
-                      marginLeft: 20,
-                    }}>
-                    Set Radius
-                  </Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      marginLeft: 20,
-                      borderBottomWidth: 1,
-                      borderBottomColor: '#ccc',
-                      marginRight: 20,
-                      marginTop: -10,
-                    }}>
-                    <TextInput
-                      name="radius"
-                      style={{
-                        fontFamily: 'Avenir Book',
-                        width: 30,
-                        marginBottom: Platform.OS === 'ios' ? 10 : 0,
-                        marginTop: Platform.OS === 'ios' ? 15 : 3,
-                        color: 'black',
-                      }}
-                      onChangeText={handleText2}
-                    />
+            {iconState === false && (
+              <>
+                <View>
+                  <View style={{height: 60}}>
                     <Text
                       style={{
-                        fontFamily: 'Avenir Book',
-                        width: 30,
-                        marginBottom: 10,
+                        fontFamily: 'Avenir Medium',
+                        fontSize: 18,
+                        color: '#7A7A7A',
                         marginTop: 15,
-                        color: 'black',
+                        marginLeft: 20,
                       }}>
-                      km
+                      Sort by
                     </Text>
                   </View>
-                </View>
-                <View
-                  style={{
-                    borderTopColor: '#351347',
-                    borderTopWidth: 1,
-                    borderBottomColor: '#351347',
-                    borderBottomWidth: 1,
-                    height: 60,
-                    flexDirection: 'row',
-                  }}>
-                  {!price.one ? (
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: 'white',
-                        width: '25%',
-                        borderRightWidth: 1,
-                        borderRightColor: '#351347',
-                      }}
-                      onPress={() => {
-                        setPrice({
-                          one: true,
-                          tens: false,
-                          hundreds: false,
-                          thousands: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: '#351347',
-                        }}>
-                        ₹
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={{backgroundColor: '#351347', width: '25%'}}
-                      onPress={() => {
-                        setPrice({
-                          one: false,
-                          tens: false,
-                          hundreds: false,
-                          thousands: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: 'white',
-                        }}>
-                        ₹
-                      </Text>
-                    </TouchableOpacity>
-                  )}
 
-                  {!price.tens ? (
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: 'white',
-                        width: '25%',
-                        borderRightWidth: 1,
-                        borderRightColor: '#351347',
-                      }}
-                      onPress={() => {
-                        setPrice({
-                          one: false,
-                          tens: true,
-                          hundreds: false,
-                          thousands: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: '#351347',
-                        }}>
-                        ₹₹
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={{backgroundColor: '#351347', width: '25%'}}
-                      onPress={() => {
-                        setPrice({
-                          one: false,
-                          tens: false,
-                          hundreds: false,
-                          thousands: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: 'white',
-                        }}>
-                        ₹₹
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  {!price.hundreds ? (
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: 'white',
-                        width: '25%',
-                        borderRightWidth: 1,
-                        borderRightColor: '#351347',
-                      }}
-                      onPress={() => {
-                        setPrice({
-                          one: false,
-                          tens: false,
-                          hundreds: true,
-                          thousands: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: '#351347',
-                        }}>
-                        ₹₹₹
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={{backgroundColor: '#351347', width: '25%'}}
-                      onPress={() => {
-                        setPrice({
-                          one: false,
-                          tens: false,
-                          hundreds: false,
-                          thousands: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: 'white',
-                        }}>
-                        ₹₹₹
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {!price.thousands ? (
-                    <TouchableOpacity
-                      style={{backgroundColor: 'white', width: '25%'}}
-                      onPress={() => {
-                        setPrice({
-                          one: false,
-                          tens: false,
-                          hundreds: false,
-                          thousands: true,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: '#351347',
-                        }}>
-                        ₹₹₹₹
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={{backgroundColor: '#351347', width: '25%'}}
-                      onPress={() => {
-                        setPrice({
-                          one: false,
-                          tens: false,
-                          hundreds: false,
-                          thousands: false,
-                        });
-                      }}>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginTop: 20,
-                          fontFamily: 'Avenir Medium',
-                          fontSize: 16,
-                          color: 'white',
-                        }}>
-                        ₹₹₹₹
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-
-                <View
-                  style={{
-                    height: 60,
-                    marginTop: Platform.OS === 'ios' ? 0 : 0,
-                  }}>
-                  <Text
+                  <View
                     style={{
-                      fontFamily: 'Avenir Medium',
-                      fontSize: 18,
-                      color: '#7A7A7A',
-                      marginTop: 19,
-                      marginLeft: 20,
+                      borderTopColor: '#351347',
+                      borderTopWidth: 1,
+                      borderBottomColor: '#351347',
+                      borderBottomWidth: 1,
+                      height: 60,
+                      flexDirection: 'row',
                     }}>
-                    Features
-                  </Text>
+                    {!sortBy.popular ? (
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: 'white',
+                          width: '33.333%',
+                          borderRightWidth: 1,
+                          borderRightColor: '#351347',
+                        }}
+                        onPress={() => {
+                          setSortBy({
+                            popular: true,
+
+                            distance: false,
+                            rating: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: '#351347',
+                          }}>
+                          Popular
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={{backgroundColor: '#351347', width: '33.333%'}}
+                        onPress={() => {
+                          setSortBy({
+                            popular: false,
+                            distance: false,
+                            rating: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: 'white',
+                          }}>
+                          Popular
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {!sortBy.distance ? (
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: 'white',
+                          width: '33.333%',
+                          borderRightWidth: 1,
+                          borderRightColor: '#351347',
+                        }}
+                        onPress={() => {
+                          setSortBy({
+                            popular: false,
+                            distance: true,
+                            rating: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: '#351347',
+                          }}>
+                          Distance
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={{backgroundColor: '#351347', width: '33.333%'}}
+                        onPress={() => {
+                          setSortBy({
+                            popular: false,
+                            distance: false,
+                            rating: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: 'white',
+                          }}>
+                          Distance
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {!sortBy.rating ? (
+                      <TouchableOpacity
+                        style={{backgroundColor: 'white', width: '33.333%'}}
+                        onPress={() => {
+                          setSortBy({
+                            popular: false,
+                            distance: false,
+                            rating: true,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: '#351347',
+                          }}>
+                          Rating
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={{backgroundColor: '#351347', width: '33.333%'}}
+                        onPress={() => {
+                          setSortBy({
+                            popular: false,
+                            distance: false,
+                            rating: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: 'white',
+                          }}>
+                          Rating
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  <View style={{height: 60}}>
+                    <Text
+                      style={{
+                        fontFamily: 'Avenir Medium',
+                        fontSize: 18,
+                        color: '#7A7A7A',
+                        marginTop: 15,
+                        marginLeft: 20,
+                      }}>
+                      Fliter by
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      height: Platform.OS === 'ios' ? 100 : 120,
+                      backgroundColor: 'white',
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: 'Avenir Medium',
+                        fontSize: 14,
+                        color: '#7A7A7A',
+                        marginTop: 20,
+                        marginLeft: 20,
+                      }}>
+                      Set Radius
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginLeft: 20,
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#ccc',
+                        marginRight: 20,
+                        marginTop: -10,
+                      }}>
+                      <TextInput
+                        name="radius"
+                        style={{
+                          fontFamily: 'Avenir Book',
+                          width: 30,
+                          marginBottom: Platform.OS === 'ios' ? 10 : 0,
+                          marginTop: Platform.OS === 'ios' ? 15 : 3,
+                          color: 'black',
+                        }}
+                        onChangeText={handleText2}
+                      />
+                      <Text
+                        style={{
+                          fontFamily: 'Avenir Book',
+                          width: 30,
+                          marginBottom: 10,
+                          marginTop: 15,
+                          color: 'black',
+                        }}>
+                        km
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      borderTopColor: '#351347',
+                      borderTopWidth: 1,
+                      borderBottomColor: '#351347',
+                      borderBottomWidth: 1,
+                      height: 60,
+                      flexDirection: 'row',
+                    }}>
+                    {!price.one ? (
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: 'white',
+                          width: '25%',
+                          borderRightWidth: 1,
+                          borderRightColor: '#351347',
+                        }}
+                        onPress={() => {
+                          setPrice({
+                            one: true,
+                            tens: false,
+                            hundreds: false,
+                            thousands: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: '#351347',
+                          }}>
+                          ₹
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={{backgroundColor: '#351347', width: '25%'}}
+                        onPress={() => {
+                          setPrice({
+                            one: false,
+                            tens: false,
+                            hundreds: false,
+                            thousands: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: 'white',
+                          }}>
+                          ₹
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {!price.tens ? (
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: 'white',
+                          width: '25%',
+                          borderRightWidth: 1,
+                          borderRightColor: '#351347',
+                        }}
+                        onPress={() => {
+                          setPrice({
+                            one: false,
+                            tens: true,
+                            hundreds: false,
+                            thousands: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: '#351347',
+                          }}>
+                          ₹₹
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={{backgroundColor: '#351347', width: '25%'}}
+                        onPress={() => {
+                          setPrice({
+                            one: false,
+                            tens: false,
+                            hundreds: false,
+                            thousands: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: 'white',
+                          }}>
+                          ₹₹
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    {!price.hundreds ? (
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: 'white',
+                          width: '25%',
+                          borderRightWidth: 1,
+                          borderRightColor: '#351347',
+                        }}
+                        onPress={() => {
+                          setPrice({
+                            one: false,
+                            tens: false,
+                            hundreds: true,
+                            thousands: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: '#351347',
+                          }}>
+                          ₹₹₹
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={{backgroundColor: '#351347', width: '25%'}}
+                        onPress={() => {
+                          setPrice({
+                            one: false,
+                            tens: false,
+                            hundreds: false,
+                            thousands: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: 'white',
+                          }}>
+                          ₹₹₹
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {!price.thousands ? (
+                      <TouchableOpacity
+                        style={{backgroundColor: 'white', width: '25%'}}
+                        onPress={() => {
+                          setPrice({
+                            one: false,
+                            tens: false,
+                            hundreds: false,
+                            thousands: true,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: '#351347',
+                          }}>
+                          ₹₹₹₹
+                        </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={{backgroundColor: '#351347', width: '25%'}}
+                        onPress={() => {
+                          setPrice({
+                            one: false,
+                            tens: false,
+                            hundreds: false,
+                            thousands: false,
+                          });
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            fontFamily: 'Avenir Medium',
+                            fontSize: 16,
+                            color: 'white',
+                          }}>
+                          ₹₹₹₹
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+
+                  <View
+                    style={{
+                      height: 60,
+                      marginTop: Platform.OS === 'ios' ? 0 : 0,
+                    }}>
+                    <Text
+                      style={{
+                        fontFamily: 'Avenir Medium',
+                        fontSize: 18,
+                        color: '#7A7A7A',
+                        marginTop: 19,
+                        marginLeft: 20,
+                      }}>
+                      Features
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      height: 60,
+                      backgroundColor: 'white',
+                      borderBottomColor: '#ccc',
+                      borderBottomWidth: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    {!features.acceptCC ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                            color: '#ccc',
+                          }}>
+                          Accepts credits cards
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              acceptCC: true,
+                            });
+                          }}>
+                          <Icon
+                            name="plus"
+                            size={23}
+                            color="rgba(53, 19, 71, 0.4)"
+                            style={{marginRight: 22, marginTop: 18}}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                          }}>
+                          Accepts credits cards
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              acceptCC: false,
+                            });
+                          }}>
+                          <Image
+                            style={{
+                              fontSize: 16,
+                              marginRight: 25,
+                              marginTop: 20,
+                            }}
+                            source={require('../assets/images/filter_selected.png')}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      height: 60,
+                      backgroundColor: 'white',
+                      borderBottomColor: '#ccc',
+                      borderBottomWidth: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    {!features.deliver ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                            color: '#ccc',
+                          }}>
+                          Delivery
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              deliver: true,
+                            });
+                          }}>
+                          <Icon
+                            name="plus"
+                            size={23}
+                            color="rgba(53, 19, 71, 0.4)"
+                            style={{marginRight: 22, marginTop: 18}}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                          }}>
+                          Delivery
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              deliver: false,
+                            });
+                          }}>
+                          <Image
+                            style={{
+                              fontSize: 16,
+                              marginRight: 25,
+                              marginTop: 20,
+                            }}
+                            source={require('../assets/images/filter_selected.png')}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      height: 60,
+                      backgroundColor: 'white',
+                      borderBottomColor: '#ccc',
+                      borderBottomWidth: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    {!features.dogFriendly ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                            color: '#ccc',
+                          }}>
+                          Dog Friendly
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              dogFriendly: true,
+                            });
+                          }}>
+                          <Icon
+                            name="plus"
+                            size={23}
+                            color="rgba(53, 19, 71, 0.4)"
+                            style={{marginRight: 22, marginTop: 18}}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                          }}>
+                          Dog Friendly
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              dogFriendly: false,
+                            });
+                          }}>
+                          <Image
+                            style={{
+                              fontSize: 16,
+                              marginRight: 25,
+                              marginTop: 20,
+                            }}
+                            source={require('../assets/images/filter_selected.png')}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      height: 60,
+                      backgroundColor: 'white',
+                      borderBottomColor: '#ccc',
+                      borderBottomWidth: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    {!features.familyFriendly ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                            color: '#ccc',
+                          }}>
+                          Family-Friendly places
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              familyFriendly: true,
+                            });
+                          }}>
+                          <Icon
+                            name="plus"
+                            size={23}
+                            color="rgba(53, 19, 71, 0.4)"
+                            style={{marginRight: 22, marginTop: 18}}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                          }}>
+                          Family-Friendly places
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              familyFriendly: false,
+                            });
+                          }}>
+                          <Image
+                            style={{
+                              fontSize: 16,
+                              marginRight: 25,
+                              marginTop: 20,
+                            }}
+                            source={require('../assets/images/filter_selected.png')}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      height: 60,
+                      backgroundColor: 'white',
+                      borderBottomColor: '#ccc',
+                      borderBottomWidth: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    {!features.walkingDistance ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                            color: '#ccc',
+                          }}>
+                          In walking distance
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              walkingDistance: true,
+                            });
+                          }}>
+                          <Icon
+                            name="plus"
+                            size={23}
+                            color="rgba(53, 19, 71, 0.4)"
+                            style={{marginRight: 22, marginTop: 18}}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                          }}>
+                          In walking distance
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              walkingDistance: false,
+                            });
+                          }}>
+                          <Image
+                            style={{
+                              fontSize: 16,
+                              marginRight: 25,
+                              marginTop: 20,
+                            }}
+                            source={require('../assets/images/filter_selected.png')}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      height: 60,
+                      backgroundColor: 'white',
+                      borderBottomColor: '#ccc',
+                      borderBottomWidth: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    {!features.outDoorSeating ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                            color: '#ccc',
+                          }}>
+                          Outdoor seating
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              outDoorSeating: true,
+                            });
+                          }}>
+                          <Icon
+                            name="plus"
+                            size={23}
+                            color="rgba(53, 19, 71, 0.4)"
+                            style={{marginRight: 22, marginTop: 18}}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                          }}>
+                          Outdoor seating
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              outDoorSeating: false,
+                            });
+                          }}>
+                          <Image
+                            style={{
+                              fontSize: 16,
+                              marginRight: 25,
+                              marginTop: 20,
+                            }}
+                            source={require('../assets/images/filter_selected.png')}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      height: 60,
+                      backgroundColor: 'white',
+                      borderBottomColor: '#ccc',
+                      borderBottomWidth: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    {!features.parking ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                            color: '#ccc',
+                          }}>
+                          Parking
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              parking: true,
+                            });
+                          }}>
+                          <Icon
+                            name="plus"
+                            size={23}
+                            color="rgba(53, 19, 71, 0.4)"
+                            style={{marginRight: 22, marginTop: 18}}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                          }}>
+                          Parking
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              parking: false,
+                            });
+                          }}>
+                          <Image
+                            style={{
+                              fontSize: 16,
+                              marginRight: 25,
+                              marginTop: 20,
+                            }}
+                            source={require('../assets/images/filter_selected.png')}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      height: 60,
+                      backgroundColor: 'white',
+                      borderBottomColor: '#ccc',
+                      borderBottomWidth: 1,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    {!features.wifi ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                            color: '#ccc',
+                          }}>
+                          Wifi
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              wifi: true,
+                            });
+                          }}>
+                          <Icon
+                            name="plus"
+                            size={23}
+                            color="rgba(53, 19, 71, 0.4)"
+                            style={{marginRight: 22, marginTop: 18}}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginLeft: 25,
+                            marginTop: 20,
+                          }}>
+                          Wifi
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setFeatures({
+                              ...features,
+                              wifi: false,
+                            });
+                          }}>
+                          <Image
+                            style={{
+                              fontSize: 16,
+                              marginRight: 25,
+                              marginTop: 20,
+                            }}
+                            source={require('../assets/images/filter_selected.png')}
+                          />
+                        </TouchableOpacity>
+                      </>
+                    )}
+                  </View>
                 </View>
-                <View
-                  style={{
-                    height: 60,
-                    backgroundColor: 'white',
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {!features.acceptCC ? (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                          color: '#ccc',
-                        }}>
-                        Accepts credits cards
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            acceptCC: true,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                        }}>
-                        Accepts credits cards
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            acceptCC: false,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_selected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-                <View
-                  style={{
-                    height: 60,
-                    backgroundColor: 'white',
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {!features.deliver ? (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                          color: '#ccc',
-                        }}>
-                        Delivery
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            deliver: true,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                        }}>
-                        Delivery
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            deliver: false,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_selected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-                <View
-                  style={{
-                    height: 60,
-                    backgroundColor: 'white',
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {!features.dogFriendly ? (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                          color: '#ccc',
-                        }}>
-                        Dog Friendly
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            dogFriendly: true,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                        }}>
-                        Dog Friendly
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            dogFriendly: false,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_selected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-                <View
-                  style={{
-                    height: 60,
-                    backgroundColor: 'white',
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {!features.familyFriendly ? (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                          color: '#ccc',
-                        }}>
-                        Family-Friendly places
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            familyFriendly: true,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                        }}>
-                        Family-Friendly places
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            familyFriendly: false,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_selected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-                <View
-                  style={{
-                    height: 60,
-                    backgroundColor: 'white',
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {!features.walkingDistance ? (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                          color: '#ccc',
-                        }}>
-                        In walking distance
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            walkingDistance: true,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                        }}>
-                        In walking distance
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            walkingDistance: false,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_selected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-                <View
-                  style={{
-                    height: 60,
-                    backgroundColor: 'white',
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {!features.outDoorSeating ? (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                          color: '#ccc',
-                        }}>
-                        Outdoor seating
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            outDoorSeating: true,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                        }}>
-                        Outdoor seating
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            outDoorSeating: false,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_selected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-                <View
-                  style={{
-                    height: 60,
-                    backgroundColor: 'white',
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {!features.parking ? (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                          color: '#ccc',
-                        }}>
-                        Parking
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            parking: true,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                        }}>
-                        Parking
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            parking: false,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_selected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-                <View
-                  style={{
-                    height: 60,
-                    backgroundColor: 'white',
-                    borderBottomColor: '#ccc',
-                    borderBottomWidth: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {!features.wifi ? (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                          color: '#ccc',
-                        }}>
-                        Wifi
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            wifi: true,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          marginLeft: 25,
-                          marginTop: 20,
-                        }}>
-                        Wifi
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setFeatures({
-                            ...features,
-                            wifi: false,
-                          });
-                        }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_selected.png')}
-                        />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-              </View>
-            </>
-          )}
-              
               </>
-
-
-
+            )}
+          </>
         </View>
       </ScrollView>
     </View>

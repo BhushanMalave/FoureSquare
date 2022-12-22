@@ -10,45 +10,80 @@ import {
   Alert,
   Platform,
   useWindowDimensions,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 
-export const FavouriteViewComponent = ({onPress}) => {
-  const {height, width} = useWindowDimensions();
+import {useDispatch, useSelector} from 'react-redux';
+import {addFavouriteApi} from '../authorization/Auth';
+import { setInitialState } from '../redux/ReduxPersist/States';
+
+export const FaviouriteViewComponent = ({item,onPress,onLongPress}) => {
+  const token = useSelector(state=>state.userDetails.token);
+  const state = useSelector(state=> state.status.initialState);
+  const dispatch=useDispatch();
+  const convertPriceRange = number => {
+    if (number < 10) {
+      return '₹';
+    } else if (number < 100) {
+      return '₹₹';
+    } else if (number < 1000) {
+      return '₹₹₹';
+    } else {
+      return '₹₹₹₹';
+    }
+  };
+  const removeFromFavourite = async (id) => {
+    const body ={
+      "placeId":id,
+    }
+    const res = await addFavouriteApi(token,body);
+    console.log(res);
+  }
+
+
   return (
     <TouchableOpacity style={styles.Container} onPress={onPress}>
-      <Image
-        source={require('../assets/images/images.jpeg')}
-        style={styles.hotelimg}
-      />
-      <View style={{marginHorizontal: 13,marginVertical:6,}}>
+      <Image source={{uri: item?.placeImages?.url}} style={styles.hotelimg} />
+      <View
+        style={{
+          flex: 1,
+          paddingLeft: 7,
+          paddingRight: 7,
+          paddingTop: 7,
+          paddingBottom: 7,
+        }}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            width: width > height ? '66%' : '60%',
+            // justifyContent:'flex-end',
+            //  width: width > height ? '70%' : '80%',
           }}>
           <Text
             style={{
               fontFamily: 'Avenir Light',
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: 'bold',
               color: 'black',
+              width: '70%',
+              height: 60,
             }}>
-            Attil
+            {item?.placeName}
           </Text>
-          <Image
-           source={require('../assets/images/close_icon_grey_mdpi.png')} 
-            style={styles.star}
-          />
+                <TouchableOpacity onLongPress={onLongPress}>
+                  <Image
+                    source={require('../assets/images/close_icon_grey_mdpi.png')}
+                    style={styles.star}
+                  />
+                </TouchableOpacity>
         </View>
         <View
           style={{
-            backgroundColor: '#76B947',
+            backgroundColor: '#74d434',
             height: 23,
             width: 25,
             borderRadius: 4,
-            marginTop: 25,
+            marginTop: 0,
           }}>
           <Text
             style={{
@@ -59,28 +94,36 @@ export const FavouriteViewComponent = ({onPress}) => {
               color: 'white',
               marginTop: 2,
             }}>
-            8.5
+            {item?.totalrating / 2}
           </Text>
         </View>
         <View style={{marginTop: 5}}>
           <Text
             style={{
               fontFamily: 'Avenir Book',
-              fontSize: 16,
+              fontSize: 14,
               color: '#7A7A7A',
               fontWeight: '500',
             }}>
-            Indian{'·'}
+            Indian {' · '} {`${convertPriceRange(item?.priceRange)}`}
+            {'   '}
+            {Math.round(item?.dist?.calculated / 1.609, 3 * 1000) / 1000}
+            {'km'}
           </Text>
-          <Text
-            style={{
-              fontFamily: 'Avenir Book',
-              fontSize: 16,
-              color: '#7A7A7A',
-              fontWeight: '500',
-            }}>
-            fhgjdkfhgsdfkjghfdhjg
-          </Text>
+          <View style={{}}>
+            <Text
+              style={{
+                fontFamily: 'Avenir Book',
+                fontSize: 14,
+                color: '#7A7A7A',
+                fontWeight: '500',
+                flexShrink: 1,
+              }}>
+              {item?.address?.length > 20
+                ? item?.address.substring(0, 25) + '...'
+                : item?.address}
+            </Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -89,6 +132,7 @@ export const FavouriteViewComponent = ({onPress}) => {
 
 const styles = StyleSheet.create({
   Container: {
+    flex: 1,
     flexDirection: 'row',
     marginHorizontal: 8,
     marginVertical: 4,
@@ -98,13 +142,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 5,
+    height: 140,
   },
   hotelimg: {
     height: 140,
     width: 140,
   },
   star: {
-     height:20,
-     width:20,
+    height: 18,
+    width: 18,
+    marginTop: 8,
+    marginRight: 8,
   },
 });

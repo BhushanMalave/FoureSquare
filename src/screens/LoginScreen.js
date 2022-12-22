@@ -65,8 +65,7 @@ export const Login = ({navigation}) => {
             <View style={styles.viewTop}>
               <TouchableOpacity
                 onPress={() => {
-                  dispatch(setLoginState(false));
-                  navigation.navigate('Drawer');
+                  dispatch(setLoginState(1));
                 }}>
                 <Text style={styles.textskip}>Skip {'>'}</Text>
               </TouchableOpacity>
@@ -93,8 +92,7 @@ export const Login = ({navigation}) => {
 
                     if (res?.message === 'Login successful') {
                       dispatch(setToken(res.access_token));
-                      navigation.navigate('Drawer');
-                      dispatch(setLoginState(true));
+                      dispatch(setLoginState(2));
                       resetForm({initialValues: ''});
                     }
                   

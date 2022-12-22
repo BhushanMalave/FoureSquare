@@ -21,6 +21,7 @@ import {
   scrollX,
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
+import Icon from 'react-native-vector-icons/Feather';
 
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {SearchViewComponent} from '../components/SearchViewComponent';
@@ -278,7 +279,7 @@ export const Search = ({navigation}) => {
           </SafeAreaView>
         </View>
 
-        <View style={{flex: 1, marginBottom: 40,borderWidth:1,height:700}}>
+        <View style={{flex: 1, marginBottom: 40,}}>
           {onFocus === 1 && (
             <>
               <View style={{flex: 1}}>
@@ -945,9 +946,11 @@ export const Search = ({navigation}) => {
                             acceptCC: true,
                           });
                         }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
+                          <Icon
+                          name="plus"
+                          size={23}
+                          color="rgba(53, 19, 71, 0.4)"
+                          style={{marginRight: 22, marginTop: 18}}
                         />
                       </TouchableOpacity>
                     </>
@@ -968,10 +971,11 @@ export const Search = ({navigation}) => {
                             acceptCC: false,
                           });
                         }}>
-                        <Image
+                           <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
+                       
                       </TouchableOpacity>
                     </>
                   )}
@@ -1003,9 +1007,11 @@ export const Search = ({navigation}) => {
                             deliver: true,
                           });
                         }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
+                        <Icon
+                          name="plus"
+                          size={23}
+                          color="rgba(53, 19, 71, 0.4)"
+                          style={{marginRight: 22, marginTop: 18}}
                         />
                       </TouchableOpacity>
                     </>
@@ -1026,7 +1032,7 @@ export const Search = ({navigation}) => {
                             deliver: false,
                           });
                         }}>
-                        <Image
+                           <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1061,9 +1067,11 @@ export const Search = ({navigation}) => {
                             dogFriendly: true,
                           });
                         }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
+                        <Icon
+                          name="plus"
+                          size={23}
+                          color="rgba(53, 19, 71, 0.4)"
+                          style={{marginRight: 22, marginTop: 18}}
                         />
                       </TouchableOpacity>
                     </>
@@ -1084,7 +1092,7 @@ export const Search = ({navigation}) => {
                             dogFriendly: false,
                           });
                         }}>
-                        <Image
+                           <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1119,9 +1127,11 @@ export const Search = ({navigation}) => {
                             familyFriendly: true,
                           });
                         }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
+                        <Icon
+                          name="plus"
+                          size={23}
+                          color="rgba(53, 19, 71, 0.4)"
+                          style={{marginRight: 22, marginTop: 18}}
                         />
                       </TouchableOpacity>
                     </>
@@ -1142,7 +1152,7 @@ export const Search = ({navigation}) => {
                             familyFriendly: false,
                           });
                         }}>
-                        <Image
+                           <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1177,9 +1187,11 @@ export const Search = ({navigation}) => {
                             walkingDistance: true,
                           });
                         }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
+                        <Icon
+                          name="plus"
+                          size={23}
+                          color="rgba(53, 19, 71, 0.4)"
+                          style={{marginRight: 22, marginTop: 18}}
                         />
                       </TouchableOpacity>
                     </>
@@ -1200,7 +1212,7 @@ export const Search = ({navigation}) => {
                             walkingDistance: false,
                           });
                         }}>
-                        <Image
+                           <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1235,9 +1247,11 @@ export const Search = ({navigation}) => {
                             outDoorSeating: true,
                           });
                         }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
+                        <Icon
+                          name="plus"
+                          size={23}
+                          color="rgba(53, 19, 71, 0.4)"
+                          style={{marginRight: 22, marginTop: 18}}
                         />
                       </TouchableOpacity>
                     </>
@@ -1258,7 +1272,7 @@ export const Search = ({navigation}) => {
                             outDoorSeating: false,
                           });
                         }}>
-                        <Image
+                           <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1293,9 +1307,11 @@ export const Search = ({navigation}) => {
                             parking: true,
                           });
                         }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
+                        <Icon
+                          name="plus"
+                          size={23}
+                          color="rgba(53, 19, 71, 0.4)"
+                          style={{marginRight: 22, marginTop: 18}}
                         />
                       </TouchableOpacity>
                     </>
@@ -1316,7 +1332,7 @@ export const Search = ({navigation}) => {
                             parking: false,
                           });
                         }}>
-                        <Image
+                           <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1351,9 +1367,11 @@ export const Search = ({navigation}) => {
                             wifi: true,
                           });
                         }}>
-                        <Image
-                          style={{fontSize: 16, marginRight: 25, marginTop: 20}}
-                          source={require('../assets/images/filter_unselected.png')}
+                        <Icon
+                          name="plus"
+                          size={23}
+                          color="rgba(53, 19, 71, 0.4)"
+                          style={{marginRight: 22, marginTop: 18}}
                         />
                       </TouchableOpacity>
                     </>
@@ -1374,7 +1392,7 @@ export const Search = ({navigation}) => {
                             wifi: false,
                           });
                         }}>
-                        <Image
+                           <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1386,7 +1404,7 @@ export const Search = ({navigation}) => {
             </>
           )}
           {buttonView === 2 && (
-              <View style={{flex:1,borderWidth:1}}>
+              <View style={{flex:1,height:700}}>
               {currentLatitude && currentLongitude !== '' ? (
               
                   <Maps

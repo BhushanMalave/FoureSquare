@@ -5,7 +5,8 @@ export const StateSlice = createSlice({
   name: 'status',
   initialState: {
     ratingState: false,
-    loginState: false,
+    loginState: 0,
+    initialState:false,
   },
   reducers: {
     setRatingState: (state, action) => {
@@ -14,10 +15,14 @@ export const StateSlice = createSlice({
     setLoginState: (state, action) => {
       state.loginState = action.payload;
     },
+    setInitialState: (state, action) => {
+      state.initialState = !state.initialState;
+    },
+
    
   },
 });
 
-export const {setRatingState, setLoginState} = StateSlice.actions;
+export const {setRatingState, setLoginState,setInitialState} = StateSlice.actions;
 
 export default StateSlice.reducer;

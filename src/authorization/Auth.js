@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Toast from 'react-native-simple-toast'
+import Toast from 'react-native-simple-toast';
 
 export const refreshToken = async token => {
   try {
@@ -102,7 +102,7 @@ export const verifyOtpApi = async objBody => {
       'https://assesment-seven.vercel.app/verify',
       body,
     );
-    // Toast.show(response.data.message, Toast.SHORT);
+    Toast.show(response.data.message, Toast.SHORT);
     if (response.data) {
       return response.data;
     }
@@ -147,6 +147,70 @@ export const changePasswordApi = async objBody => {
   }
 };
 
+export const giveFeedBack = async (token, body) => {
+  const options = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/giveFeedback',
+      body,
+      options,
+    );
+    Toast.show(response.data.message, Toast.SHORT);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('give feedback', error);
+  }
+};
+
+export const gettProfile = async token => {
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/getProfile',
+      {}, 
+      {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    // Toast.show(response.data.message, Toast.SHORT);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+   // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('get Profile', error.response.data);
+  }
+};
+
+export const logoutApi = async token => {
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/logout',
+      {}, 
+      {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    // Toast.show(response.data.message, Toast.SHORT);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('get Profile', error.response.data);
+  }
+};
+
 export const nearYouPlaces = async objBody => {
   body = objBody;
 
@@ -180,12 +244,11 @@ export const topPickPlaces = async objBody => {
     console.log('nearYou', error.response.data);
   }
 };
-export const popularPlaces = async()=> {
-
-
+export const popularPlaces = async (body) => {
   try {
     const response = await axios.post(
       'https://assesment-seven.vercel.app/popularPlaces',
+      body,
     );
     if (response.data) {
       return response.data;
@@ -214,8 +277,6 @@ export const placeDetails = async objBody => {
 };
 
 export const aboutUsApi = async () => {
-
-
   try {
     const response = await axios.get(
       'https://assesment-seven.vercel.app/aboutUS',
@@ -230,13 +291,12 @@ export const aboutUsApi = async () => {
   }
 };
 
-
-export const placeCategory = async body => {
+export const placeCategoryLunch = async body => {
   body = body;
 
   try {
     const response = await axios.post(
-      'https://assesment-seven.vercel.app/placeCategory',
+      'https://assesment-seven.vercel.app/lunchPlace',
       body,
     );
     if (response.data) {
@@ -247,3 +307,85 @@ export const placeCategory = async body => {
     console.log('placeCategory', error.response.data);
   }
 };
+export const placeCategoryCafe = async body => {
+  body = body;
+
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/cafePlace',
+      body,
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('placeCategory', error.response.data);
+  }
+};
+
+
+
+export const viewReviewApi = async body => {
+  body = body;
+
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/getReviewsByPlace',
+      body,
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('placeCategory', error.response.data);
+  }
+};
+
+
+
+export const addFavouriteApi = async (token, body) => {
+  const options = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  try {
+    const response = await axios.put(
+      'https://assesment-seven.vercel.app/addToFavourites',
+      body,
+      options,
+    );
+    Toast.show(response.data.message, Toast.SHORT);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('add favourite', error);
+  }
+};
+
+export const getFavouriteApi = async (token,body) => {
+  const options = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/getFavourite',
+      body,
+      options,
+    );
+   // Toast.show(response.data.message, Toast.SHORT);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    //Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('add favourite', error);
+  }
+};
+
