@@ -421,13 +421,68 @@ export const getFavouriteApi = async (token,body) => {
       body,
       options,
     );
-    Toast.show(response.data.message, Toast.SHORT);
+   // Toast.show(response.data.message, Toast.SHORT);
     if (response.data) {
       return response.data;
     }
   } catch (error) {
     //Toast.show(error.response.data.message, Toast.SHORT);
-    console.log('add favourite', error);
+    console.log('get favourite', error);
+  }
+};
+
+
+export const favSearchApi = async (token,body) => {
+  const options = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/searchFromFavourite',
+      body,
+      options,
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('searchFromFavourite', error.response.data);
+  }
+};
+
+export const SearchApi = async (body) => {
+  
+
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/searchPlace',
+      body,
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('searchPlace', error.response.data);
+  }
+};
+
+export const getNearByCityApi = async (body) => {
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/getNearByCity',
+      body,
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('getNearByCity', error.response.data);
   }
 };
 

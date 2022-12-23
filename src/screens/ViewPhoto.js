@@ -24,8 +24,11 @@ export const ViewPhoto = ({navigation,route}) => {
   const [data,setData] = useState('');
   const state = useSelector(state=> state.status.initialState);
   const dispatch = useDispatch();
-  const item =route.params.data._id;
-  const name =route.params.data.placeName;
+  console.log(route.params);
+  //  const place_id =route.params.data._id;
+  //  const img_id =route.params.data.reviews._id;
+  //  console.log(place_id);
+  //  console.log(img_id);
   const call = async () =>{
     const body={
       "placeId":item,
@@ -69,7 +72,7 @@ export const ViewPhoto = ({navigation,route}) => {
               marginLeft: 30,
               marginTop: -5,
             }}>
-          {name.length >15 ? name.substring(0,15)+'...':name}
+          dhsagdsa
           </Text>
           <Image
             source={require('../assets/images/share_icon.png')}

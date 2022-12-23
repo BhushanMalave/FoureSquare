@@ -10,45 +10,135 @@ import {
   Alert,
   Platform,
   useWindowDimensions,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 
-export const SearchViewComponent = ({onPress}) => {
+import {useDispatch, useSelector} from 'react-redux';
+import {addFavouriteApi} from '../authorization/Auth';
+import {setInitialState} from '../redux/ReduxPersist/States';
+
+export const SearchViewComponent = ({onPress, item, state,style={}}) => {
   const {height, width} = useWindowDimensions();
+  const login = useSelector(state => state.status.loginState);
+  const token = useSelector(state => state.userDetails.token);
+  const favData = useSelector(state => state.userDetails.userFavData);
+  const [fav, setFav] = useState(false);
+  const dispatch = useDispatch();
+  // console.log("====",favData);
+
+  const favDatacompare = () => {
+    favData?.map(item => {
+      if (item._id === favData._id) {
+        setFav(true);
+        console.log(fav);
+      }
+    });
+  };
+
+  const convertPriceRange = number => {
+    if (number < 10) {
+      return '₹';
+    } else if (number < 100) {
+      return '₹₹';
+    } else if (number < 1000) {
+      return '₹₹₹';
+    } else {
+      return '₹₹₹₹';
+    }
+  };
+  const addToFavourite = async id => {
+    const body = {
+      placeId: id,
+    };
+    const res = await addFavouriteApi(token, body);
+    console.log(res);
+    dispatch(setInitialState());
+  };
+  const removeFromFavourite = async id => {
+    const body = {
+      placeId: id,
+    };
+    const res = await addFavouriteApi(token, body);
+    console.log(res);
+    dispatch(setInitialState());
+  };
+
   return (
-    <TouchableOpacity style={styles.Container} onPress={onPress}>
-      <Image
-        source={require('../assets/images/images.jpeg')}
-        style={styles.hotelimg}
-      />
-      <View style={{marginHorizontal: 13,marginVertical:6,}}>
+    <TouchableOpacity style={[styles.Container,{width:width}]} onPress={onPress}>
+      <Image source={{uri: item?.placeImages?.url}} style={styles.hotelimg} />
+      <View
+        style={{
+          flex: 1,
+          paddingLeft: 7,
+          paddingRight: 7,
+          paddingTop: 7,
+          paddingBottom: 7,
+        }}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            width: width > height ? '66%' : '60%',
+            flex:1,
           }}>
           <Text
             style={{
               fontFamily: 'Avenir Light',
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: 'bold',
               color: 'black',
+              width: '70%',
+              height: 60,
             }}>
-            Attil
+            {item?.placeName}
           </Text>
-          <Image
-            source={require('../assets/images/favourite_iconcopy.png')}
-            style={styles.star}
-          />
+          {login === 1 ? (
+            <Pressable>
+              <Image
+                source={require('../assets/images/favourite_star.png')}
+                style={styles.star}
+              />
+            </Pressable>
+          ) : favData?.length > 0 ? (
+            favData.filter(ele => ele._id === item._id)?.length > 0 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  addToFavourite(item?._id);
+                }}>
+                <Image
+                  source={require('../assets/images/favourite_icon.png')}
+                  style={styles.star}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() => {
+                  removeFromFavourite(item?._id);
+                }}>
+                <Image
+                  source={require('../assets/images/favourite_star.png')}
+                  style={styles.star}
+                />
+              </TouchableOpacity>
+            )
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                removeFromFavourite(item?._id);
+              }}>
+              <Image
+                source={require('../assets/images/favourite_star.png')}
+                style={styles.star}
+              />
+            </TouchableOpacity>
+          )}
         </View>
         <View
           style={{
-            backgroundColor: '#76B947',
+            backgroundColor: '#74d434',
             height: 23,
             width: 25,
             borderRadius: 4,
-            marginTop: 25,
+            marginTop: 0,
           }}>
           <Text
             style={{
@@ -59,28 +149,38 @@ export const SearchViewComponent = ({onPress}) => {
               color: 'white',
               marginTop: 2,
             }}>
-            8.5
+            {item?.totalrating / 2}
           </Text>
         </View>
         <View style={{marginTop: 5}}>
           <Text
             style={{
               fontFamily: 'Avenir Book',
-              fontSize: 16,
+              fontSize: 14,
               color: '#7A7A7A',
               fontWeight: '500',
             }}>
-            Indian{'·'}
+             {item?.keywords?.length >10 ? item?.keywords.substring(0,10)+'...' : (item?.keywords)} 
+            {' • '}
+          {`${convertPriceRange(item?.priceRange)}  `}
+           
+            {Math.round(item?.dist?.calculated, 2 * 1) / 1}
+            {'km'}
           </Text>
-          <Text
-            style={{
-              fontFamily: 'Avenir Book',
-              fontSize: 16,
-              color: '#7A7A7A',
-              fontWeight: '500',
-            }}>
-            fhgjdkfhgsdfkjghfdhjg
-          </Text>
+          <View style={{}}>
+            <Text
+              style={{
+                fontFamily: 'Avenir Book',
+                fontSize: 14,
+                color: '#7A7A7A',
+                fontWeight: '500',
+                flexShrink: 1,
+              }}>
+              {item?.address?.length > 20
+                ? item?.address.substring(0, 25) + '...'
+                : item?.address}
+            </Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -89,8 +189,9 @@ export const SearchViewComponent = ({onPress}) => {
 
 const styles = StyleSheet.create({
   Container: {
+    flex: 1,
     flexDirection: 'row',
-    marginHorizontal: 8,
+   marginHorizontal: 4,
     marginVertical: 4,
     backgroundColor: '#FFF',
     shadowColor: '#000',
@@ -98,12 +199,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 5,
+    height: 140,
   },
   hotelimg: {
     height: 140,
     width: 140,
   },
   star: {
-    tintColor: 'red',
+    height: 20,
+    width: 22,
+    marginTop: 8,
+    marginRight: 8,
   },
 });

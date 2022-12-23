@@ -16,7 +16,7 @@ import {
 export const ReviewViewComponent = ({item}) => {
   const {height, width} = useWindowDimensions();
   return (
-    <TouchableOpacity style={styles.Container} >
+    <View style={styles.Container} >
       <View style={{backgroundColor: 'white',}}>
         <View
           style={{
@@ -26,7 +26,7 @@ export const ReviewViewComponent = ({item}) => {
             height: 52,
           }}>
           <Image
-            source={require('../assets/images/images.jpeg')}
+             source={{uri:item?.userId?.profileImage?.public_id}}
             style={{height: 50, width: 50, borderRadius: 50}}
           />
           <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
@@ -88,7 +88,7 @@ export const ReviewViewComponent = ({item}) => {
           }}
         />
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 

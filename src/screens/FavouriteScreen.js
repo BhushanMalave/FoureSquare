@@ -23,14 +23,16 @@ import {setUserFavData} from '../redux/ReduxPersist/User';
 import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
+import {favSearchApi} from '../authorization/Auth';
 
 export const Favourite = ({navigation}) => {
   const {height, width} = useWindowDimensions();
   const [text, setText] = useState('');
-  const [text1, setText1] = useState(null);
-  const [text2, setText2] = useState(null);
   const [iconState, setIconState] = useState(true);
-  const data = useSelector(state => state.userDetails.userFavData);
+  const item = useSelector(state => state.userDetails.userFavData);
+  const [data, setData] = useState(item);
+
+
   const state = useSelector(state => state.status.initialState);
   const dispatch = useDispatch();
   const token = useSelector(state => state.userDetails.token);
@@ -60,15 +62,25 @@ export const Favourite = ({navigation}) => {
     wifi: false,
   });
 
-  const handleText1 = string => {
-    setText1(string);
-  };
-  const handleText2 = string => {
-    setText2(string);
+  const handleText = string => {
+    setText(string);
   };
 
-  const handleSearch = () => {};
-
+  const handleSearch = async () => {
+    //console.log(text);
+    if (text.length <= 2) {
+     setData(item);
+    }
+    if (text.length > 2) {
+      const body = {
+        latitude:latitude,longitude:longitude,
+        text: text,
+      };
+      const res = await favSearchApi(token, body);
+      console.log("=-=-=",res)
+      setData(res);
+    }
+  };
   const favouriteDataCall = async () => {
     const body = {
       latitude: latitude,
@@ -76,6 +88,7 @@ export const Favourite = ({navigation}) => {
     };
     const res = await getFavouriteApi(token, body);
     dispatch(setUserFavData(res));
+    setData(res);
   };
   const removeFromFavourite = async id => {
     const body = {
@@ -93,7 +106,7 @@ export const Favourite = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
-      <ScrollView style={{flex: 1}}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.topbar}>
           <SafeAreaView style={{flex: 1}}>
             <View
@@ -106,7 +119,7 @@ export const Favourite = ({navigation}) => {
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
-                  dispatch(setInitialState);
+                  dispatch(setInitialState());
                 }}>
                 <Image
                   style={styles.menu}
@@ -175,7 +188,7 @@ export const Favourite = ({navigation}) => {
                 placeholder="Search"
                 placeholderTextColor={'#ccc'}
                 style={styles.textInput}
-                onChangeText={handleText1}
+                onChangeText={handleText}
                 onChange={handleSearch}
               />
             </View>

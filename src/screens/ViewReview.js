@@ -29,11 +29,13 @@ export const ViewReview = ({navigation,route}) => {
   const dispatch = useDispatch();
   const item =route.params.data._id;
   const name =route.params.data.placeName;
+  console.log(item)
   const call = async () =>{
     const body={
       "placeId":item,
     }
     const res = await viewReviewApi(body);
+    console.log(res)
     setData(res.reviews);
   }
 
