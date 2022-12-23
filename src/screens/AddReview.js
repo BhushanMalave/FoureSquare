@@ -30,11 +30,11 @@ export const AddReview = ({navigation}) => {
   console.log(imgData);
   console.log(imgData);
   const handleText = string => {
-    setText(string);
+    // setText(string);
   };
   const handleSubmit = () => {
-    console.log(text);
-    console.log(imgData);
+    // console.log(text);
+    // console.log(imgData);
   };
 
   const changeProfileImageFromLibrary = () => {
@@ -149,28 +149,20 @@ export const AddReview = ({navigation}) => {
               }}
             />
           ))}
-          <View
-            style={{
-              height: 80,
-              width: 80,
-              borderRadius: 10,
-              alignContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#cccccc',
-              marginBottom: 80,
-              marginTop: 10,
-              marginRight: 10,
-            }}>
-            <Icon
-              name="camera-plus-outline"
-              size={40}
-              color="#301934"
-              style={{alignSelf: 'center', marginTop: 18}}
-              onPress={() => {
+          <TouchableOpacity onPress={() => {
                 changeProfileImageFromLibrary();
+              }}>
+          <Image
+              source={require('../assets/images/aad_photo_icon.png')}
+              style={{
+                height: 80,
+                width: 80,
+                borderRadius: 10,
+                marginRight: 10,
+                marginTop: 10,
               }}
             />
-          </View>
+            </TouchableOpacity>
         </View>
       </ScrollView>
       <View style={styles.buttonbody}>

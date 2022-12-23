@@ -35,7 +35,7 @@ export const RatingModel = () => {
     };
     const res = await addRatingApi(token,body);
     dispatch(setRatingState());
-    dispatch(setInitialState);
+    dispatch(setInitialState());
   };
   return (
     <Modal

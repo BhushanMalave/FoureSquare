@@ -93,7 +93,7 @@ export const Favourite = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
-      <ScrollView style={{flex: 1}}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.topbar}>
           <SafeAreaView style={{flex: 1}}>
             <View
@@ -106,7 +106,7 @@ export const Favourite = ({navigation}) => {
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
-                  dispatch(setInitialState);
+                  dispatch(setInitialState());
                 }}>
                 <Image
                   style={styles.menu}

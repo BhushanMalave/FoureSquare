@@ -58,7 +58,7 @@ export const Popular = ({navigation}) => {
       }
     };
     requestLocationPermission();
-  }, []);
+  }, [state]);
 
   const getOneTimeLocation = async () => {
    // Toast.show('Getting Location ...');

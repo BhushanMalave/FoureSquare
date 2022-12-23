@@ -19,7 +19,8 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ReviewViewComponent} from '../components/ReviewComponent';
 import {useDispatch, useSelector} from 'react-redux';
-import { viewPhotoApi } from '../authorization/Auth';
+import {viewPhotoApi} from '../authorization/Auth';
+import {setInitialState} from '../redux/ReduxPersist/States';
 
 export const PhotosGallery = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();
@@ -28,14 +29,13 @@ export const PhotosGallery = ({navigation, route}) => {
   const dispatch = useDispatch();
   const item = route.params.data._id;
   const name = route.params.data.placeName;
+  console.log(item);
   const call = async () => {
     const body = {
       placeId: item,
     };
     const res = await viewPhotoApi(body);
-    
     setData(res.reviews[0]);
-    console.log("====",data.reviewImage.urls)
   };
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export const PhotosGallery = ({navigation, route}) => {
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
-                dispatch(setInitialState);
+                dispatch(setInitialState());
               }}>
               <Image
                 style={styles.menu}
@@ -79,30 +79,47 @@ export const PhotosGallery = ({navigation, route}) => {
       </View>
       <ScrollView style={{flex: 1, backgroundColor: 'black'}}>
         <View style={styles.container}>
-
-        {!data ? (
-        <ActivityIndicator size="large" color="#7A7A7A" />
-      ) : (
-        <>
-          {data?.reviewImage?.urls.map(item => (
-             <TouchableOpacity
-             onPress={() => {
-               navigation.navigate('ViewPhoto',{});
-             }}>
-             <Image
-               source={{uri:item}}
-               style={{
-                 height: Platform.OS === 'ios' ? 123 : 135,
-                 width: Platform.OS === 'ios' ? 123 : 135,
-                 marginVertical: 3,
-                 marginHorizontal: 3,
-               }}
-             />
-           </TouchableOpacity>
-          ))}
-        </> 
-      )}
-         
+          {!data ? (
+            <ActivityIndicator size="large" color="#7A7A7A" style={{alignSelf:'center',width:'100%'}}/>
+          ) : (
+            <>
+              {
+               data?.reviewImage?.urls ? (
+                data?.reviewImage?.urls?.map(item => (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('ViewPhoto', {});
+                    }}>
+                    <Image
+                      source={{uri: item}}
+                      style={{
+                        height: Platform.OS === 'ios' ? 123 : 135,
+                        width: Platform.OS === 'ios' ? 123 : 135,
+                        marginVertical: 3,
+                        marginHorizontal: 3,
+                      }}
+                    />
+                  </TouchableOpacity>
+                ))
+               ) : (
+                 <View
+              style={{
+               width:'100%'
+              }}>
+              <Text
+                style={{
+                  color: 'white',
+                  marginTop: 20,
+                alignSelf:'center'
+                }}>
+                No Images Found
+              </Text>
+            </View>
+               )
+              }
+             
+            </>
+          )}
         </View>
       </ScrollView>
     </View>

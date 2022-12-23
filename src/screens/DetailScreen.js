@@ -111,7 +111,7 @@ export const DetailScreen = ({navigation, route}) => {
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
-                  dispatch(setInitialState);
+                  dispatch(setInitialState());
                 }}>
                 <Image
                   source={require('../assets/images/back_icon.png')}
