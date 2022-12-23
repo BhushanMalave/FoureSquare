@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
 
-export const SearchViewComponent = ({onPress, item, state}) => {
+export const SearchViewComponent = ({onPress, item, state,style={}}) => {
   const {height, width} = useWindowDimensions();
   const login = useSelector(state => state.status.loginState);
   const token = useSelector(state => state.userDetails.token);
@@ -64,7 +64,7 @@ export const SearchViewComponent = ({onPress, item, state}) => {
   };
 
   return (
-    <TouchableOpacity style={styles.Container} onPress={onPress}>
+    <TouchableOpacity style={[styles.Container,{width:width}]} onPress={onPress}>
       <Image source={{uri: item?.placeImages?.url}} style={styles.hotelimg} />
       <View
         style={{
@@ -78,8 +78,7 @@ export const SearchViewComponent = ({onPress, item, state}) => {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            // justifyContent:'flex-end',
-            //  width: width > height ? '70%' : '80%',
+            flex:1,
           }}>
           <Text
             style={{
@@ -161,8 +160,10 @@ export const SearchViewComponent = ({onPress, item, state}) => {
               color: '#7A7A7A',
               fontWeight: '500',
             }}>
-            Indian {' · '} {`${convertPriceRange(item?.priceRange)}`}
-            {'   '}
+             {item?.keywords?.length >10 ? item?.keywords.substring(0,10)+'...' : (item?.keywords)} 
+            {' • '}
+          {`${convertPriceRange(item?.priceRange)}  `}
+           
             {Math.round(item?.dist?.calculated, 2 * 1) / 1}
             {'km'}
           </Text>
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
     flexDirection: 'row',
-    marginHorizontal: 8,
+   marginHorizontal: 4,
     marginVertical: 4,
     backgroundColor: '#FFF',
     shadowColor: '#000',

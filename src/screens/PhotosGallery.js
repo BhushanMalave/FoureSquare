@@ -29,13 +29,12 @@ export const PhotosGallery = ({navigation, route}) => {
   const dispatch = useDispatch();
   const item = route.params.data._id;
   const name = route.params.data.placeName;
-  console.log(item);
   const call = async () => {
     const body = {
       placeId: item,
     };
     const res = await viewPhotoApi(body);
-    setData(res.reviews[0]);
+    setData(res);
   };
 
   useEffect(() => {
@@ -84,11 +83,11 @@ export const PhotosGallery = ({navigation, route}) => {
           ) : (
             <>
               {
-               data?.reviewImage?.urls ? (
-                data?.reviewImage?.urls?.map(item => (
+               data?.reviews[0]?.reviewImage?.urls ? (
+                data?.reviews[0]?.reviewImage?.urls?.map(item => (
                   <TouchableOpacity
                     onPress={() => {
-                      navigation.navigate('ViewPhoto', {});
+                      navigation.navigate('ViewPhoto', {item});
                     }}>
                     <Image
                       source={{uri: item}}

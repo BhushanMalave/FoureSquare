@@ -105,9 +105,11 @@ export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
               color: '#7A7A7A',
               fontWeight: '500',
             }}>
-            Indian {' · '} {`${convertPriceRange(item?.priceRange)}`}
-            {'   '}
-            {Math.round(item?.dist?.calculated, 2 )}
+             {item?.keywords?.length >10 ? item?.keywords.substring(0,10)+'...' : (item?.keywords)} 
+            {' • '}
+          {`${convertPriceRange(item?.priceRange)}  `}
+           
+            {Math.round(item?.dist?.calculated, 2 * 1) / 1}
             {'km'}
           </Text>
           <View style={{}}>

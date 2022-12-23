@@ -17,7 +17,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
 
-export const HotelViewComponent = ({onPress, item, state}) => {
+export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
   const {height, width} = useWindowDimensions();
   const login = useSelector(state => state.status.loginState);
   const token = useSelector(state => state.userDetails.token);
@@ -64,7 +64,7 @@ export const HotelViewComponent = ({onPress, item, state}) => {
   };
 
   return (
-    <TouchableOpacity style={styles.Container} onPress={onPress}>
+    <TouchableOpacity style={[styles.Container,{width:width}]} onPress={onPress}>
       <Image source={{uri: item?.placeImages?.url}} style={styles.hotelimg} />
       <View
         style={{
@@ -78,8 +78,7 @@ export const HotelViewComponent = ({onPress, item, state}) => {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            // justifyContent:'flex-end',
-            //  width: width > height ? '70%' : '80%',
+            flex:1,
           }}>
           <Text
             style={{
@@ -150,7 +149,7 @@ export const HotelViewComponent = ({onPress, item, state}) => {
               color: 'white',
               marginTop: 2,
             }}>
-            {item?.totalrating}
+            {item?.totalrating / 2}
           </Text>
         </View>
         <View style={{marginTop: 5}}>
@@ -160,10 +159,9 @@ export const HotelViewComponent = ({onPress, item, state}) => {
               fontSize: 14,
               color: '#7A7A7A',
               fontWeight: '500',
-           
             }}>
-          {item?.keywords?.length >10 ? item?.keywords.substring(0,10)+'...' : (item?.keywords)} 
-          {' • '}
+             {item?.keywords?.length >10 ? item?.keywords.substring(0,10)+'...' : (item?.keywords)} 
+            {' • '}
           {`${convertPriceRange(item?.priceRange)}  `}
            
             {Math.round(item?.dist?.calculated, 2 * 1) / 1}
@@ -193,7 +191,7 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
     flexDirection: 'row',
-    marginHorizontal: 8,
+// marginHorizontal: 4,
     marginVertical: 4,
     backgroundColor: '#FFF',
     shadowColor: '#000',

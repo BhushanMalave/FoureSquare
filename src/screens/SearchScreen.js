@@ -19,23 +19,46 @@ import {
   FlatList,
   Animated,
   scrollX,
+  ActivityIndicator,
 } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 import Icon from 'react-native-vector-icons/Feather';
-
+import {useDispatch, useSelector} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {SearchViewComponent} from '../components/SearchViewComponent';
+import {SearchViewComponentMap} from '../components/searchViewComponentMap';
 import Maps from '../components/Maps';
 import Geolocation from '@react-native-community/geolocation';
+import {SearchApi} from '../authorization/Auth';
 import {useRef} from 'react';
+import {nearYouPlaces} from '../authorization/Auth';
+import {topPickPlaces} from '../authorization/Auth';
+import {popularPlaces} from '../authorization/Auth';
+import {placeCategoryLunch} from '../authorization/Auth';
+import {placeCategoryCafe} from '../authorization/Auth';
+import {getNearByCityApi} from '../authorization/Auth';
+
 export const Search = ({navigation}) => {
   const {height, width} = useWindowDimensions();
+  const state = useSelector(state => state.status.initialState);
   const [text, setText] = useState('');
   const [text1, setText1] = useState(null);
   const [text2, setText2] = useState(null);
+
   const [iconState, setIconState] = useState(true);
   const [onFocus, setOnFocus] = useState(0);
+
   const [buttonView, setButtonView] = useState(0);
+
+  const latitude = useSelector(state => state.userDetails.userlatitude);
+  const longitude = useSelector(state => state.userDetails.userlongitude);
+
+  const [currentLongitude, setCurrentLongitude] = useState(latitude);
+  const [currentLatitude, setCurrentLatitude] = useState(longitude);
+  const [data, setData] = useState([]);
+  const favData = useSelector(state => state.userDetails.userFavData);
+  const [cityData, setCityData] = useState(null);
+
   const [price, setPrice] = useState({
     one: false,
     tens: false,
@@ -69,11 +92,13 @@ export const Search = ({navigation}) => {
   };
   const setOnFocus1 = () => {
     setOnFocus(1);
+    setButtonView(0);
     setIconState(true);
   };
 
   const setOnFocus2 = () => {
     setOnFocus(2);
+    setButtonView(0);
     setIconState(true);
   };
   const handleMapView = () => {
@@ -85,95 +110,143 @@ export const Search = ({navigation}) => {
     setOnFocus(0);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setButtonView(1);
+    setOnFocus(0);
+
+    const body = {
+      latitude: latitude,
+      longitude: longitude,
+      text: text,
+    };
+
+    if (text.length <= 2) {
+      setOnFocus(0);
+      setButtonView(0);
+      setData(null);
+    }
+    const res = await SearchApi(body);
+    setData(res.result);
     setOnFocus(0);
   };
 
-  const [data, setData] = useState(null);
+  const [Viewable, SetViewable] = React.useState([]);
+  const ref = React.useRef(null);
 
-  const [currentLongitude, setCurrentLongitude] = useState('');
-  const [currentLatitude, setCurrentLatitude] = useState('');
+  const onViewRef = React.useRef(viewableItems => {
+    let Check = [];
+    for (var i = 0; i < viewableItems.viewableItems.length; i++) {
+      Check.push(viewableItems.viewableItems[i].item);
+    }
+    SetViewable(Check);
+  });
+
+  const viewConfigRef = React.useRef({viewAreaCoveragePercentThreshold: 90});
+
+  const renderItem = ({item}) => {
+    setCurrentLatitude(Viewable[0]?.location?.coordinates[0]);
+    setCurrentLongitude(Viewable[0]?.location?.coordinates[1]);
+    return (
+      <SearchViewComponentMap
+        item={item}
+        state={state}
+        onPress={() => {
+          navigation.navigate('DetailScreen', {item});
+        }}
+      />
+    );
+  };
+
+  const useMyCurrentLocation = async () => {
+    const obj = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const data = await nearYouPlaces(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const topPicksCall = async () => {
+    const obj = {
+      latitude: currentLatitude,
+      longitude: currentLongitude,
+    };
+    const data = await topPickPlaces(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const popularCall = async () => {
+    const obj = {
+      latitude: currentLatitude,
+      longitude: currentLongitude,
+    };
+    const data = await popularPlaces(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const lunchCall = async () => {
+    const obj = {
+      latitude: currentLatitude,
+      longitude: currentLongitude,
+    };
+    const data = await placeCategoryLunch(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const cafeCall = async () => {
+    const obj = {
+      latitude: currentLatitude,
+      longitude: currentLongitude,
+    };
+    const data = await placeCategoryCafe(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const SuggestaionNearByPlacesCall = async () => {
+    const obj = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const data = await getNearByCityApi(obj);
+    setCityData(data);
+  };
+
+  const nearByPlaceData = async item => {
+    setButtonView(1);
+    setOnFocus(0);
+    const body = {
+      latitude: item?.location?.coordinates[1],
+      longitude: item?.location?.coordinates[0],
+      text: item?.cityName,
+    };
+     console.log(body);
+    const res = await SearchApi(body);
+    console.log(res.result);
+    setData(res.result);
+    setOnFocus(0);
+  };
 
   const mapRef = useRef(null);
 
   useEffect(() => {
-    const requestLocationPermission = async () => {
-      if (Platform.OS === 'ios') {
-        getOneTimeLocation();
-      } else {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Access Required',
-              message: 'This App needs to Access your location',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //To Check, If Permission is granted
-            getOneTimeLocation();
-          } else {
-            Toast.show('Permission Denied');
-          }
-        } catch (err) {
-          console.warn(err);
-        }
-      }
-    };
-    requestLocationPermission();
-  }, []);
-
-  const getOneTimeLocation = () => {
-    Toast.show('Getting Location ...');
-    Geolocation.getCurrentPosition(
-      //Will give you the current location
-      position => {
-        setTimeout(() => {
-          try {
-            mapRef.current.animateToRegion(
-              {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.2,
-              },
-              3 * 1000,
-            );
-          } catch (error) {
-            Toast.show('Failed to animate direction');
-          }
-        }, 500);
-        Toast.show('You are Here');
-
-        //getting the Longitude from the location json
-        const currentLongitude = position.coords.longitude;
-
-        //getting the Latitude from the location json
-        const currentLatitude = position.coords.latitude;
-
-        //Setting Longitude state
-        setCurrentLongitude(currentLongitude);
-
-        //Setting Longitude state
-        setCurrentLatitude(currentLatitude);
-      },
-      error => {
-        Toast.show(error.message);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 30000,
-        maximumAge: 1000,
-      },
-    );
-  };
+    SuggestaionNearByPlacesCall();
+  }, [state]);
 
   return (
     <View style={{flex: 1}}>
       <ScrollView style={{flex: 1}}>
         <View style={styles.topbar}>
-          <SafeAreaView >
+          <SafeAreaView>
             <View
               style={{
                 marginTop: Platform.OS === 'ios' ? 20 : 30,
@@ -224,6 +297,7 @@ export const Search = ({navigation}) => {
                   onPress={() => {
                     setIconState(false);
                     setOnFocus(0);
+                    setButtonView(0);
                   }}>
                   <Image
                     style={styles.filter}
@@ -235,6 +309,7 @@ export const Search = ({navigation}) => {
                   onPress={() => {
                     setIconState(true);
                     setOnFocus(0);
+                    setButtonView(1);
                   }}>
                   <Text
                     style={{
@@ -279,7 +354,7 @@ export const Search = ({navigation}) => {
           </SafeAreaView>
         </View>
 
-        <View style={{flex: 1, marginBottom: 40,}}>
+        <View style={{flex: 1, marginBottom: 40}}>
           {onFocus === 1 && (
             <>
               <View style={{flex: 1}}>
@@ -295,65 +370,41 @@ export const Search = ({navigation}) => {
                     Near by places
                   </Text>
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 0.7,
-                    borderBottomColor: '#ccc',
-                    marginTop: 0,
-                    backgroundColor: '#fff',
-                    height: 90,
-                  }}>
-                  <Image
-                    source={require('../assets/images/images.jpeg')}
-                    style={{
-                      height: 60,
-                      width: 60,
-                      marginLeft: 20,
-                      marginTop: 15,
+                {cityData?.map(item => (
+                  <TouchableOpacity
+                    onPress={() => {
+                      nearByPlaceData(item);
                     }}
-                  />
-                  <Text
                     style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginTop: 25,
-                      color: 'black',
-                      marginLeft: 20,
+                      flexDirection: 'row',
+                      borderBottomWidth: 0.7,
+                      borderBottomColor: '#ccc',
+                      marginTop: 0,
+                      backgroundColor: '#fff',
+                      height: 90,
                     }}>
-                    Santhekatte
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    borderBottomWidth: 0.7,
-                    borderBottomColor: '#ccc',
-                    marginTop: 0,
-                    backgroundColor: '#fff',
-                    height: 90,
-                  }}>
-                  <Image
-                    source={require('../assets/images/images.jpeg')}
-                    style={{
-                      height: 60,
-                      width: 60,
-                      marginLeft: 20,
-                      marginTop: 15,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginTop: 25,
-                      color: 'black',
-                      marginLeft: 20,
-                    }}>
-                    Santhekatte
-                  </Text>
-                </View>
+                    <Image
+                      source={{uri: item?.placeImage}}
+                      style={{
+                        height: 60,
+                        width: 60,
+                        marginLeft: 20,
+                        marginTop: 15,
+                      }}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: 'Avenir Book',
+                        fontSize: 22,
+                        marginTop: 25,
+                        color: 'black',
+                        marginLeft: 20,
+                        textTransform: 'capitalize',
+                      }}>
+                      {item?.cityName}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
               <View style={{}}>
                 <View style={{height: 60}}>
@@ -368,7 +419,8 @@ export const Search = ({navigation}) => {
                     Suggesstions
                   </Text>
                 </View>
-                <View
+                <TouchableOpacity
+                  onPress={topPicksCall}
                   style={{
                     flexDirection: 'row',
                     borderBottomWidth: 0.7,
@@ -387,8 +439,9 @@ export const Search = ({navigation}) => {
                     }}>
                     Top Picks
                   </Text>
-                </View>
-                <View
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={popularCall}
                   style={{
                     flexDirection: 'row',
                     borderBottomWidth: 0.7,
@@ -407,14 +460,57 @@ export const Search = ({navigation}) => {
                     }}>
                     Popular
                   </Text>
-                </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={lunchCall}
+                  style={{
+                    flexDirection: 'row',
+                    borderBottomWidth: 0.7,
+                    borderBottomColor: '#ccc',
+                    marginTop: 0,
+                    height: 70,
+                    backgroundColor: '#fff',
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Avenir Book',
+                      fontSize: 22,
+                      marginTop: 20,
+                      color: 'black',
+                      marginLeft: 20,
+                    }}>
+                    Lunch
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={cafeCall}
+                  style={{
+                    flexDirection: 'row',
+                    borderBottomWidth: 0.7,
+                    borderBottomColor: '#ccc',
+                    marginTop: 0,
+                    height: 70,
+                    backgroundColor: '#fff',
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Avenir Book',
+                      fontSize: 22,
+                      marginTop: 20,
+                      color: 'black',
+                      marginLeft: 20,
+                    }}>
+                    Cafe
+                  </Text>
+                </TouchableOpacity>
               </View>
             </>
           )}
 
           {onFocus === 2 && (
             <>
-              <View
+              <TouchableOpacity
+                onPress={useMyCurrentLocation}
                 style={{
                   flexDirection: 'row',
                   borderBottomWidth: 0.7,
@@ -438,7 +534,7 @@ export const Search = ({navigation}) => {
                   }}>
                   Use my current location
                 </Text>
-              </View>
+              </TouchableOpacity>
 
               <View
                 style={{
@@ -946,7 +1042,7 @@ export const Search = ({navigation}) => {
                             acceptCC: true,
                           });
                         }}>
-                          <Icon
+                        <Icon
                           name="plus"
                           size={23}
                           color="rgba(53, 19, 71, 0.4)"
@@ -971,11 +1067,10 @@ export const Search = ({navigation}) => {
                             acceptCC: false,
                           });
                         }}>
-                           <Image
+                        <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
-                       
                       </TouchableOpacity>
                     </>
                   )}
@@ -1032,7 +1127,7 @@ export const Search = ({navigation}) => {
                             deliver: false,
                           });
                         }}>
-                           <Image
+                        <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1092,7 +1187,7 @@ export const Search = ({navigation}) => {
                             dogFriendly: false,
                           });
                         }}>
-                           <Image
+                        <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1152,7 +1247,7 @@ export const Search = ({navigation}) => {
                             familyFriendly: false,
                           });
                         }}>
-                           <Image
+                        <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1212,7 +1307,7 @@ export const Search = ({navigation}) => {
                             walkingDistance: false,
                           });
                         }}>
-                           <Image
+                        <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1272,7 +1367,7 @@ export const Search = ({navigation}) => {
                             outDoorSeating: false,
                           });
                         }}>
-                           <Image
+                        <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1332,7 +1427,7 @@ export const Search = ({navigation}) => {
                             parking: false,
                           });
                         }}>
-                           <Image
+                        <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1392,7 +1487,7 @@ export const Search = ({navigation}) => {
                             wifi: false,
                           });
                         }}>
-                           <Image
+                        <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
                           source={require('../assets/images/filter_selected.png')}
                         />
@@ -1404,28 +1499,42 @@ export const Search = ({navigation}) => {
             </>
           )}
           {buttonView === 2 && (
-              <View style={{flex:1,height:700}}>
+            <View style={{flex: 1, height: 700}}>
               {currentLatitude && currentLongitude !== '' ? (
-              
-                  <Maps
-                    latitude={currentLatitude}
-                    longitude={currentLongitude}
-                    mapRef={mapRef}
-                    viewStyle={{flex:1}}
-                  />
-               
+                <Maps
+                  latitude={latitude}
+                  longitude={longitude}
+                  viewStyle={{flex: 1}}
+                />
               ) : null}
-              <SearchViewComponent/>
-           </View>
+
+              <View style={{height: 140, width: width}}>
+                <FlatList
+                  data={data}
+                  renderItem={renderItem}
+                  keyExtractor={item => item?._id}
+                  horizontal
+                  pagingEnabled
+                  ref={ref}
+                  onViewableItemsChanged={onViewRef.current}
+                  viewabilityConfig={viewConfigRef.current}
+                />
+              </View>
+            </View>
           )}
           {buttonView === 1 && (
             <View>
-              <SearchViewComponent />
-              <SearchViewComponent />
-              <SearchViewComponent />
-              <SearchViewComponent />
-              <SearchViewComponent />
-              <SearchViewComponent />
+              {data?.map(item => (
+                <View key={item?._id}>
+                  <SearchViewComponent
+                    item={item}
+                    state={state}
+                    onPress={() => {
+                      navigation.navigate('DetailScreen', {item});
+                    }}
+                  />
+                </View>
+              ))}
             </View>
           )}
         </View>
