@@ -165,6 +165,7 @@ export const Favourite = ({navigation}) => {
 
   setText("");
   setIconState(true);
+
  }
 
 
