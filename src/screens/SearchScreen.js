@@ -1743,24 +1743,28 @@ export const Search = ({navigation}) => {
           )}
           {buttonView === 1 && (
             <View>
-              {data?.[0] ? (
-                        data?.map(item => (
-                          <View key={item?._id}>
-                            <SearchViewComponent
-                              item={item}
-                              state={state}
-                              onPress={() => {
-                                navigation.navigate('DetailScreen', {item});
-                              }}
-                            />
-                          </View>
-                        ))
+              {!data ? ( <ActivityIndicator size="large" color="#7A7A7A" />) : (
+                 data?.[0] ? (
+                  data?.map(item => (
+                    <View key={item?._id}>
+                      <SearchViewComponent
+                        item={item}
+                        state={state}
+                        onPress={() => {
+                          navigation.navigate('DetailScreen', {item});
+                        }}
+                      />
+                    </View>
+                  ))
 
-              ):(
-                <View>
-                  <Text style={{color:'black',alignSelf:'center',fontSize:18,marginTop:20}}>No Search Found</Text>
-                </View>
+        ):(
+          <View>
+            <Text style={{color:'black',alignSelf:'center',fontSize:18,marginTop:20}}>No Search Found</Text>
+          </View>
+        )
+
               )}
+             
              
             </View>
           )}
