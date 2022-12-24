@@ -17,6 +17,7 @@ import {
   useWindowDimensions,
   ActivityIndicator,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 import {FaviouriteViewComponent} from '../components/FavouriteViewComponent';
 import {getFavouriteApi} from '../authorization/Auth';
 import {setUserFavData} from '../redux/ReduxPersist/User';
@@ -24,6 +25,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
 import {favSearchApi} from '../authorization/Auth';
+import { filterSearchApi } from '../authorization/Auth';
 
 export const Favourite = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -163,8 +165,7 @@ export const Favourite = ({navigation}) => {
 
   setText("");
   setIconState(true);
-  setOnFocus(0);
-  setButtonView(1);
+
  }
 
 
@@ -311,7 +312,8 @@ export const Favourite = ({navigation}) => {
 
         <View>
           <>
-            <View showsVerticalScrollIndicator={false}>
+          {iconState === true && (
+            <View >
               {!data ? (
                 <ActivityIndicator size="large" color="#7A7A7A" />
               ) : (
@@ -340,6 +342,7 @@ export const Favourite = ({navigation}) => {
                 
               )}
             </View>
+            )}
 
           {iconState === false && (
             <>
@@ -565,7 +568,7 @@ export const Favourite = ({navigation}) => {
                         marginTop: Platform.OS === 'ios' ? 15 : 3,
                         color: 'black',
                       }}
-                      onChangeText={handleText2}
+                      onChangeText={handleText}
                     />
                     <Text
                       style={{
