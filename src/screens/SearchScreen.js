@@ -37,6 +37,7 @@ import {popularPlaces} from '../authorization/Auth';
 import {placeCategoryLunch} from '../authorization/Auth';
 import {placeCategoryCafe} from '../authorization/Auth';
 import {getNearByCityApi} from '../authorization/Auth';
+import { filterSearchApi } from '../authorization/Auth';
 
 export const Search = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -81,6 +82,24 @@ export const Search = ({navigation}) => {
     parking: false,
     wifi: false,
   });
+
+  const [filterData,setFilterData] = useState({
+    'latitude':latitude,
+    'longitude':longitude,
+    'text':'',
+    'radius':text2,
+    'priceRange':"",
+    'sortBy':"", 
+    'acceptcreditCredit':false,
+    'delivery':false,
+    'dogFriendly':false,
+    'familyFriendlyPlace':false,
+    'inWalkingdistance':false,
+    'outdoorSeating':false,
+    'parking':false,
+    'wifi':false,
+
+  }) 
   const handleText = string => {
     setText(string);
   };
@@ -89,6 +108,10 @@ export const Search = ({navigation}) => {
   };
   const handleText2 = string => {
     setText2(string);
+    setFilterData({
+      ...filterData,
+      radius:text2,
+    })
   };
   const setOnFocus1 = () => {
     setOnFocus(1);
@@ -229,14 +252,61 @@ export const Search = ({navigation}) => {
       longitude: item?.location?.coordinates[0],
       text: item?.cityName,
     };
-     console.log(body);
     const res = await SearchApi(body);
     console.log(res.result);
     setData(res.result);
     setOnFocus(0);
   };
 
-  const mapRef = useRef(null);
+ const callFilterData = async () =>{
+    const res = await filterSearchApi(filterData);
+    console.log("=-=-=-",res);
+    setData(res);
+  setFilterData({
+    'latitude':latitude,
+    'longitude':longitude,
+    'text':'',
+    'radius':text2,
+    'priceRange':"",
+    'sortBy':"", 
+    'acceptcreditCredit':false,
+    'delivery':false,
+    'dogFriendly':false,
+    'familyFriendlyPlace':false,
+    'inWalkingdistance':false,
+    'outdoorSeating':false,
+    'parking':false,
+    'wifi':false,
+  })
+  setFeatures({
+    acceptCC: false,
+    deliver: false,
+    dogFriendly: false,
+    familyFriendly: false,
+    walkingDistance: false,
+    outDoorSeating: false,
+    parking: false,
+    wifi: false,
+  })
+
+  setPrice({
+    one: false,
+    tens: false,
+    hundreds: false,
+    thousands: false,
+  })
+
+  setSortBy({
+    popular: false,
+    distance: false,
+    rating: false,
+  })
+
+  setText2("");
+  setIconState(true);
+  setOnFocus(0);
+  setButtonView(1);
+ }
 
   useEffect(() => {
     SuggestaionNearByPlacesCall();
@@ -256,7 +326,58 @@ export const Search = ({navigation}) => {
               }}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.goBack();
+                  if(iconState === false)
+                  {
+                    setFilterData({
+                      'latitude':latitude,
+                      'longitude':longitude,
+                      'text':'',
+                      'radius':text2,
+                      'priceRange':"",
+                      'sortBy':"", 
+                      'acceptcreditCredit':false,
+                      'delivery':false,
+                      'dogFriendly':false,
+                      'familyFriendlyPlace':false,
+                      'inWalkingdistance':false,
+                      'outdoorSeating':false,
+                      'parking':false,
+                      'wifi':false,
+                    })
+                    setFeatures({
+                      acceptCC: false,
+                      deliver: false,
+                      dogFriendly: false,
+                      familyFriendly: false,
+                      walkingDistance: false,
+                      outDoorSeating: false,
+                      parking: false,
+                      wifi: false,
+                    })
+                  
+                    setPrice({
+                      one: false,
+                      tens: false,
+                      hundreds: false,
+                      thousands: false,
+                    })
+                  
+                    setSortBy({
+                      popular: false,
+                      distance: false,
+                      rating: false,
+                    })
+                  
+                    setText2("");
+                    setIconState(true);
+                    setOnFocus(0);
+                    setButtonView(0);
+                    
+
+                  }else{
+                    navigation.goBack();
+                  }
+                 
                 }}>
                 <Image
                   style={styles.menu}
@@ -307,9 +428,8 @@ export const Search = ({navigation}) => {
               ) : (
                 <TouchableOpacity
                   onPress={() => {
-                    setIconState(true);
-                    setOnFocus(0);
-                    setButtonView(1);
+                    callFilterData();
+                   
                   }}>
                   <Text
                     style={{
@@ -600,10 +720,13 @@ export const Search = ({navigation}) => {
                       onPress={() => {
                         setSortBy({
                           popular: true,
-
                           distance: false,
                           rating: false,
                         });
+                        setFilterData({
+                          ...filterData,
+                          sortBy:'viewCount',
+                        })
                       }}>
                       <Text
                         style={{
@@ -653,6 +776,10 @@ export const Search = ({navigation}) => {
                           distance: true,
                           rating: false,
                         });
+                        setFilterData({
+                          ...filterData,
+                          sortBy:'dist.calculated',
+                        })
                       }}>
                       <Text
                         style={{
@@ -697,6 +824,10 @@ export const Search = ({navigation}) => {
                           distance: false,
                           rating: true,
                         });
+                        setFilterData({
+                          ...filterData,
+                          sortBy:'totalrating',
+                        })
                       }}>
                       <Text
                         style={{
@@ -772,7 +903,7 @@ export const Search = ({navigation}) => {
                       name="radius"
                       style={{
                         fontFamily: 'Avenir Book',
-                        width: 30,
+                        width: 40,
                         marginBottom: Platform.OS === 'ios' ? 10 : 0,
                         marginTop: Platform.OS === 'ios' ? 15 : 3,
                         color: 'black',
@@ -815,6 +946,10 @@ export const Search = ({navigation}) => {
                           hundreds: false,
                           thousands: false,
                         });
+                        setFilterData({
+                          ...filterData,
+                          priceRange:1,
+                        })
                       }}>
                       <Text
                         style={{
@@ -866,6 +1001,10 @@ export const Search = ({navigation}) => {
                           hundreds: false,
                           thousands: false,
                         });
+                        setFilterData({
+                          ...filterData,
+                          priceRange:10,
+                        })
                       }}>
                       <Text
                         style={{
@@ -916,6 +1055,10 @@ export const Search = ({navigation}) => {
                           hundreds: true,
                           thousands: false,
                         });
+                        setFilterData({
+                          ...filterData,
+                          priceRange:100,
+                        })
                       }}>
                       <Text
                         style={{
@@ -962,6 +1105,10 @@ export const Search = ({navigation}) => {
                           hundreds: false,
                           thousands: true,
                         });
+                        setFilterData({
+                          ...filterData,
+                          priceRange:1000,
+                        })
                       }}>
                       <Text
                         style={{
@@ -1041,6 +1188,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             acceptCC: true,
                           });
+                          setFilterData({
+                            ...filterData,
+                            acceptcreditCredit:true,
+                          })
                         }}>
                         <Icon
                           name="plus"
@@ -1057,6 +1208,7 @@ export const Search = ({navigation}) => {
                           fontSize: 16,
                           marginLeft: 25,
                           marginTop: 20,
+                          color: '#ccc',
                         }}>
                         Accepts credits cards
                       </Text>
@@ -1066,6 +1218,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             acceptCC: false,
                           });
+                          setFilterData({
+                            ...filterData,
+                            acceptcreditCredit:false,
+                          })
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1101,6 +1257,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             deliver: true,
                           });
+                          setFilterData({
+                            ...filterData,
+                            delivery:true,
+                          })
                         }}>
                         <Icon
                           name="plus"
@@ -1117,6 +1277,7 @@ export const Search = ({navigation}) => {
                           fontSize: 16,
                           marginLeft: 25,
                           marginTop: 20,
+                          color: '#ccc',
                         }}>
                         Delivery
                       </Text>
@@ -1126,6 +1287,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             deliver: false,
                           });
+                          setFilterData({
+                            ...filterData,
+                            delivery:false,
+                          })
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1161,6 +1326,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             dogFriendly: true,
                           });
+                          setFilterData({
+                            ...filterData,
+                            dogFriendly:true,
+                          })
                         }}>
                         <Icon
                           name="plus"
@@ -1177,6 +1346,7 @@ export const Search = ({navigation}) => {
                           fontSize: 16,
                           marginLeft: 25,
                           marginTop: 20,
+                          color: '#ccc',
                         }}>
                         Dog Friendly
                       </Text>
@@ -1186,6 +1356,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             dogFriendly: false,
                           });
+                          setFilterData({
+                            ...filterData,
+                            dogFriendly:false,
+                          })
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1221,6 +1395,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             familyFriendly: true,
                           });
+                          setFilterData({
+                            ...filterData,
+                            familyFriendlyPlace:true,
+                          })
                         }}>
                         <Icon
                           name="plus"
@@ -1237,6 +1415,7 @@ export const Search = ({navigation}) => {
                           fontSize: 16,
                           marginLeft: 25,
                           marginTop: 20,
+                          color: '#ccc',
                         }}>
                         Family-Friendly places
                       </Text>
@@ -1246,6 +1425,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             familyFriendly: false,
                           });
+                          setFilterData({
+                            ...filterData,
+                            familyFriendlyPlace:false,
+                          })
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1281,6 +1464,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             walkingDistance: true,
                           });
+                          setFilterData({
+                            ...filterData,
+                            inWalkingdistance:true,
+                          })
                         }}>
                         <Icon
                           name="plus"
@@ -1297,6 +1484,7 @@ export const Search = ({navigation}) => {
                           fontSize: 16,
                           marginLeft: 25,
                           marginTop: 20,
+                          color: '#ccc',
                         }}>
                         In walking distance
                       </Text>
@@ -1306,6 +1494,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             walkingDistance: false,
                           });
+                          setFilterData({
+                            ...filterData,
+                            inWalkingdistance:false,
+                          })
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1341,6 +1533,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             outDoorSeating: true,
                           });
+                          setFilterData({
+                            ...filterData,
+                            outdoorSeating:true,
+                          })
                         }}>
                         <Icon
                           name="plus"
@@ -1357,6 +1553,7 @@ export const Search = ({navigation}) => {
                           fontSize: 16,
                           marginLeft: 25,
                           marginTop: 20,
+                          color: '#ccc',
                         }}>
                         Outdoor seating
                       </Text>
@@ -1366,6 +1563,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             outDoorSeating: false,
                           });
+                          setFilterData({
+                            ...filterData,
+                            outDoorSeating:false,
+                          })
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1401,6 +1602,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             parking: true,
                           });
+                          setFilterData({
+                            ...filterData,
+                            parking:true,
+                          })
                         }}>
                         <Icon
                           name="plus"
@@ -1417,6 +1622,7 @@ export const Search = ({navigation}) => {
                           fontSize: 16,
                           marginLeft: 25,
                           marginTop: 20,
+                          color: '#ccc',
                         }}>
                         Parking
                       </Text>
@@ -1426,6 +1632,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             parking: false,
                           });
+                          setFilterData({
+                            ...filterData,
+                            parking:false,
+                          })
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1461,6 +1671,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             wifi: true,
                           });
+                          setFilterData({
+                            ...filterData,
+                            wifi:true,
+                          })
                         }}>
                         <Icon
                           name="plus"
@@ -1477,6 +1691,7 @@ export const Search = ({navigation}) => {
                           fontSize: 16,
                           marginLeft: 25,
                           marginTop: 20,
+                          color: '#ccc',
                         }}>
                         Wifi
                       </Text>
@@ -1486,6 +1701,10 @@ export const Search = ({navigation}) => {
                             ...features,
                             wifi: false,
                           });
+                          setFilterData({
+                            ...filterData,
+                            wifi:false,
+                          })
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1524,17 +1743,25 @@ export const Search = ({navigation}) => {
           )}
           {buttonView === 1 && (
             <View>
-              {data?.map(item => (
-                <View key={item?._id}>
-                  <SearchViewComponent
-                    item={item}
-                    state={state}
-                    onPress={() => {
-                      navigation.navigate('DetailScreen', {item});
-                    }}
-                  />
+              {data?.[0] ? (
+                        data?.map(item => (
+                          <View key={item?._id}>
+                            <SearchViewComponent
+                              item={item}
+                              state={state}
+                              onPress={() => {
+                                navigation.navigate('DetailScreen', {item});
+                              }}
+                            />
+                          </View>
+                        ))
+
+              ):(
+                <View>
+                  <Text style={{color:'black',alignSelf:'center',fontSize:18,marginTop:20}}>No Search Found</Text>
                 </View>
-              ))}
+              )}
+             
             </View>
           )}
         </View>
@@ -1617,218 +1844,3 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStyle = [
-  {
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#ebe3cd',
-      },
-    ],
-  },
-  {
-    elementType: 'labels.text.fill',
-    stylers: [
-      {
-        color: '#523735',
-      },
-    ],
-  },
-  {
-    elementType: 'labels.text.stroke',
-    stylers: [
-      {
-        color: '#f5f1e6',
-      },
-    ],
-  },
-  {
-    featureType: 'administrative',
-    elementType: 'geometry.stroke',
-    stylers: [
-      {
-        color: '#c9b2a6',
-      },
-    ],
-  },
-  {
-    featureType: 'administrative.land_parcel',
-    elementType: 'geometry.stroke',
-    stylers: [
-      {
-        color: '#dcd2be',
-      },
-    ],
-  },
-  {
-    featureType: 'administrative.land_parcel',
-    elementType: 'labels.text.fill',
-    stylers: [
-      {
-        color: '#ae9e90',
-      },
-    ],
-  },
-  {
-    featureType: 'landscape.natural',
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#dfd2ae',
-      },
-    ],
-  },
-  {
-    featureType: 'poi',
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#dfd2ae',
-      },
-    ],
-  },
-  {
-    featureType: 'poi',
-    elementType: 'labels.text.fill',
-    stylers: [
-      {
-        color: '#93817c',
-      },
-    ],
-  },
-  {
-    featureType: 'poi.park',
-    elementType: 'geometry.fill',
-    stylers: [
-      {
-        color: '#a5b076',
-      },
-    ],
-  },
-  {
-    featureType: 'poi.park',
-    elementType: 'labels.text.fill',
-    stylers: [
-      {
-        color: '#447530',
-      },
-    ],
-  },
-  {
-    featureType: 'road',
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#f5f1e6',
-      },
-    ],
-  },
-  {
-    featureType: 'road.arterial',
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#fdfcf8',
-      },
-    ],
-  },
-  {
-    featureType: 'road.highway',
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#f8c967',
-      },
-    ],
-  },
-  {
-    featureType: 'road.highway',
-    elementType: 'geometry.stroke',
-    stylers: [
-      {
-        color: '#e9bc62',
-      },
-    ],
-  },
-  {
-    featureType: 'road.highway.controlled_access',
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#e98d58',
-      },
-    ],
-  },
-  {
-    featureType: 'road.highway.controlled_access',
-    elementType: 'geometry.stroke',
-    stylers: [
-      {
-        color: '#db8555',
-      },
-    ],
-  },
-  {
-    featureType: 'road.local',
-    elementType: 'labels.text.fill',
-    stylers: [
-      {
-        color: '#806b63',
-      },
-    ],
-  },
-  {
-    featureType: 'transit.line',
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#dfd2ae',
-      },
-    ],
-  },
-  {
-    featureType: 'transit.line',
-    elementType: 'labels.text.fill',
-    stylers: [
-      {
-        color: '#8f7d77',
-      },
-    ],
-  },
-  {
-    featureType: 'transit.line',
-    elementType: 'labels.text.stroke',
-    stylers: [
-      {
-        color: '#ebe3cd',
-      },
-    ],
-  },
-  {
-    featureType: 'transit.station',
-    elementType: 'geometry',
-    stylers: [
-      {
-        color: '#dfd2ae',
-      },
-    ],
-  },
-  {
-    featureType: 'water',
-    elementType: 'geometry.fill',
-    stylers: [
-      {
-        color: '#b9d3c2',
-      },
-    ],
-  },
-  {
-    featureType: 'water',
-    elementType: 'labels.text.fill',
-    stylers: [
-      {
-        color: '#92998d',
-      },
-    ],
-  },
-];

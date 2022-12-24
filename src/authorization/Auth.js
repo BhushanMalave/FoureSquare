@@ -286,7 +286,7 @@ export const aboutUsApi = async () => {
       return response.data;
     }
   } catch (error) {
-    Toast.show(error.response.data.message, Toast.SHORT);
+   // Toast.show(error.response.data.message, Toast.SHORT);
     console.log('aboutus', error);
   }
 };
@@ -460,6 +460,23 @@ export const SearchApi = async (body) => {
   try {
     const response = await axios.post(
       'https://assesment-seven.vercel.app/searchPlace',
+      body,
+    );
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('searchPlace', error.response.data);
+  }
+};
+
+export const filterSearchApi = async (body) => {
+  
+
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app//searchByFilter',
       body,
     );
     if (response.data) {
