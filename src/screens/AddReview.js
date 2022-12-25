@@ -18,23 +18,76 @@ import {
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { setInitialState } from '../redux/ReduxPersist/States';
+import Toast from 'react-native-simple-toast';
+import uuid from 'react-native-uuid';
+import { useSelector,useDispatch } from 'react-redux';
+import { addReview } from '../authorization/Auth';
+import { addImages } from '../authorization/Auth';
 
-export const AddReview = ({navigation}) => {
+export const AddReview = ({navigation,route}) => {
   const {height, width} = useWindowDimensions();
+  const token = useSelector(state=>state.userDetails.token);
   const [text, setText] = useState('');
   const [image, setImage] = useState(null);
-
   const [imgData, setImgData] = useState([]);
-  console.log(imgData);
-  console.log(imgData);
-  const handleText = string => {
-    // setText(string);
-  };
-  const handleSubmit = () => {
+
+  const placeId =route.params.placeId;
+  const data = route.params.data;
+  const addRev =route.params.addRev;
+const dispatch = useDispatch();
+
+  const handleSubmit = async () => {
     // console.log(text);
     // console.log(imgData);
+    let resp;
+    let resp1;
+    let payload;
+    if (imgData.length > 0) {
+      payload = new FormData();
+      payload.append('placeId', placeId);
+      payload.append('review', text);
+      for (let i = 0; i < imgData.length; i++) {
+        payload.append(imgData[i].name, {
+          uri: imgData[i].path,
+          type: imgData[i].mime,
+          name: `${imgData[i].filename}.${imgData[i].mime.substring(
+            imgData[i].mime.indexOf('/') + 1,
+          )}`,
+        });
+      } 
+    }
+    console.log(payload);
+
+    if(addRev === 1){
+      resp = await addImages(payload, token);
+      dispatch(setInitialState());
+      navigation.navigate('PhotosGallery',{placeId,data});
+    }
+   
+    if(addRev===1){
+      resp1 = await addReview(token, payload);
+      console.log(resp1)
+      if (resp1 !== undefined) {
+        if (resp1.message === "edited sucessfully(already reviwed)") {
+          setImgArray([]);
+          setText('');
+          Toast.show('Edited Successfully and Already Reviewed');
+          dispatch(setInitialState());
+          navigation.navigate('ViewReviews',{data,placeId});
+          
+        }
+        else{
+          setImgData([]);
+          setText('');
+          Toast.show('Review Added');
+          dispatch(setInitialState());
+          navigation.navigate('ViewReviews',{data,placeId});
+        }
+      }
+
+    }
+   
   };
 
   const changeProfileImageFromLibrary = () => {
@@ -43,10 +96,15 @@ export const AddReview = ({navigation}) => {
       height: 110,
       cropping: true,
     }).then(img => {
-      setImage(img.path);
-      const {filename, mime, path} = img;
-      setImgData([...imgData, {image: {filename, mime, path}}]);
-    });
+      const obj = {
+        id: uuid.v4(),
+        name: 'image',
+        path: img.path,
+        fileName: img.filename,
+        mime: img.mime,
+      };
+      setImgData(prevImg =>[...prevImg,obj]);
+    }).catch(er => Toast.show('User cancelled selection'));
   };
   const changeProfileImageFromCamera = () => {
     ImagePicker.openCamera({
@@ -72,7 +130,18 @@ export const AddReview = ({navigation}) => {
               }}>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.goBack();
+                  if(addRev === 1){
+                    setImgData([]);
+                    setText('');
+                    dispatch(setInitialState());
+                    navigation.navigate('PhotosGallery',{data,placeId});
+
+                  }else{
+                    setImgData([]);
+                    setText('');
+                    dispatch(setInitialState());
+                    navigation.navigate('ViewReviews',{data,placeId});
+                  }
                 }}>
                 <Image
                   style={styles.menu}
@@ -112,8 +181,7 @@ export const AddReview = ({navigation}) => {
               <TextInput
                 multiline={true}
                 numberOfLines={15}
-                name="notes"
-                onChangeText={handleText}
+                onChangeText={str => setText(str)}
                 style={styles.textNotes}
                 textAlignVertical="top"
               />
@@ -139,7 +207,7 @@ export const AddReview = ({navigation}) => {
           }}>
           {imgData?.map(item => (
             <Image
-              source={{uri: item?.image?.path}}
+              source={{uri: item?.path}}
               style={{
                 height: 80,
                 width: 80,

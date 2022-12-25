@@ -53,8 +53,8 @@ export const ReviewViewComponent = ({item}) => {
                   width:width>height ? '150%':"100%",
 
                 }}>
-            {item?.review?.length > 100
-                ? item?.review.substring(0, 100) + '...'
+            {item?.review?.length > 50
+                ? item?.review.substring(0, 50) + '...'
                 : item?.review}
               </Text>
             </View>

@@ -24,14 +24,16 @@ import {setInitialState} from '../redux/ReduxPersist/States';
 
 export const PhotosGallery = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();
-  const [data, setData] = useState('');
+  const [dataImg, setDataImg] = useState('');
   const state = useSelector(state => state.status.initialState);
   const dispatch = useDispatch();
-  const item = route.params.data._id;
+  const placeId = route.params.placeId;
   const name = route.params.data.placeName;
+  const data = route.params.data;
+  const addRev = 2;
   const call = async () => {
     const body = {
-      placeId: item,
+      placeId: placeId,
     };
     const res = await viewPhotoApi(body);
     setData(res);
@@ -72,19 +74,19 @@ export const PhotosGallery = ({navigation, route}) => {
               }}>
               {name.length > 15 ? name.substring(0, 15) + '...' : name}
             </Text>
-            <Icon name="camera-plus-outline" size={24} color="#fff" />
+            <Icon name="camera-plus-outline" size={24} color="#fff"   onPress={()=>{navigation.navigate('AddReviews',{placeId,addRev,data})}} />
           </View>
-        </SafeAreaView>
+        </SafeAreaView>r
       </View>
       <ScrollView style={{flex: 1, backgroundColor: 'black'}}>
         <View style={styles.container}>
-          {!data ? (
+          {!dataImg ? (
             <ActivityIndicator size="large" color="#7A7A7A" style={{alignSelf:'center',width:'100%'}}/>
           ) : (
-            <>
+            <>  
               {
-               data?.reviews[0]?.reviewImage?.urls ? (
-                data?.reviews[0]?.reviewImage?.urls?.map(item => (
+               dataImg?.reviews[0]?.reviewImage?.urls ? (
+                dataImg?.reviews[0]?.reviewImage?.urls?.map(item => (
                   <TouchableOpacity
                     onPress={() => {
                       navigation.navigate('ViewPhoto', {item});
