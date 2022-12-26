@@ -6,6 +6,7 @@ import { AddReview } from '../screens/AddReview';
 import { PhotosGallery } from '../screens/PhotosGallery';
 import { ViewPhoto } from '../screens/ViewPhoto';
 import { Search } from '../screens/SearchScreen';
+import { FilterSearch } from '../screens/FilterSearchScreen';
 import { Favourite } from '../screens/FavouriteScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import { CardStyleInterpolators ,createStackNavigator} from '@react-navigation/stack';
@@ -66,6 +67,14 @@ export const HomeStack = () => {
        <Stack.Screen
         name="Search"
         component={Search}
+        options={{
+          headerShown: false,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        }}
+      />
+        <Stack.Screen
+        name="FilterSearch"
+        component={FilterSearch}
         options={{
           headerShown: false,
           cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,

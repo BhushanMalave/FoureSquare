@@ -17,6 +17,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   PermissionsAndroid,
+  ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Maps from '../components/Maps';
@@ -103,7 +104,14 @@ export const DetailScreen = ({navigation, route}) => {
   }, [state]);
 
   return (
-    <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+    <>
+    {!data ? (
+      <SafeAreaView>
+          <ActivityIndicator size="large" color="#7A7A7A" />
+      </SafeAreaView>
+    ):(
+
+      <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
       <ImageBackground
         source={{uri: item?.placeImages?.url}}
         style={styles.hotelimg}>
@@ -389,6 +397,8 @@ export const DetailScreen = ({navigation, route}) => {
       </View>
       <RatingModel />
     </ScrollView>
+    )}
+   </>
   );
 };
 

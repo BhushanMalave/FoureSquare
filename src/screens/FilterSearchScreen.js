@@ -15,32 +15,51 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  PermissionsAndroid,
+  FlatList,
+  Animated,
+  scrollX,
   ActivityIndicator,
 } from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
 import Icon from 'react-native-vector-icons/Feather';
-import {FaviouriteViewComponent} from '../components/FavouriteViewComponent';
-import {getFavouriteApi} from '../authorization/Auth';
-import {setUserFavData} from '../redux/ReduxPersist/User';
 import {useDispatch, useSelector} from 'react-redux';
-import {addFavouriteApi} from '../authorization/Auth';
-import {setInitialState} from '../redux/ReduxPersist/States';
-import {favSearchApi} from '../authorization/Auth';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {SearchViewComponent} from '../components/SearchViewComponent';
+import {SearchViewComponentMap} from '../components/searchViewComponentMap';
+import Maps from '../components/Maps';
+import Geolocation from '@react-native-community/geolocation';
+import {SearchApi} from '../authorization/Auth';
+import {useRef} from 'react';
+import {nearYouPlaces} from '../authorization/Auth';
+import {topPickPlaces} from '../authorization/Auth';
+import {popularPlaces} from '../authorization/Auth';
+import {placeCategoryLunch} from '../authorization/Auth';
+import {placeCategoryCafe} from '../authorization/Auth';
+import {getNearByCityApi} from '../authorization/Auth';
 import { filterSearchApi } from '../authorization/Auth';
 
-export const Favourite = ({navigation}) => {
+export const FilterSearch = ({navigation}) => {
   const {height, width} = useWindowDimensions();
-  const [text, setText] = useState('');
-  const [iconState, setIconState] = useState(true);
-  const item = useSelector(state => state.userDetails.userFavData);
-  const [data, setData] = useState(item);
-
-
   const state = useSelector(state => state.status.initialState);
-  const dispatch = useDispatch();
-  const token = useSelector(state => state.userDetails.token);
+  const [text, setText] = useState('');
+  const [text1, setText1] = useState(null);
+  const [text2, setText2] = useState(null);
+
+  const [iconState, setIconState] = useState(false);
+  const [onFocus, setOnFocus] = useState(0);
+
+  const [buttonView, setButtonView] = useState(0);
+
   const latitude = useSelector(state => state.userDetails.userlatitude);
   const longitude = useSelector(state => state.userDetails.userlongitude);
-  console.log(item)
+
+  const [currentLongitude, setCurrentLongitude] = useState(latitude);
+  const [currentLatitude, setCurrentLatitude] = useState(longitude);
+  const [data, setData] = useState([]);
+  const favData = useSelector(state => state.userDetails.userFavData);
+  const [cityData, setCityData] = useState(null);
+
   const [price, setPrice] = useState({
     one: false,
     tens: false,
@@ -63,11 +82,12 @@ export const Favourite = ({navigation}) => {
     parking: false,
     wifi: false,
   });
+
   const [filterData,setFilterData] = useState({
     'latitude':latitude,
     'longitude':longitude,
     'text':'',
-    'radius':text,
+    'radius':text2,
     'priceRange':"",
     'sortBy':"", 
     'acceptcreditCredit':false,
@@ -79,55 +99,175 @@ export const Favourite = ({navigation}) => {
     'parking':false,
     'wifi':false,
 
-  }) ;
-
+  }) 
   const handleText = string => {
     setText(string);
   };
+  const handleText1 = string => {
+    setText1(string);
+  };
+  const handleText2 = string => {
+    setText2(string);
+    setFilterData({
+      ...filterData,
+      radius:text2,
+    })
+  };
+  const setOnFocus1 = () => {
+    setOnFocus(1);
+    setButtonView(0);
+    setIconState(true);
+  };
+
+  const setOnFocus2 = () => {
+    setOnFocus(2);
+    setButtonView(0);
+    setIconState(true);
+  };
+  const handleMapView = () => {
+    setButtonView(2);
+    setOnFocus(0);
+  };
+  const handleListView = () => {
+    setButtonView(1);
+    setOnFocus(0);
+  };
 
   const handleSearch = async () => {
-    //console.log(text);
-    if (text.length <= 3) {
-     setData(item);
-    }
-    if (text.length > 2) {
-      const body = {
-        latitude:latitude,longitude:longitude,
-        text: text,
-      };
-      const res = await favSearchApi(token, body);
-      console.log("=-=-=",res)
-      setData(res);
-    }
-  };
-  const favouriteDataCall = async () => {
+    setButtonView(1);
+    setOnFocus(0);
+
     const body = {
       latitude: latitude,
       longitude: longitude,
+      text: text,
     };
-    const res = await getFavouriteApi(token, body);
-    dispatch(setUserFavData(res));
-    setData(res);
-  };
-  const removeFromFavourite = async id => {
-    const body = {
-      placeId: id,
-    };
-    const res = await addFavouriteApi(token, body);
-    console.log(res);
-    dispatch(setInitialState());
-    favouriteDataCall();
+
+    if (text.length <= 2) {
+      setOnFocus(0);
+      setButtonView(0);
+      setData(null);
+    }
+    const res = await SearchApi(body);
+    setData(res.result);
+    setOnFocus(0);
   };
 
-  const callFilterData = async () =>{
+  const [Viewable, SetViewable] = React.useState([]);
+  const ref = React.useRef(null);
+
+  const onViewRef = React.useRef(viewableItems => {
+    let Check = [];
+    for (var i = 0; i < viewableItems.viewableItems.length; i++) {
+      Check.push(viewableItems.viewableItems[i].item);
+    }
+    SetViewable(Check);
+  });
+
+  const viewConfigRef = React.useRef({viewAreaCoveragePercentThreshold: 90});
+
+  const renderItem = ({item}) => {
+    setCurrentLatitude(Viewable[0]?.location?.coordinates[1]);
+    setCurrentLongitude(Viewable[0]?.location?.coordinates[0]);
+    return (
+      <SearchViewComponentMap
+        item={item}
+        state={state}
+        onPress={() => {
+          navigation.navigate('DetailScreen', {item});
+        }}
+      />
+    );
+  };
+
+  const useMyCurrentLocation = async () => {
+    const obj = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const data = await nearYouPlaces(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const topPicksCall = async () => {
+    const obj = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const data = await topPickPlaces(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const popularCall = async () => {
+    const obj = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const data = await popularPlaces(obj);
+    console.log("=-=-=-=-",data)
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const lunchCall = async () => {
+    const obj = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const data = await placeCategoryLunch(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const cafeCall = async () => {
+    const obj = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const data = await placeCategoryCafe(obj);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+  };
+
+  const SuggestaionNearByPlacesCall = async () => {
+    const obj = {
+      latitude: latitude,
+      longitude: longitude,
+    };
+    const data = await getNearByCityApi(obj);
+    setCityData(data);
+  };
+
+  const nearByPlaceData = async item => {
+    setButtonView(1);
+    setOnFocus(0);
+    const body = {
+      latitude: item?.location?.coordinates[1],
+      longitude: item?.location?.coordinates[0],
+      text: item?.cityName,
+    };
+    const res = await SearchApi(body);
+    console.log(res.result);
+    setData(res.result);
+    setOnFocus(0);
+  };
+
+ const callFilterData = async () =>{
+  console.log(filterData);
     const res = await filterSearchApi(filterData);
-    console.log("=-=-=-",res);
     setData(res);
   setFilterData({
     'latitude':latitude,
     'longitude':longitude,
     'text':'',
-    'radius':text,
+    'radius':text2,
     'priceRange':"",
     'sortBy':"", 
     'acceptcreditCredit':false,
@@ -163,21 +303,21 @@ export const Favourite = ({navigation}) => {
     rating: false,
   })
 
-  setText("");
+  setText2("");
   setIconState(true);
-
+  setOnFocus(0);
+  setButtonView(1);
  }
 
-
   useEffect(() => {
-    favouriteDataCall();
+    SuggestaionNearByPlacesCall();
   }, [state]);
 
   return (
     <View style={{flex: 1}}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView style={{flex: 1}}>
         <View style={styles.topbar}>
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView>
             <View
               style={{
                 marginTop: Platform.OS === 'ios' ? 20 : 30,
@@ -187,13 +327,12 @@ export const Favourite = ({navigation}) => {
               }}>
               <TouchableOpacity
                 onPress={() => {
-                  if(iconState === false)
-                  {
+                  
                     setFilterData({
                       'latitude':latitude,
                       'longitude':longitude,
                       'text':'',
-                      'radius':text,
+                      'radius':text2,
                       'priceRange':"",
                       'sortBy':"", 
                       'acceptcreditCredit':false,
@@ -229,33 +368,56 @@ export const Favourite = ({navigation}) => {
                       rating: false,
                     })
                   
-                    setText("");
-                    setIconState(true);
-                  }else{
+                    setText2("");
+                   
+                    setOnFocus(0);
+                    setButtonView(0);
+                    
+
                     navigation.goBack();
-                  }
-                  dispatch(setInitialState());
+                 
+                 
                 }}>
                 <Image
                   style={styles.menu}
                   source={require('../assets/images/back_icon.png')}
                 />
               </TouchableOpacity>
-              <Text
+              <View
                 style={{
-                  color: 'white',
-                  fontFamily: 'Avenir Medium',
-                  fontSize: 28,
-                  marginTop: -5,
-                  fontWeight: '500',
+                  height: 40,
+                  width:
+                    width > height
+                      ? Platform.OS === 'ios'
+                        ? '85%'
+                        : '85%'
+                      : '75%',
+                  backgroundColor: 'white',
+                  alignSelf: 'center',
+                  marginTop: -10,
+                  borderRadius: 5,
+                  flexDirection: 'row',
                 }}>
-                Favourites
-              </Text>
-
+                <Image
+                  source={require('../assets/images/search_icon.png')}
+                  style={{tintColor: '#cccccc', marginTop: 12, marginLeft: 20}}
+                />
+                <TextInput
+                  name="search"
+                  placeholder="Search"
+                  placeholderTextColor={'#ccc'}
+                  style={styles.textInput}
+                  onChangeText={handleText}
+                  onFocus={setOnFocus1}
+                  onChange={handleSearch}
+                />
+              </View>
               {iconState ? (
                 <TouchableOpacity
                   onPress={() => {
                     setIconState(false);
+                    setOnFocus(0);
+                    setButtonView(0);
                   }}>
                   <Image
                     style={styles.filter}
@@ -266,6 +428,7 @@ export const Favourite = ({navigation}) => {
                 <TouchableOpacity
                   onPress={() => {
                     callFilterData();
+                   
                   }}>
                   <Text
                     style={{
@@ -295,54 +458,231 @@ export const Favourite = ({navigation}) => {
                 flexDirection: 'row',
               }}>
               <Image
-                source={require('../assets/images/search_icon.png')}
-                style={{tintColor: '#cccccc', marginTop: 12, marginLeft: 20}}
+                source={require('../assets/images/near_me_mdpi.png')}
+                style={{marginTop: 12, marginLeft: 20, height: 18, width: 18}}
               />
               <TextInput
-                name="search"
-                placeholder="Search"
+                name="nearMe"
+                value= {text}
+                placeholder="Near Me"
                 placeholderTextColor={'#ccc'}
                 style={styles.textInput}
-                onChangeText={handleText}
-                onChange={handleSearch}
+                onChangeText={handleText1}
+                onFocus={setOnFocus2}
               />
             </View>
           </SafeAreaView>
         </View>
 
-        <View>
-          <>
-          {iconState === true && (
-            <View >
-              {!data ? (
-                <ActivityIndicator size="large" color="#7A7A7A" />
-              ) : (
-                
-                data?.[0] ? (
-
-                   data?.map(item => (
-                    <View key={item?._id}>
-                      <FaviouriteViewComponent
-                        item={item}
-                        navigation={navigation}
-                        onPress={() => {
-                          removeFromFavourite(item?._id);
-                        }}
-                      />
-                    </View>
-                  ))
-                  
-                ) : (
-                  <View>
-                  <Text style={{color:'black',alignSelf:'center',fontSize:18,marginTop:20}}>No Favourite Found</Text>
+        <View style={{flex: 1, marginBottom: 40}}>
+          {onFocus === 1 && (
+            <>
+              <View style={{flex: 1}}>
+                <View style={{height: 60}}>
+                  <Text
+                    style={{
+                      fontFamily: 'Avenir Medium',
+                      fontSize: 22,
+                      color: '#7A7A7A',
+                      marginTop: 15,
+                      marginLeft: 20,
+                    }}>
+                    Near by places
+                  </Text>
                 </View>
+                {cityData?.map(item => (
+                  <TouchableOpacity
+                    onPress={() => {
+                      nearByPlaceData(item);
+                    }}
+                    style={{
+                      flexDirection: 'row',
+                      borderBottomWidth: 0.7,
+                      borderBottomColor: '#ccc',
+                      marginTop: 0,
+                      backgroundColor: '#fff',
+                      height: 90,
+                    }}>
+                    <Image
+                      source={{uri: item?.placeImage}}
+                      style={{
+                        height: 60,
+                        width: 60,
+                        marginLeft: 20,
+                        marginTop: 15,
+                      }}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: 'Avenir Book',
+                        fontSize: 22,
+                        marginTop: 25,
+                        color: 'black',
+                        marginLeft: 20,
+                        textTransform: 'capitalize',
+                      }}>
+                      {item?.cityName}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View style={{}}>
+                <View style={{height: 60}}>
+                  <Text
+                    style={{
+                      fontFamily: 'Avenir Medium',
+                      fontSize: 22,
+                      color: '#7A7A7A',
+                      marginTop: 15,
+                      marginLeft: 20,
+                    }}>
+                    Suggesstions
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={topPicksCall}
+                  style={{
+                    flexDirection: 'row',
+                    borderBottomWidth: 0.7,
+                    borderBottomColor: '#ccc',
+                    marginTop: 0,
+                    height: 60,
+                    backgroundColor: '#fff',
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Avenir Book',
+                      fontSize: 22,
+                      marginTop: 10,
+                      color: 'black',
+                      marginLeft: 20,
+                    }}>
+                    Top Picks
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={popularCall}
+                  style={{
+                    flexDirection: 'row',
+                    borderBottomWidth: 0.7,
+                    borderBottomColor: '#ccc',
+                    marginTop: 0,
+                    height: 70,
+                    backgroundColor: '#fff',
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Avenir Book',
+                      fontSize: 22,
+                      marginTop: 20,
+                      color: 'black',
+                      marginLeft: 20,
+                    }}>
+                    Popular
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={lunchCall}
+                  style={{
+                    flexDirection: 'row',
+                    borderBottomWidth: 0.7,
+                    borderBottomColor: '#ccc',
+                    marginTop: 0,
+                    height: 70,
+                    backgroundColor: '#fff',
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Avenir Book',
+                      fontSize: 22,
+                      marginTop: 20,
+                      color: 'black',
+                      marginLeft: 20,
+                    }}>
+                    Lunch
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={cafeCall}
+                  style={{
+                    flexDirection: 'row',
+                    borderBottomWidth: 0.7,
+                    borderBottomColor: '#ccc',
+                    marginTop: 0,
+                    height: 70,
+                    backgroundColor: '#fff',
+                  }}>
+                  <Text
+                    style={{
+                      fontFamily: 'Avenir Book',
+                      fontSize: 22,
+                      marginTop: 20,
+                      color: 'black',
+                      marginLeft: 20,
+                    }}>
+                    Cafe
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
 
-                )
-                
-                
-              )}
-            </View>
-            )}
+          {onFocus === 2 && (
+            <>
+              <TouchableOpacity
+                onPress={useMyCurrentLocation}
+                style={{
+                  flexDirection: 'row',
+                  borderBottomWidth: 0.7,
+                  borderBottomColor: '#ccc',
+                  marginTop: 10,
+                  height: 80,
+                  flexDirection: 'row',
+                }}>
+                <Image
+                  source={require('../assets/images/location_icon.png')}
+                  style={{height: 30, width: 30, marginTop: 15, marginLeft: 30}}
+                />
+
+                <Text
+                  style={{
+                    fontFamily: 'Avenir Book',
+                    fontSize: 22,
+                    marginTop: 15,
+                    color: 'black',
+                    marginLeft: 30,
+                  }}>
+                  Use my current location
+                </Text>
+              </TouchableOpacity>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  borderBottomWidth: 0.7,
+                  borderBottomColor: '#ccc',
+                  marginTop: 10,
+                  height: 80,
+                  flexDirection: 'row',
+                }}>
+                <Image
+                  source={require('../assets/images/map_icon.png')}
+                  style={{height: 30, width: 30, marginTop: 15, marginLeft: 30}}
+                />
+
+                <Text
+                  style={{
+                    fontFamily: 'Avenir Book',
+                    fontSize: 22,
+                    marginTop: 15,
+                    color: 'black',
+                    marginLeft: 30,
+                  }}>
+                  Select Search area on map
+                </Text>
+              </View>
+            </>
+          )}
 
           {iconState === false && (
             <>
@@ -568,7 +908,7 @@ export const Favourite = ({navigation}) => {
                         marginTop: Platform.OS === 'ios' ? 15 : 3,
                         color: 'black',
                       }}
-                      onChangeText={handleText}
+                      onChangeText={handleText2}
                     />
                     <Text
                       style={{
@@ -1377,9 +1717,73 @@ export const Favourite = ({navigation}) => {
               </View>
             </>
           )}
-          </>
+          {buttonView === 2 && (
+            <View style={{flex: 1, height: 700}}>
+              {currentLatitude && currentLongitude !== '' ? (
+                <Maps
+                  latitude={currentLatitude}
+                  longitude={currentLongitude}
+                  viewStyle={{flex: 1}}
+                />
+              ) : null}
+
+              <View style={{height: 140, width: width}}>
+                <FlatList
+                  data={data}
+                  renderItem={renderItem}
+                  keyExtractor={item => item?._id}
+                  horizontal
+                  pagingEnabled
+                  ref={ref}
+                  onViewableItemsChanged={onViewRef.current}
+                  viewabilityConfig={viewConfigRef.current}
+                />
+              </View>
+            </View>
+          )}
+          {buttonView === 1 && (
+            <View>
+              {!data ? ( <ActivityIndicator size="large" color="#7A7A7A" />) : (
+                 data?.[0] ? (
+                  data?.map(item => (
+                    <View key={item?._id}>
+                      <SearchViewComponent
+                        item={item}
+                        state={state}
+                        onPress={() => {
+                          navigation.navigate('DetailScreen', {item});
+                        }}
+                      />
+                    </View>
+                  ))
+
+        ):(
+          <View>
+            <Text style={{color:'black',alignSelf:'center',fontSize:18,marginTop:20}}>No Search Found</Text>
+          </View>
+        )
+
+              )}
+             
+             
+            </View>
+          )}
         </View>
       </ScrollView>
+      {buttonView === 1 && (
+        <View style={styles.buttonbody}>
+          <TouchableOpacity onPress={handleMapView} style={styles.button}>
+            <Text style={styles.buttontext}>Map View</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {buttonView === 2 && (
+        <View style={styles.buttonbody}>
+          <TouchableOpacity onPress={handleListView} style={styles.button}>
+            <Text style={styles.buttontext}>List View</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
@@ -1400,4 +1804,47 @@ const styles = StyleSheet.create({
     marginTop: 2,
     color: '#2B2B2B',
   },
+  button: {
+    height: 60,
+    backgroundColor: '#301934',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonbody: {
+    width: '100%',
+    flex: 1,
+    // justifyContent: 'flex-end',
+    position: 'absolute',
+    bottom: 0,
+  },
+  buttontext: {
+    height: 28,
+    width: 100,
+    color: '#FFFFFF',
+    fontSize: 20,
+    textAlign: 'center',
+    fontFamily: 'Avenir Book',
+  },
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#E5E5E5',
+    marginBottom: 20,
+  },
+  mapContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  mapStyle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
 });
+
