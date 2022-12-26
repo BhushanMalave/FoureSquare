@@ -84,7 +84,7 @@ export const CreateAccount = () => {
                 console.log(response)
                   if(response?.message === "User registered successfully")
                   {
-                    dispatch(setToken(res.access_token));
+                    dispatch(setToken(response.access_token));
                     dispatch(setLoginState(2));
                     resetForm({initialValues: ''});
                   }else{

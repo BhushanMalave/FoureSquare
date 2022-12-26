@@ -167,8 +167,8 @@ export const Search = ({navigation}) => {
   const viewConfigRef = React.useRef({viewAreaCoveragePercentThreshold: 90});
 
   const renderItem = ({item}) => {
-    setCurrentLatitude(Viewable[0]?.location?.coordinates[0]);
-    setCurrentLongitude(Viewable[0]?.location?.coordinates[1]);
+    setCurrentLatitude(Viewable[0]?.location?.coordinates[1]);
+    setCurrentLongitude(Viewable[0]?.location?.coordinates[0]);
     return (
       <SearchViewComponentMap
         item={item}
@@ -260,8 +260,8 @@ export const Search = ({navigation}) => {
   };
 
  const callFilterData = async () =>{
+  console.log(filterData);
     const res = await filterSearchApi(filterData);
-    console.log("=-=-=-",res);
     setData(res);
   setFilterData({
     'latitude':latitude,
@@ -1723,8 +1723,8 @@ export const Search = ({navigation}) => {
             <View style={{flex: 1, height: 700}}>
               {currentLatitude && currentLongitude !== '' ? (
                 <Maps
-                  latitude={latitude}
-                  longitude={longitude}
+                  latitude={currentLatitude}
+                  longitude={currentLongitude}
                   viewStyle={{flex: 1}}
                 />
               ) : null}

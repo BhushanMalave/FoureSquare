@@ -63,13 +63,13 @@ export const signUpApi = async objBody => {
       'https://assesment-seven.vercel.app/signUp',
       body,
     );
-    Toast.show(response.data.message, Toast.SHORT);
+    Toast.show(response.data.message[0], Toast.SHORT);
     if (response.data) {
       return response.data;
     }
   } catch (error) {
-    Toast.show(error.response.data.message, Toast.SHORT);
-    console.log('mpPasword', error);
+    Toast.show("User Allready Exist", Toast.SHORT);
+    console.log('mpPasword', error.response.data);
   }
 };
 
@@ -102,7 +102,7 @@ export const verifyOtpApi = async objBody => {
       'https://assesment-seven.vercel.app/verify',
       body,
     );
-    Toast.show(response.data.message, Toast.SHORT);
+  //  Toast.show(response.data.message, Toast.SHORT);
     if (response.data) {
       return response.data;
     }
@@ -137,7 +137,7 @@ export const changePasswordApi = async objBody => {
       'https://assesment-seven.vercel.app/forgotPassword/createNewPassword',
       body,
     );
-    Toast.show(response.data.message, Toast.SHORT);
+  //  Toast.show(response.data.message, Toast.SHORT);
     if (response.data) {
       return response.data;
     }
@@ -360,6 +360,24 @@ export const viewPhotoApi = async body => {
   }
 };
 
+export const imageDetailsApi = async body => {
+  body = body;
+
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/getDetailsOfParticularImage',
+      body,
+    );
+    console.log(response.data)
+    if (response.data.data) {
+      return response.data.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('viewphotos', error.response.data);
+  }
+};
+
 export const addRatingApi = async (token,body) => {
  
   const options = {
@@ -476,9 +494,10 @@ export const filterSearchApi = async (body) => {
 
   try {
     const response = await axios.post(
-      'https://assesment-seven.vercel.app//searchByFilter',
+      'https://assesment-seven.vercel.app/searchByFilter',
       body,
     );
+    console.log("=-=-=-=-",response.data);
     if (response.data) {
       return response.data;
     }

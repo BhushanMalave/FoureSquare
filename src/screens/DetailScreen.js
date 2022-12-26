@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Toast from 'react-native-simple-toast';
+import Share from 'react-native-share';
 import {
   ImageBackground,
   SafeAreaView,
@@ -44,6 +45,23 @@ export const DetailScreen = ({navigation, route}) => {
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
   const [rating, setRating] = useState('');
+
+  const share = async () => {
+    shareOptions = {
+      url: 'https' + data?.placeImages?.url.substring(4),
+      message: `Place Name:${data?.placeName}${'\n'}Address:${
+        data?.address
+      }${'\n'}Phone No:${
+        data?.placePhone
+      }${'\n'}Rating:${data?.totalrating}${'\n'}`,
+    };
+    try {
+      const shareResponse = await Share.open(shareOptions);
+      Toast.show('Shared Successfully');
+    } catch (error) {
+      console.log('error while sharing');
+    }
+  };
 
   const mapRef = useRef(null);
   const call = async () => {
@@ -129,14 +147,16 @@ export const DetailScreen = ({navigation, route}) => {
               </Text>
               <View
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <TouchableOpacity onPress={()=>{share()}}>
                 <Image
                   source={require('../assets/images/share_icon.png')}
                   style={{height: 22, width: 26, marginRight: 5}}
                 />
+                </TouchableOpacity>
                 {login === 1 ? (
                   <Pressable>
                     <Image
-                      source={require('../assets/images/favourite_star.png')}
+                      source={require('../assets/images/favourite_icon_copy.png')}
                       style={styles.star}
                     />
                   </Pressable>
@@ -157,7 +177,7 @@ export const DetailScreen = ({navigation, route}) => {
                         removeFromFavourite(data?._id);
                       }}>
                       <Image
-                        source={require('../assets/images/favourite_star.png')}
+                        source={require('../assets/images/favourite_icon_copy.png')}
                         style={styles.star}
                       />
                     </TouchableOpacity>
@@ -333,7 +353,7 @@ export const DetailScreen = ({navigation, route}) => {
                 marginTop: 20,
                 marginLeft: Platform.OS === 'ios' ? 10 : 15,
               }}>
-              +91 {data?.phoneNumber}
+              +91 {data?.phoneNumber.substring(2,13)}
             </Text>
             <Text
               style={{

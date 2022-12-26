@@ -20,6 +20,7 @@ import * as yup from 'yup';
 import {TextField} from 'rn-material-ui-textfield';
 import { verifyOtpApi } from '../authorization/Auth';
 import { resendOtpApi } from '../authorization/Auth';
+import Toast from 'react-native-simple-toast';
 
 export const VerifyOtp = ({navigation,route}) => {
   const {width, height} = useWindowDimensions();
@@ -61,10 +62,13 @@ export const VerifyOtp = ({navigation,route}) => {
                 }
                 const response = await verifyOtpApi(obj);
                 console.log(response);
-                if(response?.message == true)
+                if(response?.message === true)
                 {
+                  Toast.show("Otp Verified Successfully", Toast.SHORT);
                   navigation.navigate('Forgot Password',{Email})
                   resetForm({initialValues: ''});
+                  }else{
+                    Toast.show("Invalid Otp", Toast.SHORT);
                   }
                
                 }}>

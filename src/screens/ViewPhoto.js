@@ -1,4 +1,6 @@
 import React,{useState,useEffect} from 'react';
+import Toast from 'react-native-simple-toast';
+import Share from 'react-native-share';
 import {
   ImageBackground,
   SafeAreaView,
@@ -15,36 +17,41 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {ReviewViewComponent} from '../components/ReviewComponent';
 import { useDispatch,useSelector } from 'react-redux';
+import moment from 'moment';
 
 export const ViewPhoto = ({navigation,route}) => {
   const {height, width} = useWindowDimensions();
   const [data,setData] = useState('');
   const state = useSelector(state=> state.status.initialState);
   const dispatch = useDispatch();
-  console.log(route.params);
-  //  const place_id =route.params.data._id;
-  //  const img_id =route.params.data.reviews._id;
-  //  console.log(place_id);
-  //  console.log(img_id);
-  const call = async () =>{
-    const body={
-      "placeId":item,
-    }
-    const res = await viewReviewApi(body);
-    setData(res.reviews);
-  }
+  const name = route.params.name;
+ const item = route.params.item;
 
+ const share = async () => {
+  shareOptions = {
+    url: 'https' + item?.url.substring(4),
+    message: `Place Name:${name}${'\n'}
+    `,
+  };
+  try {
+    const shareResponse = await Share.open(shareOptions);
+    Toast.show('Shared Successfully');
+  } catch (error) {
+    console.log('error while sharing');
+  }
+};
+
+
+ console.log(item)
   useEffect(() => {
-    //call();
+   
   },[state]);
 
 
   return (
     <ImageBackground
-      source={require('../assets/images/images.jpeg')}
+      source={{uri:item?.url}}
       resizeMode="cover"
       style={{flex: 1}}>
       <SafeAreaView>
@@ -67,34 +74,45 @@ export const ViewPhoto = ({navigation,route}) => {
           <Text
             style={{
               fontFamily: 'Avenir Medium',
-              fontSize: 26,
+              fontSize: 22,
               color: '#FFF',
-              marginLeft: 30,
-              marginTop: -5,
+             // marginLeft: 30,
+             // marginTop: -5,
             }}>
-          dhsagdsa
+          {name.length > 15 ? name.substring(0, 15) + '...' : name}
           </Text>
+          <TouchableOpacity onPress={()=>{share()}}>
           <Image
             source={require('../assets/images/share_icon.png')}
             style={{height: 22, width: 26}}
           />
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
       <View style={styles.viewBottom}>
         <View style={{flexDirection:'row',marginTop:20,marginLeft:20,}}>
-        <Image
-            source={require('../assets/images/images.jpeg')}
+          {item.profilePic ? (
+              <Image
+              source={{uri:item.profilePic}}
+              style={{height: 70, width: 70, borderRadius: 50}}
+          />
+          ) : (
+            <Image
+            source={require('../assets/images/login.webp')}
             style={{height: 70, width: 70, borderRadius: 50}}
         />
+          )}
+       
         <View style={{marginTop:0,marginLeft:20,}}>
             <Text
               style={{
                 fontFamily: 'Avenir Medium',
                 fontSize: 20,
                 fontWeight: '500',
-                color: 'white',}}
+                color: 'white',
+              textTransform:'capitalize'}}
             >
-                 Satish Balu
+                 {item?.name}
             </Text>
             <Text
               style={{
@@ -103,7 +121,7 @@ export const ViewPhoto = ({navigation,route}) => {
                 fontWeight: '500',
                 color: 'white',}}
             >
-                Added May 12,2016
+                Added {moment(item?.createdOn).format('MMMM D, YYYY')}
             </Text>
         </View>
 
