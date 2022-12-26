@@ -44,20 +44,19 @@ export const AddReview = ({navigation, route}) => {
     let payload;
 
     if (addRev === 1) {
-     
-        payload = new FormData();
-        payload.append('placeId', placeId);
-        payload.append('review', text);
-        for (let i = 0; i < imgData.length; i++) {
-          payload.append(imgData[i].name, {
-            uri: imgData[i].path,
-            type: imgData[i].mime,
-            name: `${imgData[i].filename}.${imgData[i].mime.substring(
-              imgData[i].mime.indexOf('/') + 1,
-            )}`,
-          });
-        }
-      
+      payload = new FormData();
+      payload.append('placeId', placeId);
+      payload.append('review', text);
+      for (let i = 0; i < imgData.length; i++) {
+        payload.append(imgData[i].name, {
+          uri: imgData[i].path,
+          type: imgData[i].mime,
+          name: `${imgData[i].filename}.${imgData[i].mime.substring(
+            imgData[i].mime.indexOf('/') + 1,
+          )}`,
+        });
+      }
+
       console.log(payload);
 
       resp1 = await addReview(token, payload);

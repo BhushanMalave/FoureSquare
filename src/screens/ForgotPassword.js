@@ -19,6 +19,7 @@ import {Formik} from 'formik';
 import * as yup from 'yup';
 import {TextField} from 'rn-material-ui-textfield';
 import { changePasswordApi } from '../authorization/Auth';
+import Toast from 'react-native-simple-toast';
 
 export const ForgotPassword = ({navigation,route}) => {
   const {width, height} = useWindowDimensions();
@@ -70,6 +71,7 @@ export const ForgotPassword = ({navigation,route}) => {
                 {
                   navigation.navigate('Login')
                   resetForm({initialValues: ''});
+                  Toast.show("Password Updated ,Please Login!", Toast.SHORT);
                   } else {
                     console.log(response.message);
                   }
