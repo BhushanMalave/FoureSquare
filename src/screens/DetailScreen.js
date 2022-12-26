@@ -26,11 +26,10 @@ import {setRatingState} from '../redux/ReduxPersist/States';
 import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
 import {placeDetails} from '../authorization/Auth';
-import { addFavouriteApi } from '../authorization/Auth';
-import { setInitialState } from '../redux/ReduxPersist/States';
-import { setOverallRating } from '../redux/ReduxPersist/User';
-import { setPlaceId } from '../redux/ReduxPersist/User';
-
+import {addFavouriteApi} from '../authorization/Auth';
+import {setInitialState} from '../redux/ReduxPersist/States';
+import {setOverallRating} from '../redux/ReduxPersist/User';
+import {setPlaceId} from '../redux/ReduxPersist/User';
 
 export const DetailScreen = ({navigation, route}) => {
   const {width, height} = useWindowDimensions();
@@ -44,7 +43,7 @@ export const DetailScreen = ({navigation, route}) => {
   const placeId = route.params.item._id;
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
-  const [rating,setRating] =useState("");
+  const [rating, setRating] = useState('');
 
   const mapRef = useRef(null);
   const call = async () => {
@@ -57,14 +56,10 @@ export const DetailScreen = ({navigation, route}) => {
     setCurrentLongitude(data?.location?.coordinates[0]);
     setCurrentLatitude(data?.location?.coordinates[1]);
 
-
-   
-   
-    const no = (item?.totalrating)/2;
+    const no = item?.totalrating / 2;
     setRating(no);
     dispatch(setOverallRating(rating));
     dispatch(setPlaceId(item._id));
-  
   };
 
   const addToFavourite = async id => {
@@ -75,7 +70,7 @@ export const DetailScreen = ({navigation, route}) => {
     console.log(res);
     dispatch(setInitialState());
   };
-  
+
   const removeFromFavourite = async id => {
     const body = {
       placeId: id,
@@ -85,7 +80,7 @@ export const DetailScreen = ({navigation, route}) => {
     dispatch(setInitialState());
   };
 
-  useEffect( () => {
+  useEffect(() => {
     call();
   }, [state]);
 
@@ -107,7 +102,7 @@ export const DetailScreen = ({navigation, route}) => {
                 justifyContent: 'space-between',
                 marginHorizontal: 15,
                 marginTop: Platform.OS === 'android' ? 30 : 10,
-                height:130,
+                height: 130,
               }}>
               <TouchableOpacity
                 onPress={() => {
@@ -126,9 +121,9 @@ export const DetailScreen = ({navigation, route}) => {
                   color: '#FFF',
                   marginLeft: 30,
                   marginTop: -5,
-                  height:100,
-                  width:'60%',
-                  textAlign:'center',
+                  height: 100,
+                  width: '60%',
+                  textAlign: 'center',
                 }}>
                 {data?.placeName}
               </Text>
@@ -136,48 +131,48 @@ export const DetailScreen = ({navigation, route}) => {
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Image
                   source={require('../assets/images/share_icon.png')}
-                  style={{height: 22, width: 26,marginRight:5,}}
+                  style={{height: 22, width: 26, marginRight: 5}}
                 />
-               {login === 1 ? (
-            <Pressable>
-              <Image
-                source={require('../assets/images/favourite_star.png')}
-                style={styles.star}
-              />
-            </Pressable>
-          ) : favData?.length > 0 ? (
-            favData.filter(ele => ele._id === item._id)?.length > 0 ? (
-              <TouchableOpacity
-                onPress={() => {
-                  addToFavourite(data?._id);
-                }}>
-                <Image
-                  source={require('../assets/images/favourite_icon.png')}
-                  style={styles.star}
-                />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={() => {
-                  removeFromFavourite(data?._id);
-                }}>
-                <Image
-                  source={require('../assets/images/favourite_star.png')}
-                  style={styles.star}
-                />
-              </TouchableOpacity>
-            )
-          ) : (
-            <TouchableOpacity
-              onPress={() => {
-                removeFromFavourite(data?._id);
-              }}>
-              <Image
-                source={require('../assets/images/favourite_star.png')}
-                style={styles.star}
-              />
-            </TouchableOpacity>
-          )}
+                {login === 1 ? (
+                  <Pressable>
+                    <Image
+                      source={require('../assets/images/favourite_star.png')}
+                      style={styles.star}
+                    />
+                  </Pressable>
+                ) : favData?.length > 0 ? (
+                  favData.filter(ele => ele._id === item._id)?.length > 0 ? (
+                    <TouchableOpacity
+                      onPress={() => {
+                        addToFavourite(data?._id);
+                      }}>
+                      <Image
+                        source={require('../assets/images/favourite_icon.png')}
+                        style={styles.star}
+                      />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => {
+                        removeFromFavourite(data?._id);
+                      }}>
+                      <Image
+                        source={require('../assets/images/favourite_star.png')}
+                        style={styles.star}
+                      />
+                    </TouchableOpacity>
+                  )
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => {
+                      removeFromFavourite(data?._id);
+                    }}>
+                    <Image
+                      source={require('../assets/images/favourite_star.png')}
+                      style={styles.star}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
             <View
@@ -245,7 +240,7 @@ export const DetailScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('PhotosGallery',{placeId,data});
+              navigation.navigate('PhotosGallery', {placeId, data});
             }}>
             <Image
               source={require('../assets/images/photos_icon.png')}
@@ -255,7 +250,7 @@ export const DetailScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ViewReviews',{data,placeId});
+              navigation.navigate('ViewReviews', {data, placeId});
             }}>
             <Image
               source={require('../assets/images/review_icon.png')}
@@ -302,11 +297,7 @@ export const DetailScreen = ({navigation, route}) => {
         <View
           style={{height: Platform.OS === 'ios' ? 180 : 230, marginTop: 20}}>
           {currentLatitude && currentLongitude !== '' ? (
-            <Maps
-              latitude={currentLatitude}
-              longitude={currentLongitude}
-           
-            />
+            <Maps latitude={currentLatitude} longitude={currentLongitude} />
           ) : null}
         </View>
         <LinearGradient
@@ -357,15 +348,24 @@ export const DetailScreen = ({navigation, route}) => {
             </Text>
           </View>
         </LinearGradient>
-        <View style={styles.buttonbody}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('AddReviews',{data});
-            }}
-            style={styles.button}>
-            <Text style={styles.buttontext}>Add Review</Text>
-          </TouchableOpacity>
-        </View>
+        {login === 2 ? (
+          <View style={styles.buttonbody}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('AddReviews', {data});
+              }}
+              style={styles.button}>
+              <Text style={styles.buttontext}>Add Review</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.buttonbody}>
+            <View
+              style={styles.button}>
+              <Text style={styles.buttontext}>Add Review</Text>
+            </View>
+          </View>
+        )}
       </View>
       <RatingModel />
     </ScrollView>
@@ -393,8 +393,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Avenir Book',
   },
-  star:{
-    height:24,
-    width:28,
-  }
+  star: {
+    height: 24,
+    width: 28,
+  },
 });

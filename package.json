@@ -21,6 +21,7 @@
     "axios": "^0.26.1",
     "formik": "^2.2.9",
     "react": "18.1.0",
+    "react-moment": "^1.1.2",
     "react-native": "0.70.6",
     "react-native-gesture-handler": "^2.8.0",
     "react-native-image-crop-picker": "^0.38.1",

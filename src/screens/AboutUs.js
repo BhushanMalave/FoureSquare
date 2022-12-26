@@ -23,11 +23,11 @@ import { aboutUsApi } from '../authorization/Auth';
 
 export const AboutUs = ({navigation}) => {
 
-  const [data,setData]= useState(null);
+  const [data,setData]= useState("");
 
   const call = async () =>{
     const res = await aboutUsApi();
-    setData(res);
+    setData(res.message);
   }
 
   useEffect(() => {
