@@ -41,6 +41,7 @@ export const DetailScreen = ({navigation, route}) => {
   const [data, setData] = useState(null);
   const dispatch = useDispatch();
   const item = route.params.item;
+  const placeId = route.params.item._id;
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
   const [rating,setRating] =useState("");
@@ -244,7 +245,7 @@ export const DetailScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('PhotosGallery',{data});
+              navigation.navigate('PhotosGallery',{placeId,data});
             }}>
             <Image
               source={require('../assets/images/photos_icon.png')}
@@ -254,7 +255,7 @@ export const DetailScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ViewReviews',{data});
+              navigation.navigate('ViewReviews',{data,placeId});
             }}>
             <Image
               source={require('../assets/images/review_icon.png')}

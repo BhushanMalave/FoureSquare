@@ -503,3 +503,46 @@ export const getNearByCityApi = async (body) => {
   }
 };
 
+
+export const addReview = async (token, payload) => {
+  try {
+    let res = await fetch(
+      'https://assesment-seven.vercel.app/addReviews',
+      {
+        method: 'put',
+        body: payload,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    const jsonResponse = res;
+    return res.status;
+  } catch (err) {
+     console.log('addReview', err);
+   // Toast.show('Something Went Wrong,Try Again!!!',Toast.SHORT)
+  }
+};
+
+export const addImages = async (token, payload) => {
+  try {
+    let res = await fetch(
+      'https://assesment-seven.vercel.app/addReviews',
+      {
+        method: 'put',
+        body: payload,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    const jsonResponse = res;
+    return res.status;
+  } catch (err) {
+     console.log('addReview', err);
+   // Toast.show('Something Went Wrong,Try Again!!!',Toast.SHORT)
+  }
+};
+
