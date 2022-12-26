@@ -39,7 +39,7 @@ export const ViewPhoto = ({navigation,route}) => {
 
   useEffect(() => {
     //call();
-  },[]);
+  },[state]);
 
 
   return (

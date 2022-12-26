@@ -509,7 +509,7 @@ export const addReview = async (token, payload) => {
     let res = await fetch(
       'https://assesment-seven.vercel.app/addReviews',
       {
-        method: 'put',
+        method: 'post',
         body: payload,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -517,8 +517,8 @@ export const addReview = async (token, payload) => {
         },
       },
     );
-    const jsonResponse = res;
-    return res.status;
+    const jsonResponse = await res.json();
+    return jsonResponse;
   } catch (err) {
      console.log('addReview', err);
    // Toast.show('Something Went Wrong,Try Again!!!',Toast.SHORT)
@@ -528,9 +528,9 @@ export const addReview = async (token, payload) => {
 export const addImages = async (token, payload) => {
   try {
     let res = await fetch(
-      'https://assesment-seven.vercel.app/addReviews',
+      'https://assesment-seven.vercel.app/uploadMultipleImages',
       {
-        method: 'put',
+        method: 'post',
         body: payload,
         headers: {
           Authorization: `Bearer ${token}`,
@@ -538,10 +538,10 @@ export const addImages = async (token, payload) => {
         },
       },
     );
-    const jsonResponse = res;
-    return res.status;
+    const jsonResponse =await  res.json();
+    return jsonResponse;
   } catch (err) {
-     console.log('addReview', err);
+     console.log('addReviewImage', err);
    // Toast.show('Something Went Wrong,Try Again!!!',Toast.SHORT)
   }
 };
