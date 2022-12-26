@@ -193,8 +193,8 @@ export const Search = ({navigation}) => {
 
   const topPicksCall = async () => {
     const obj = {
-      latitude: currentLatitude,
-      longitude: currentLongitude,
+      latitude: latitude,
+      longitude: longitude,
     };
     const data = await topPickPlaces(obj);
     setData(data);
@@ -204,10 +204,11 @@ export const Search = ({navigation}) => {
 
   const popularCall = async () => {
     const obj = {
-      latitude: currentLatitude,
-      longitude: currentLongitude,
+      latitude: latitude,
+      longitude: longitude,
     };
     const data = await popularPlaces(obj);
+    console.log("=-=-=-=-",data)
     setData(data);
     setOnFocus(0);
     setButtonView(1);
@@ -215,8 +216,8 @@ export const Search = ({navigation}) => {
 
   const lunchCall = async () => {
     const obj = {
-      latitude: currentLatitude,
-      longitude: currentLongitude,
+      latitude: latitude,
+      longitude: longitude,
     };
     const data = await placeCategoryLunch(obj);
     setData(data);
@@ -226,8 +227,8 @@ export const Search = ({navigation}) => {
 
   const cafeCall = async () => {
     const obj = {
-      latitude: currentLatitude,
-      longitude: currentLongitude,
+      latitude: latitude,
+      longitude: longitude,
     };
     const data = await placeCategoryCafe(obj);
     setData(data);

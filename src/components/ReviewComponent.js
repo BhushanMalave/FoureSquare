@@ -12,6 +12,7 @@ import {
   useWindowDimensions,
   TouchableOpacity,
 } from 'react-native';
+import moment from 'moment';
 
 export const ReviewViewComponent = ({item}) => {
   const {height, width} = useWindowDimensions();
@@ -50,11 +51,11 @@ export const ReviewViewComponent = ({item}) => {
                   textTransform:'capitalize',
                   height:60,
                   textAlign:'justify',
-                  width:width>height ? '150%':"100%",
+                  width:width>height ? '150%':"90%",
 
                 }}>
-            {item?.review?.length > 50
-                ? item?.review.substring(0, 50) + '...'
+            {item?.review?.length > 30
+                ? item?.review.substring(0, 38) + '...'
                 : item?.review}
               </Text>
             </View>
@@ -64,6 +65,8 @@ export const ReviewViewComponent = ({item}) => {
                   fontFamily: 'Avenir Book',
                   fontSize: 14,
                   color: '#7A7A7A',
+                  height:40,
+                  width:90,
                   marginLeft:
                     width > height
                       ? Platform.OS === 'ios'
@@ -73,7 +76,7 @@ export const ReviewViewComponent = ({item}) => {
                       ? -10
                       : -10,
                 }}>
-                June 24,2015
+               {moment(item?.createdOn).format('MMMM D, YYYY')}
               </Text>
             </View>
           </View>

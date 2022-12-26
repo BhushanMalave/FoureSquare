@@ -26,6 +26,7 @@ import { setInitialState } from '../redux/ReduxPersist/States';
 export const ViewReview = ({navigation,route}) => {
   const {height,width} = useWindowDimensions();
   const [dataReview,setDataReview] = useState('');
+  const login = useSelector(state => state.status.loginState);
   const state = useSelector(state=> state.status.initialState);
   const dispatch = useDispatch();
   const placeId =route.params.placeId;
@@ -72,7 +73,8 @@ export const ViewReview = ({navigation,route}) => {
               }}>
             {name.length >15 ? name.substring(0,15)+'...':name}
             </Text>
-            <Icon name="addfile" size={24} color="#fff"   onPress={()=>{navigation.navigate('AddReviews',{placeId,addRev,data})}} />
+            {login === 1 ? (<Icon name="addfile" size={24} color="#fff"   />):(<Icon name="addfile" size={24} color="#fff"   onPress={()=>{navigation.navigate('AddReviews',{placeId,addRev,data})}} />)}
+            
           </View>
         </SafeAreaView>
       </View>
