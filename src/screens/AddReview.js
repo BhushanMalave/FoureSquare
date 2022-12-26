@@ -18,24 +18,23 @@ import {
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
-import { setInitialState } from '../redux/ReduxPersist/States';
+import {setInitialState} from '../redux/ReduxPersist/States';
 import Toast from 'react-native-simple-toast';
 import uuid from 'react-native-uuid';
-import { useSelector,useDispatch } from 'react-redux';
-import { addReview } from '../authorization/Auth';
-import { addImages } from '../authorization/Auth';
+import {useSelector, useDispatch} from 'react-redux';
+import {addReview} from '../authorization/Auth';
+import {addImages} from '../authorization/Auth';
 
-export const AddReview = ({navigation,route}) => {
+export const AddReview = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();
-  const token = useSelector(state=>state.userDetails.token);
+  const token = useSelector(state => state.userDetails.token);
   const [text, setText] = useState('');
-  const [image, setImage] = useState(null);
   const [imgData, setImgData] = useState([]);
 
-  const placeId =route.params.placeId;
+  const placeId = route.params.placeId;
   const data = route.params.data;
-  const addRev =route.params.addRev;
-const dispatch = useDispatch();
+  const addRev = route.params.addRev;
+  const dispatch = useDispatch();
 
   const handleSubmit = async () => {
     // console.log(text);
@@ -43,51 +42,69 @@ const dispatch = useDispatch();
     let resp;
     let resp1;
     let payload;
-    if (imgData.length > 0) {
-      payload = new FormData();
-      payload.append('placeId', placeId);
-      payload.append('review', text);
-      for (let i = 0; i < imgData.length; i++) {
-        payload.append(imgData[i].name, {
-          uri: imgData[i].path,
-          type: imgData[i].mime,
-          name: `${imgData[i].filename}.${imgData[i].mime.substring(
-            imgData[i].mime.indexOf('/') + 1,
-          )}`,
-        });
-      } 
-    }
-    console.log(payload);
 
-    if(addRev === 1){
-      resp = await addImages(payload, token);
-      dispatch(setInitialState());
-      navigation.navigate('PhotosGallery',{placeId,data});
-    }
-   
-    if(addRev===1){
+    if (addRev === 1) {
+     
+        payload = new FormData();
+        payload.append('placeId', placeId);
+        payload.append('review', text);
+        for (let i = 0; i < imgData.length; i++) {
+          payload.append(imgData[i].name, {
+            uri: imgData[i].path,
+            type: imgData[i].mime,
+            name: `${imgData[i].filename}.${imgData[i].mime.substring(
+              imgData[i].mime.indexOf('/') + 1,
+            )}`,
+          });
+        }
+      
+      console.log(payload);
+
       resp1 = await addReview(token, payload);
-      console.log(resp1)
+      console.log(resp1);
       if (resp1 !== undefined) {
-        if (resp1.message === "edited sucessfully(already reviwed)") {
-          setImgArray([]);
+        if (resp1.message === 'edited sucessfully(already reviwed)') {
+          setImgData([]);
           setText('');
           Toast.show('Edited Successfully and Already Reviewed');
           dispatch(setInitialState());
-          navigation.navigate('ViewReviews',{data,placeId});
-          
-        }
-        else{
+          navigation.navigate('ViewReviews', {data, placeId});
+        } else {
           setImgData([]);
           setText('');
           Toast.show('Review Added');
           dispatch(setInitialState());
-          navigation.navigate('ViewReviews',{data,placeId});
+          navigation.navigate('ViewReviews', {data, placeId});
         }
       }
-
     }
-   
+
+    if (addRev === 2) {
+      if (imgData.length > 0) {
+        payload = new FormData();
+        payload.append('placeId', placeId);
+        for (let i = 0; i < imgData.length; i++) {
+          payload.append(imgData[i].name, {
+            uri: imgData[i].path,
+            type: imgData[i].mime,
+            name: `${imgData[i].filename}.${imgData[i].mime.substring(
+              imgData[i].mime.indexOf('/') + 1,
+            )}`,
+          });
+        }
+      }
+      console.log(payload);
+      resp = await addImages(token, payload);
+      dispatch(setInitialState());
+      console.log(resp);
+      if (resp !== undefined) {
+        setImgData([]);
+        setText('');
+        Toast.show('Uploaded Sucessfully');
+        dispatch(setInitialState());
+        navigation.navigate('PhotosGallery', {placeId, data});
+      }
+    }
   };
 
   const changeProfileImageFromLibrary = () => {
@@ -95,16 +112,18 @@ const dispatch = useDispatch();
       width: 110,
       height: 110,
       cropping: true,
-    }).then(img => {
-      const obj = {
-        id: uuid.v4(),
-        name: 'image',
-        path: img.path,
-        fileName: img.filename,
-        mime: img.mime,
-      };
-      setImgData(prevImg =>[...prevImg,obj]);
-    }).catch(er => Toast.show('User cancelled selection'));
+    })
+      .then(img => {
+        const obj = {
+          id: uuid.v4(),
+          name: 'image',
+          path: img.path,
+          fileName: img.filename,
+          mime: img.mime,
+        };
+        setImgData(prevImg => [...prevImg, obj]);
+      })
+      .catch(er => Toast.show('User cancelled selection'));
   };
   const changeProfileImageFromCamera = () => {
     ImagePicker.openCamera({
@@ -130,17 +149,19 @@ const dispatch = useDispatch();
               }}>
               <TouchableOpacity
                 onPress={() => {
-                  if(addRev === 1){
+                  if (addRev === 2) {
                     setImgData([]);
                     setText('');
                     dispatch(setInitialState());
-                    navigation.navigate('PhotosGallery',{data,placeId});
-
-                  }else{
+                    navigation.navigate('PhotosGallery', {data, placeId});
+                  } else if (addRev === 1) {
                     setImgData([]);
                     setText('');
                     dispatch(setInitialState());
-                    navigation.navigate('ViewReviews',{data,placeId});
+                    navigation.navigate('ViewReviews', {data, placeId});
+                  } else {
+                    dispatch(setInitialState());
+                    navigation.goBack();
                   }
                 }}>
                 <Image
@@ -217,10 +238,11 @@ const dispatch = useDispatch();
               }}
             />
           ))}
-          <TouchableOpacity onPress={() => {
-                changeProfileImageFromLibrary();
-              }}>
-          <Image
+          <TouchableOpacity
+            onPress={() => {
+              changeProfileImageFromLibrary();
+            }}>
+            <Image
               source={require('../assets/images/aad_photo_icon.png')}
               style={{
                 height: 80,
@@ -230,7 +252,7 @@ const dispatch = useDispatch();
                 marginTop: 10,
               }}
             />
-            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
       </ScrollView>
       <View style={styles.buttonbody}>

@@ -36,12 +36,12 @@ export const PhotosGallery = ({navigation, route}) => {
       placeId: placeId,
     };
     const res = await viewPhotoApi(body);
-    setData(res);
+    setDataImg(res);
   };
 
   useEffect(() => {
     call();
-  }, []);
+  }, [state]);
 
   return (
     <View style={{flex: 1}}>
@@ -76,7 +76,7 @@ export const PhotosGallery = ({navigation, route}) => {
             </Text>
             <Icon name="camera-plus-outline" size={24} color="#fff"   onPress={()=>{navigation.navigate('AddReviews',{placeId,addRev,data})}} />
           </View>
-        </SafeAreaView>r
+        </SafeAreaView>
       </View>
       <ScrollView style={{flex: 1, backgroundColor: 'black'}}>
         <View style={styles.container}>
@@ -85,7 +85,7 @@ export const PhotosGallery = ({navigation, route}) => {
           ) : (
             <>  
               {
-               dataImg?.reviews[0]?.reviewImage?.urls ? (
+               dataImg?.reviews[0] ? (
                 dataImg?.reviews[0]?.reviewImage?.urls?.map(item => (
                   <TouchableOpacity
                     onPress={() => {
