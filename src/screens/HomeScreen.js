@@ -28,7 +28,9 @@ export const Home = ({navigation}) => {
             </TouchableOpacity>
             <Image style={styles.logo}  source={require('../assets/images/logo.png')} />
             <View style={{flexDirection:'row'}}>
+            <TouchableOpacity onPress={() => {navigation.navigate('FilterSearch')}}> 
             <Image style={styles.filter}  source={require('../assets/images/filter_icon.png')} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => {navigation.navigate('Search')}}>
             <Image style={styles.search}  source={require('../assets/images/search_icon.png')} />
             </TouchableOpacity>

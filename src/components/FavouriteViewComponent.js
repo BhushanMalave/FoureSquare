@@ -20,6 +20,7 @@ import { setInitialState } from '../redux/ReduxPersist/States';
 export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
   const token = useSelector(state=>state.userDetails.token);
   const state = useSelector(state=> state.status.initialState);
+  const {height, width} = useWindowDimensions();
   const dispatch=useDispatch();
   const convertPriceRange = number => {
     if (number < 10) {
@@ -109,7 +110,7 @@ export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
             {' • '}
           {`${convertPriceRange(item?.priceRange)}  `}
            
-            {Math.round(item?.dist?.calculated, 2 * 1) / 1}
+            {Math.round(item?.dist?.calculated * 100) / 100}
             {'km'}
           </Text>
           <View style={{}}>
@@ -121,9 +122,16 @@ export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
                 fontWeight: '500',
                 flexShrink: 1,
               }}>
-              {item?.address?.length > 20
-                ? item?.address.substring(0, 25) + '...'
-                : item?.address}
+               {
+              width > height ? (
+                item?.address
+              ):(
+               item?.address?.length > 33
+                ? item?.address.substring(0, 33) + '...'
+                : item?.address
+              )
+              
+              }
             </Text>
           </View>
         </View>

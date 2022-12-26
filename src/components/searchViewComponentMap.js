@@ -164,7 +164,7 @@ export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
             {' • '}
           {`${convertPriceRange(item?.priceRange)}  `}
            
-            {Math.round(item?.dist?.calculated, 2 * 1) / 1}
+            {Math.round(item?.dist?.calculated* 100) / 100}
             {'km'}
           </Text>
           <View style={{}}>
@@ -176,9 +176,16 @@ export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
                 fontWeight: '500',
                 flexShrink: 1,
               }}>
-              {item?.address?.length > 20
-                ? item?.address.substring(0, 25) + '...'
-                : item?.address}
+              {
+              width > height ? (
+                item?.address
+              ):(
+               item?.address?.length > 33
+                ? item?.address.substring(0, 33) + '...'
+                : item?.address
+              )
+              
+              }
             </Text>
           </View>
         </View>
