@@ -505,22 +505,21 @@ export const filterSearchApi = async (body) => {
     console.log('searchPlace', error.response.data);
   }
 };
-export const filterFavouriteSearchApi = async (token,filterData) => {
-  console.log(token)
+export const filterFavouriteSearchApi = async (token,body) => {
+ 
   const options = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   };
-  const body = filterData;
-  console.info(body);
+
+ 
   try {
     const response = await axios.post(
       'https://assesment-seven.vercel.app/FilterInFavourites',
       body,
       options,
     );
-    console.log("/./././././",res);
     if (response.data) {
       return response.data;
     }

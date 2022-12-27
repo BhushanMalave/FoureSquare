@@ -26,7 +26,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
 import {favSearchApi} from '../authorization/Auth';
-import { filterFavouriteSearchApi } from '../authorization/Auth';
+import {filterFavouriteSearchApi} from '../authorization/Auth';
 
 export const Favourite = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -72,7 +72,7 @@ export const Favourite = ({navigation}) => {
     radius: text,
     priceRange: '',
     sortBy: '',
-    acceptcreditCredit: false,
+    acceptcreditCards: false,
     delivery: false,
     dogFriendly: false,
     familyFriendlyPlace: false,
@@ -119,53 +119,56 @@ export const Favourite = ({navigation}) => {
     favouriteDataCall();
   };
 
+  Object.filter = (obj, predicate) =>
+    Object.fromEntries(Object.entries(obj).filter(predicate));
+
   const callFilterData = async () => {
-    console.log(filterData)
-    const res = await filterFavouriteSearchApi(token,filterData);
+    const body = Object.filter(filterData, ([key, value]) => !!value);
+      const res = await filterFavouriteSearchApi(token, body);
+      setData(res);
+      setFilterData({
+        latitude: latitude,
+        longitude: longitude,
+        text: '',
+        radius: text,
+        priceRange: '',
+        sortBy: '',
+        acceptcreditCards: false,
+        delivery: false,
+        dogFriendly: false,
+        familyFriendlyPlace: false,
+        inWalkingdistance: false,
+        outdoorSeating: false,
+        parking: false,
+        wifi: false,
+      });
+      setFeatures({
+        acceptCC: false,
+        deliver: false,
+        dogFriendly: false,
+        familyFriendly: false,
+        walkingDistance: false,
+        outDoorSeating: false,
+        parking: false,
+        wifi: false,
+      });
 
-    setData(res);
-    setFilterData({
-      latitude: latitude,
-      longitude: longitude,
-      text: '',
-      radius: text,
-      priceRange: '',
-      sortBy: '',
-      acceptcreditCredit: false,
-      delivery: false,
-      dogFriendly: false,
-      familyFriendlyPlace: false,
-      inWalkingdistance: false,
-      outdoorSeating: false,
-      parking: false,
-      wifi: false,
-    });
-    setFeatures({
-      acceptCC: false,
-      deliver: false,
-      dogFriendly: false,
-      familyFriendly: false,
-      walkingDistance: false,
-      outDoorSeating: false,
-      parking: false,
-      wifi: false,
-    });
+      setPrice({
+        one: false,
+        tens: false,
+        hundreds: false,
+        thousands: false,
+      });
 
-    setPrice({
-      one: false,
-      tens: false,
-      hundreds: false,
-      thousands: false,
-    });
+      setSortBy({
+        popular: false,
+        distance: false,
+        rating: false,
+      });
 
-    setSortBy({
-      popular: false,
-      distance: false,
-      rating: false,
-    });
-
-    setText('');
-    setIconState(true);
+      setText('');
+      setIconState(true);
+   
   };
 
   const onRefresh = React.useCallback(async () => {
@@ -178,11 +181,11 @@ export const Favourite = ({navigation}) => {
 
   return (
     <View style={{flex: 1}}>
-      <ScrollView showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      >
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         <View style={styles.topbar}>
           <SafeAreaView style={{flex: 1}}>
             <View
@@ -856,7 +859,7 @@ export const Favourite = ({navigation}) => {
                             });
                             setFilterData({
                               ...filterData,
-                              acceptcreditCredit: true,
+                              acceptcreditCards: true,
                             });
                           }}>
                           <Icon
@@ -886,7 +889,7 @@ export const Favourite = ({navigation}) => {
                             });
                             setFilterData({
                               ...filterData,
-                              acceptcreditCredit: false,
+                              acceptcreditCards: false,
                             });
                           }}>
                           <Image

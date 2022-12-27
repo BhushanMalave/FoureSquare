@@ -42,7 +42,7 @@ export const FilterSearch = ({navigation}) => {
   const [text, setText] = useState('');
   const [text1, setText1] = useState(null);
   const [text2, setText2] = useState(null);
-  const dispatch =useDispatch();
+  const dispatch = useDispatch();
   const [iconState, setIconState] = useState(false);
   const [onFocus, setOnFocus] = useState(0);
   const [mapSelect, setMapSelect] = useState(false);
@@ -87,7 +87,7 @@ export const FilterSearch = ({navigation}) => {
     radius: text2,
     priceRange: '',
     sortBy: '',
-    acceptcreditCredit: false,
+    acceptcreditCards: false,
     delivery: false,
     dogFriendly: false,
     familyFriendlyPlace: false,
@@ -265,7 +265,6 @@ export const FilterSearch = ({navigation}) => {
     setOnFocus(0);
     setButtonView(1);
     setMapSelect(false);
- 
   };
 
   const nearByPlaceData = async item => {
@@ -283,8 +282,12 @@ export const FilterSearch = ({navigation}) => {
     setMapSelect(false);
   };
 
+  Object.filter = (obj, predicate) =>
+    Object.fromEntries(Object.entries(obj).filter(predicate));
+
   const callFilterData = async () => {
-    const res = await filterSearchApi(filterData);
+    const body = Object.filter(filterData, ([key, value]) => !!value);
+    const res = await filterSearchApi(body);
     setData(res);
     setFilterData({
       latitude: latitude,
@@ -293,7 +296,7 @@ export const FilterSearch = ({navigation}) => {
       radius: text2,
       priceRange: '',
       sortBy: '',
-      acceptcreditCredit: false,
+      acceptcreditCards: false,
       delivery: false,
       dogFriendly: false,
       familyFriendlyPlace: false,
@@ -357,7 +360,7 @@ export const FilterSearch = ({navigation}) => {
                     radius: text2,
                     priceRange: '',
                     sortBy: '',
-                    acceptcreditCredit: false,
+                    acceptcreditCards: false,
                     delivery: false,
                     dogFriendly: false,
                     familyFriendlyPlace: false,
@@ -1250,7 +1253,7 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            acceptcreditCredit: true,
+                            acceptcreditCards: true,
                           });
                         }}>
                         <Icon
@@ -1280,7 +1283,7 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            acceptcreditCredit: false,
+                            acceptcreditCards: false,
                           });
                         }}>
                         <Image
