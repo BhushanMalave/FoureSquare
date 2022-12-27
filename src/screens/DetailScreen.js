@@ -18,6 +18,7 @@ import {
   useWindowDimensions,
   PermissionsAndroid,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Maps from '../components/Maps';
@@ -40,6 +41,7 @@ export const DetailScreen = ({navigation, route}) => {
   const token = useSelector(state => state.userDetails.token);
   const favData = useSelector(state => state.userDetails.userFavData);
   const [data, setData] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const dispatch = useDispatch();
   const item = route.params.item;
   const placeId = route.params.item._id;
@@ -100,6 +102,10 @@ export const DetailScreen = ({navigation, route}) => {
     dispatch(setInitialState());
   };
 
+  const onRefresh = React.useCallback(async () => {
+    call();
+  }, [refreshing]);
+
   useEffect(() => {
     call();
   }, [state,stateL]);
@@ -112,7 +118,11 @@ export const DetailScreen = ({navigation, route}) => {
       </SafeAreaView>
     ):(
 
-      <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      >
       <ImageBackground
         source={{uri: item?.placeImages?.url}}
         style={styles.hotelimg}>

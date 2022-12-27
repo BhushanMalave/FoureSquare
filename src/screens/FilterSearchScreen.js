@@ -42,7 +42,7 @@ export const FilterSearch = ({navigation}) => {
   const [text, setText] = useState('');
   const [text1, setText1] = useState(null);
   const [text2, setText2] = useState(null);
-
+  const dispatch =useDispatch();
   const [iconState, setIconState] = useState(false);
   const [onFocus, setOnFocus] = useState(0);
   const [mapSelect, setMapSelect] = useState(false);
@@ -243,6 +243,8 @@ export const FilterSearch = ({navigation}) => {
   };
 
   const SuggestaionNearByPlacesCall = async () => {
+    setCurrentLatitude(latitude);
+    setCurrentLongitude(longitude);
     const obj = {
       latitude: latitude,
       longitude: longitude,
@@ -263,8 +265,7 @@ export const FilterSearch = ({navigation}) => {
     setOnFocus(0);
     setButtonView(1);
     setMapSelect(false);
-    setCurrentLatitude(latitude);
-    setCurrentLongitude(longitude);
+ 
   };
 
   const nearByPlaceData = async item => {

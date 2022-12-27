@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {FaviouriteViewComponent} from '../components/FavouriteViewComponent';
@@ -25,7 +26,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
 import {favSearchApi} from '../authorization/Auth';
-import {filterSearchApi} from '../authorization/Auth';
+import { filterFavouriteSearchApi } from '../authorization/Auth';
 
 export const Favourite = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -34,12 +35,14 @@ export const Favourite = ({navigation}) => {
   const item = useSelector(state => state.userDetails.userFavData);
   const [data, setData] = useState(item);
 
+  const [refreshing, setRefreshing] = useState(false);
+
   const state = useSelector(state => state.status.initialState);
   const dispatch = useDispatch();
   const token = useSelector(state => state.userDetails.token);
   const latitude = useSelector(state => state.userDetails.userlatitude);
   const longitude = useSelector(state => state.userDetails.userlongitude);
-  console.info(item);
+
   const [price, setPrice] = useState({
     one: false,
     tens: false,
@@ -117,7 +120,9 @@ export const Favourite = ({navigation}) => {
   };
 
   const callFilterData = async () => {
-    const res = await filterSearchApi(filterData);
+    console.log(filterData)
+    const res = await filterFavouriteSearchApi(token,filterData);
+
     setData(res);
     setFilterData({
       latitude: latitude,
@@ -163,13 +168,21 @@ export const Favourite = ({navigation}) => {
     setIconState(true);
   };
 
+  const onRefresh = React.useCallback(async () => {
+    favouriteDataCall();
+  }, [refreshing]);
+
   useEffect(() => {
     favouriteDataCall();
   }, [state]);
 
   return (
     <View style={{flex: 1}}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      >
         <View style={styles.topbar}>
           <SafeAreaView style={{flex: 1}}>
             <View
@@ -189,7 +202,7 @@ export const Favourite = ({navigation}) => {
                       radius: text,
                       priceRange: '',
                       sortBy: '',
-                      acceptcreditCredit: false,
+                      acceptcreditCards: false,
                       delivery: false,
                       dogFriendly: false,
                       familyFriendlyPlace: false,

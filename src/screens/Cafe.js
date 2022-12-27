@@ -17,6 +17,7 @@ import {
   useWindowDimensions,
   ActivityIndicator,
   PermissionsAndroid,
+  RefreshControl
 } from 'react-native';
 import { HotelViewComponent } from '../components/HotelViewComponent';
 import { placeCategoryCafe } from '../authorization/Auth';
@@ -28,12 +29,40 @@ export const Cafe = ({navigation}) => {
 
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
-
+  const [refreshing, setRefreshing] = useState(false);
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
   const state = useSelector(state=> state.status.initialState);
 
   const mapRef = useRef(null);
+
+  const onRefresh = React.useCallback(async () => {
+    const requestLocationPermission = async () => {
+      if (Platform.OS === 'ios') {
+        getOneTimeLocation();
+      } else {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: 'Location Access Required',
+              message: 'This App needs to Access your location',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            //To Check, If Permission is granted
+            getOneTimeLocation();
+          } else {
+            Toast.show('Permission Denied');
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+    };
+    requestLocationPermission();
+  
+  }, [refreshing]);
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -108,7 +137,11 @@ export const Cafe = ({navigation}) => {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false}
+    refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }
+    >
       {!data ? (
         <ActivityIndicator size="large" color="#7A7A7A" />
       ) : (

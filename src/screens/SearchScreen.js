@@ -35,6 +35,7 @@ import {placeCategoryLunch} from '../authorization/Auth';
 import {placeCategoryCafe} from '../authorization/Auth';
 import {getNearByCityApi} from '../authorization/Auth';
 import { filterSearchApi } from '../authorization/Auth';
+import { setInitialState } from '../redux/ReduxPersist/States';
 
 
 export const Search = ({navigation}) => {
@@ -43,7 +44,7 @@ export const Search = ({navigation}) => {
   const [text, setText] = useState('');
   const [text1, setText1] = useState(null);
   const [text2, setText2] = useState(null);
-
+  const dispatch =useDispatch();
   const [iconState, setIconState] = useState(true);
   const [onFocus, setOnFocus] = useState(0); 
   const [mapSelect,setMapSelect] =useState(false);
@@ -245,6 +246,8 @@ export const Search = ({navigation}) => {
   };
 
   const SuggestaionNearByPlacesCall = async () => {
+    setCurrentLatitude(latitude);
+    setCurrentLongitude(longitude);
     const obj = {
       latitude: latitude,
       longitude: longitude,
@@ -258,15 +261,15 @@ export const Search = ({navigation}) => {
       latitude: currentLatitude,
       longitude: currentLongitude,
     };
-  //  console.info(obj);
+   console.info(obj);
     const data = await nearYouPlaces(obj);
-   // console.info(data);
+   console.info(data);
     setData(data);
     setOnFocus(0);
     setButtonView(1);
     setMapSelect(false);
-    setCurrentLatitude(latitude);
-    setCurrentLongitude(longitude);
+    dispatch(setInitialState());
+   
 
   }
 
@@ -288,7 +291,7 @@ export const Search = ({navigation}) => {
  const callFilterData = async () =>{
     const res = await filterSearchApi(filterData);
     setData(res);
-  setFilterData({
+     setFilterData({
     'latitude':latitude,
     'longitude':longitude,
     'text':'',
@@ -731,8 +734,7 @@ export const Search = ({navigation}) => {
                  }}
                  onPress={(e)=>{
                   setCurrentLatitude(e.nativeEvent.coordinate.latitude);
-                  setCurrentLongitude(e.nativeEvent.coordinate.longitude);
-              
+                  setCurrentLongitude(e.nativeEvent.coordinate.longitude);     
                    setTimeout(()=> {
                     callMapSelect();
                    },500)

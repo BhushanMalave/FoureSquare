@@ -497,13 +497,37 @@ export const filterSearchApi = async (body) => {
       'https://assesment-seven.vercel.app/searchByFilter',
       body,
     );
-    console.log("=-=-=-=-",response.data);
     if (response.data) {
       return response.data;
     }
   } catch (error) {
     // Toast.show(error.response.data.message, Toast.SHORT);
     console.log('searchPlace', error.response.data);
+  }
+};
+export const filterFavouriteSearchApi = async (token,filterData) => {
+  console.log(token)
+  const options = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const body = filterData;
+  console.info(body);
+  try {
+    const response = await axios.post(
+      'https://assesment-seven.vercel.app/FilterInFavourites',
+      body,
+      options,
+    );
+    console.log("/./././././",res);
+    if (response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    // Toast.show(error.response.data.message, Toast.SHORT);
+    console.log('filterFav', error);
+
   }
 };
 
