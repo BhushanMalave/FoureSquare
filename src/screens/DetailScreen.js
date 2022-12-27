@@ -36,6 +36,7 @@ import {setPlaceId} from '../redux/ReduxPersist/User';
 export const DetailScreen = ({navigation, route}) => {
   const {width, height} = useWindowDimensions();
   const state = useSelector(state => state.status.ratingState);
+  const stateL = useSelector(state=> state.status.initialState);
   const login = useSelector(state => state.status.loginState);
   const token = useSelector(state => state.userDetails.token);
   const favData = useSelector(state => state.userDetails.userFavData);
@@ -46,7 +47,7 @@ export const DetailScreen = ({navigation, route}) => {
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
   const [rating, setRating] = useState('');
-
+  const addRev = 1;
   const share = async () => {
     shareOptions = {
       url: 'https' + data?.placeImages?.url.substring(4),
@@ -65,6 +66,7 @@ export const DetailScreen = ({navigation, route}) => {
   };
 
   const mapRef = useRef(null);
+
   const call = async () => {
     const obj = {
       placeName: item.placeName,
@@ -101,7 +103,7 @@ export const DetailScreen = ({navigation, route}) => {
 
   useEffect(() => {
     call();
-  }, [state]);
+  }, [state,stateL]);
 
   return (
     <>
@@ -268,7 +270,7 @@ export const DetailScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('PhotosGallery', {placeId, data});
+              navigation.navigate('PhotosGallery', {placeId, data,item});
             }}>
             <Image
               source={require('../assets/images/photos_icon.png')}
@@ -278,7 +280,7 @@ export const DetailScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ViewReviews', {data, placeId});
+              navigation.navigate('ViewReviews', {data, placeId,item});
             }}>
             <Image
               source={require('../assets/images/review_icon.png')}
@@ -380,7 +382,7 @@ export const DetailScreen = ({navigation, route}) => {
           <View style={styles.buttonbody}>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('AddReviews', {data});
+                navigation.navigate('AddReviews', {data,placeId,addRev,item});
               }}
               style={styles.button}>
               <Text style={styles.buttontext}>Add Review</Text>

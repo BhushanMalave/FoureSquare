@@ -32,20 +32,20 @@ export const PhotosGallery = ({navigation, route}) => {
   const placeId = route.params.placeId;
   const name = route.params.data.placeName;
   const data = route.params.data;
+  const item = route.params.item;
   const addRev = 2;
 
   const getStructuredData = reviewArray => {
-    // console.log(reviewArray);
     let structuredImagesData = [];
     let tempObj = {};
     reviewArray.forEach(item => {
       item.reviewImage.urls.forEach(pic => {
         tempObj = {};
         tempObj.url = pic;
-        tempObj.id = item.userId._id;
-        tempObj.name = item.userId.fullName;
+        tempObj.id = item?.userId?._id;
+        tempObj.name = item?.userId?.fullName;
         tempObj.date =item.createdOn,
-        tempObj.profilePic = item.userId.profileImage.cloudinary_id,
+        tempObj.profilePic = item?.userId?.profileImage?.cloudinary_id,
         structuredImagesData.push(tempObj);
       });
     });
@@ -79,7 +79,7 @@ export const PhotosGallery = ({navigation, route}) => {
             }}>
             <TouchableOpacity
               onPress={() => {
-                navigation.goBack();
+                navigation.navigate('DetailScreen', {item});
                 dispatch(setInitialState());
               }}>
               <Image
@@ -105,7 +105,7 @@ export const PhotosGallery = ({navigation, route}) => {
                 size={24}
                 color="#fff"
                 onPress={() => {
-                  navigation.navigate('AddReviews', {placeId, addRev, data});
+                  navigation.navigate('AddReviews', {placeId, addRev, data , item});
                 }}
               />
             )}

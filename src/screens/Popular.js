@@ -94,7 +94,7 @@ export const Popular = ({navigation}) => {
            setCurrentLatitude(currentLatitude);
       },
       error => {
-        Toast.show(error.message);
+       // Toast.show(error.message);
       },
       {
         enableHighAccuracy: false,

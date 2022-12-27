@@ -81,7 +81,7 @@ export const forgotPasswordApi = async objBody => {
       'https://assesment-seven.vercel.app/forgotPassword',
       body,
     );
-    Toast.show(response.data.message, Toast.SHORT);
+    Toast.show(`${response.data.message}`, Toast.SHORT);
     if (response.data) {
       return response.data;
     }
@@ -524,6 +524,7 @@ export const getNearByCityApi = async (body) => {
 
 
 export const addReview = async (token, payload) => {
+  console.log(payload)
   try {
     let res = await fetch(
       'https://assesment-seven.vercel.app/addReviews',

@@ -38,6 +38,7 @@ import {placeCategoryLunch} from '../authorization/Auth';
 import {placeCategoryCafe} from '../authorization/Auth';
 import {getNearByCityApi} from '../authorization/Auth';
 import { filterSearchApi } from '../authorization/Auth';
+import MapSearch from '../components/MapSearch';
 
 export const FilterSearch = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -56,6 +57,7 @@ export const FilterSearch = ({navigation}) => {
 
   const [currentLongitude, setCurrentLongitude] = useState(latitude);
   const [currentLatitude, setCurrentLatitude] = useState(longitude);
+  const [id,setId] =useState("");
   const [data, setData] = useState([]);
   const favData = useSelector(state => state.userDetails.userFavData);
   const [cityData, setCityData] = useState(null);
@@ -164,11 +166,14 @@ export const FilterSearch = ({navigation}) => {
     SetViewable(Check);
   });
 
+
   const viewConfigRef = React.useRef({viewAreaCoveragePercentThreshold: 90});
 
+ 
   const renderItem = ({item}) => {
     setCurrentLatitude(Viewable[0]?.location?.coordinates[1]);
     setCurrentLongitude(Viewable[0]?.location?.coordinates[0]);
+    setId(Viewable[0]?._id);
     return (
       <SearchViewComponentMap
         item={item}
@@ -208,7 +213,6 @@ export const FilterSearch = ({navigation}) => {
       longitude: longitude,
     };
     const data = await popularPlaces(obj);
-    console.log("=-=-=-=-",data)
     setData(data);
     setOnFocus(0);
     setButtonView(1);
@@ -260,9 +264,7 @@ export const FilterSearch = ({navigation}) => {
   };
 
  const callFilterData = async () =>{
-  console.log(filterData);
     const res = await filterSearchApi(filterData);
-    setData(res);
   setFilterData({
     'latitude':latitude,
     'longitude':longitude,
@@ -1720,9 +1722,11 @@ export const FilterSearch = ({navigation}) => {
           {buttonView === 2 && (
             <View style={{flex: 1, height: 700}}>
               {currentLatitude && currentLongitude !== '' ? (
-                <Maps
+                <MapSearch
                   latitude={currentLatitude}
                   longitude={currentLongitude}
+                  data={data}
+                  _id={id}
                   viewStyle={{flex: 1}}
                 />
               ) : null}

@@ -99,7 +99,7 @@ export const SearchViewComponent = ({onPress, item, state,style={}}) => {
               />
             </Pressable>
           ) : favData?.length > 0 ? (
-            favData.filter(ele => ele._id === item._id)?.length > 0 ? (
+            favData.filter(ele => ele?._id === item?._id)?.length > 0 ? (
               <TouchableOpacity
                 onPress={() => {
                   addToFavourite(item?._id);
@@ -149,7 +149,7 @@ export const SearchViewComponent = ({onPress, item, state,style={}}) => {
               color: 'white',
               marginTop: 2,
             }}>
-            {item?.totalrating / 2}
+            {item?.totalrating}
           </Text>
         </View>
         <View style={{marginTop: 5}}>

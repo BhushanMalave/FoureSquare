@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -14,14 +14,15 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {TextField} from 'rn-material-ui-textfield';
-import { signUpApi } from '../authorization/Auth';
-import { setToken } from '../redux/ReduxPersist/User';
-import { useDispatch } from 'react-redux';
-import { setLoginState } from '../redux/ReduxPersist/States';
+import {signUpApi} from '../authorization/Auth';
+import {setToken} from '../redux/ReduxPersist/User';
+import {useDispatch} from 'react-redux';
+import {setLoginState} from '../redux/ReduxPersist/States';
 
 export const CreateAccount = () => {
   const {width, height} = useWindowDimensions();
@@ -29,19 +30,21 @@ export const CreateAccount = () => {
   const width2 = width < height ? -15.5 : -50;
   const width3 = width < height ? -20.5 : -45;
   const width4 = width < height ? -20.5 : -50;
+
+  const [loading, isLoading] = useState(true);
   const dispatch = useDispatch();
   const signinValidationSchema = yup.object().shape({
     email: yup
-    .string()
-    .email("Enter correct Email")
-    .required('Enter is required'),
+      .string()
+      .email('Enter correct Email')
+      .required('Enter is required'),
 
     mobileNumber: yup
-    .string()
-    .matches(/(\d){10}\b/, 'Enter a valid mobile number')
-    .max(10, ({max}) => `mobile number must be${max} of characters`)
-    .required('Phone number is required'),
-    
+      .string()
+      .matches(/(\d){10}\b/, 'Enter a valid mobile number')
+      .max(10, ({max}) => `mobile number must be${max} of characters`)
+      .required('Phone number is required'),
+
     password: yup
       .string()
       .matches(/\w*[a-z]\w*/, 'Password must have a small letter')
@@ -62,7 +65,11 @@ export const CreateAccount = () => {
         style={{flex: 1}}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <SafeAreaView style={{flex: 1, marginHorizontal: 30}}>
-            <View style={{alignItems: 'center',  marginTop: Platform.OS === 'ios' ?  40 :70}}>
+            <View
+              style={{
+                alignItems: 'center',
+                marginTop: Platform.OS === 'ios' ? 40 : 70,
+              }}>
               <Image
                 source={require('../assets/images/logo.png')}
                 style={styles.logo}
@@ -71,26 +78,31 @@ export const CreateAccount = () => {
             <View style={styles.viewTextInput}>
               <Formik
                 validationSchema={signinValidationSchema}
-                initialValues={{email:'',mobileNumber:'',password: '', confirmPassword:''}}
+                initialValues={{
+                  email: '',
+                  mobileNumber: '',
+                  password: '',
+                  confirmPassword: '',
+                }}
                 onSubmit={async (values, {resetForm}) => {
-                  const obj = {  
-                    "email": values.email,
-                    "mobileNumber":values.mobileNumber,
-                    "fullName":"Bhushan Malave",
-                    "password": values.password,              
-                }
-                console.log(obj)
-                const response = await signUpApi(obj);
-                console.log(response)
-                  if(response?.message === "User registered successfully")
-                  {
+                  const obj = {
+                    email: values.email,
+                    mobileNumber: values.mobileNumber,
+                    fullName: 'Bhushan Malave',
+                    password: values.password,
+                  };
+
+                  isLoading(false);
+                  const response = await signUpApi(obj);
+                  isLoading(true);
+
+                  if (response?.message === 'User registered successfully') {
                     dispatch(setToken(response.access_token));
                     dispatch(setLoginState(2));
                     resetForm({initialValues: ''});
-                  }else{
-                    console.log('error')
+                  } else {
+                    console.log('error');
                   }
-                 
                 }}>
                 {({
                   handleChange,
@@ -101,88 +113,98 @@ export const CreateAccount = () => {
                   isValid,
                 }) => (
                   <>
-                     <TextField
-                    label="Email"
-                    name="email"
-                    keyboardType="email-address"
-                    formatText={this.formatText}
-                    onSubmitEditing={this.onSubmit}
-                    ref={this.fieldRef}
-                    textColor="#FFFFFF"
-                    tintColor="#b5abab"
-                    baseColor="#b5abab"
-                    lineWidth={1}
-                    autoCapitalize="none"
-                    labelFontSize={18}
-                    labelOffset={{y1: -5, x1:width2}}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    value={values.email}
-                    autoCorrect={false}
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginBottom: 5,
-                      textAlign: 'center',
-                      marginRight: 0,
-                      marginTop: 18,
-                      height:30,
-                    }}
-                    labelTextStyle={{
-                      textAlign: 'center',
-                      color: '#b5abab',
-                      fontFamily: 'Avenir Book',
-                      alignSelf: 'center',
-                      height: 50,
-                      paddingTop:Platform.OS === 'ios' ? 2 : 4, 
-                    }}
-                  />
-                  {errors.email && (
-                    <Text style={{fontSize: 10, color: 'red',alignSelf:'center'}}>
-                      {errors.email}
-                    </Text>
-                  )}
-                     <TextField
-                    label="Mobile Number"
-                    name="mobileNumber"
-                    keyboardType='number-pad'
-                    formatText={this.formatText}
-                    onSubmitEditing={this.onSubmit}
-                    ref={this.fieldRef}
-                    textColor="#FFFFFF"
-                    tintColor="#b5abab"
-                    baseColor="#b5abab"
-                    lineWidth={1}
-                    autoCapitalize="none"
-                    labelFontSize={18}
-                    labelOffset={{y1: -5, x1:width1}}
-                    onChangeText={handleChange('mobileNumber')}
-                    onBlur={handleBlur('mobileNumber')}
-                    value={values.mobileNumber}
-                    autoCorrect={false}
-                    style={{
-                      fontFamily: 'Avenir Book',
-                      fontSize: 22,
-                      marginBottom: 5,
-                      textAlign: 'center',
-                      marginRight: 0,
-                      marginTop: 18,
-                      height:30,
-                    }}
-                    labelTextStyle={{
-                      textAlign: 'center',
-                      color: '#b5abab',
-                      fontFamily: 'Avenir Book',
-                      alignSelf: 'center',
-                      height: 50,
-                      paddingTop:Platform.OS === 'ios' ? 2 : 4, 
-                    }}
-                  />
-                  {errors.mobileNumber && (
-                    <Text style={{fontSize: 10, color: 'red',alignSelf:'center'}}>
-                      {errors.mobileNumber}
-                    </Text>
-                  )}
+                    <TextField
+                      label="Email"
+                      name="email"
+                      keyboardType="email-address"
+                      formatText={this.formatText}
+                      onSubmitEditing={this.onSubmit}
+                      ref={this.fieldRef}
+                      textColor="#FFFFFF"
+                      tintColor="#b5abab"
+                      baseColor="#b5abab"
+                      lineWidth={1}
+                      autoCapitalize="none"
+                      labelFontSize={18}
+                      labelOffset={{y1: -5, x1: width2}}
+                      onChangeText={handleChange('email')}
+                      onBlur={handleBlur('email')}
+                      value={values.email}
+                      autoCorrect={false}
+                      style={{
+                        fontFamily: 'Avenir Book',
+                        fontSize: 22,
+                        marginBottom: 5,
+                        textAlign: 'center',
+                        marginRight: 0,
+                        marginTop: 18,
+                        height: 30,
+                      }}
+                      labelTextStyle={{
+                        textAlign: 'center',
+                        color: '#b5abab',
+                        fontFamily: 'Avenir Book',
+                        alignSelf: 'center',
+                        height: 50,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
+                      }}
+                    />
+                    {errors.email && (
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          color: 'red',
+                          alignSelf: 'center',
+                        }}>
+                        {errors.email}
+                      </Text>
+                    )}
+                    <TextField
+                      label="Mobile Number"
+                      name="mobileNumber"
+                      keyboardType="number-pad"
+                      formatText={this.formatText}
+                      onSubmitEditing={this.onSubmit}
+                      ref={this.fieldRef}
+                      textColor="#FFFFFF"
+                      tintColor="#b5abab"
+                      baseColor="#b5abab"
+                      lineWidth={1}
+                      autoCapitalize="none"
+                      labelFontSize={18}
+                      labelOffset={{y1: -5, x1: width1}}
+                      onChangeText={handleChange('mobileNumber')}
+                      onBlur={handleBlur('mobileNumber')}
+                      value={values.mobileNumber}
+                      autoCorrect={false}
+                      style={{
+                        fontFamily: 'Avenir Book',
+                        fontSize: 22,
+                        marginBottom: 5,
+                        textAlign: 'center',
+                        marginRight: 0,
+                        marginTop: 18,
+                        height: 30,
+                      }}
+                      labelTextStyle={{
+                        textAlign: 'center',
+                        color: '#b5abab',
+                        fontFamily: 'Avenir Book',
+                        alignSelf: 'center',
+                        height: 50,
+                        paddingTop: Platform.OS === 'ios' ? 2 : 4,
+                      }}
+                    />
+                    {errors.mobileNumber && (
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          color: 'red',
+                          alignSelf: 'center',
+                        }}>
+                        {errors.mobileNumber}
+                      </Text>
+                    )}
                     <TextField
                       label="Password"
                       name="password"
@@ -209,7 +231,7 @@ export const CreateAccount = () => {
                         textAlign: 'center',
                         marginRight: 0,
                         marginTop: 18,
-                        height:30,
+                        height: 30,
                       }}
                       labelTextStyle={{
                         textAlign: 'center',
@@ -219,7 +241,6 @@ export const CreateAccount = () => {
                         height: 50,
                         paddingTop: Platform.OS === 'ios' ? 2 : 4,
                       }}
-                
                     />
                     {errors.password && (
                       <Text
@@ -257,7 +278,7 @@ export const CreateAccount = () => {
                         textAlign: 'center',
                         marginRight: 0,
                         marginTop: 18,
-                        height:30,
+                        height: 30,
                       }}
                       labelTextStyle={{
                         textAlign: 'center',
@@ -267,7 +288,6 @@ export const CreateAccount = () => {
                         height: 50,
                         paddingTop: Platform.OS === 'ios' ? 2 : 4,
                       }}
-                    
                     />
                     {errors.confirmPassword && (
                       <Text
@@ -281,12 +301,21 @@ export const CreateAccount = () => {
                     )}
 
                     <View style={styles.container}>
-                      <TouchableOpacity
-                        onPress={handleSubmit}
-                        style={styles.button}
-                        disabled={!isValid}>
-                        <Text style={styles.textbutton}>Login</Text>
-                      </TouchableOpacity>
+                      {loading ? (
+                        <TouchableOpacity
+                          onPress={handleSubmit}
+                          style={styles.button}
+                          disabled={!isValid}>
+                          <Text style={styles.textbutton}>Login</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity style={styles.button1}>
+                          <ActivityIndicator
+                            size="large"
+                            color="#7A7A7A"
+                          />
+                        </TouchableOpacity>
+                      )}
                     </View>
                   </>
                 )}
@@ -306,7 +335,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   viewTextInput: {
-    marginTop: Platform.OS === 'android' ? 80:60,
+    marginTop: Platform.OS === 'android' ? 80 : 60,
   },
   textskip: {
     fontFamily: 'Avenir Book',
@@ -347,7 +376,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 80,
-    marginBottom:Platform.OS === 'android' ? 80:50,
+    marginBottom: Platform.OS === 'android' ? 80 : 50,
   },
   button: {
     backgroundColor: 'transparent',
@@ -356,6 +385,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 0.5,
     borderRadius: 8,
+    borderColor: '#FFF',
+    width: '100%',
+  },
+  button1: {
+    backgroundColor: 'transparent',
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderColor: '#FFF',
     width: '100%',
   },

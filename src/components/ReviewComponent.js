@@ -26,10 +26,19 @@ export const ReviewViewComponent = ({item}) => {
             marginVertical: 20,
             height: 52,
           }}>
-          <Image
-             source={{uri:item?.userId?.profileImage?.public_id}}
-            style={{height: 50, width: 50, borderRadius: 50}}
-          />
+            {item?.userId?.profileImage?.public_id ? (
+               <Image
+               source={{uri:item?.userId?.profileImage?.public_id}}
+              style={{height: 50, width: 50, borderRadius: 50}}
+            />
+
+            ):(
+               <Image
+               source={require('../assets/images/login.webp')}
+               style={{height: 40, width: 40, borderRadius: 50}}
+           />
+            )}
+         
           <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
             <View style={{width: '60%', marginLeft: 15}}>
               <Text
@@ -40,7 +49,7 @@ export const ReviewViewComponent = ({item}) => {
                   color: 'black',
                   textTransform:'capitalize',
                 }}>
-               {item?.userId?.fullName}
+               {item.userId ? item?.userId?.fullName : 'User'}
               </Text>
               <Text
                 style={{

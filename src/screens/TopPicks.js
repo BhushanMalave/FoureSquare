@@ -95,7 +95,7 @@ export const TopPicks = ({navigation}) => {
            setCurrentLatitude(currentLatitude);
       },
       error => {
-        Toast.show(error.message);
+       // Toast.show(error.message);
       },
       {
         enableHighAccuracy: false,

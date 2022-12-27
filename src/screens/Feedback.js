@@ -15,34 +15,35 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Formik} from 'formik';
-import { giveFeedBack } from '../authorization/Auth';
-import { useSelector } from 'react-redux';
+import {giveFeedBack} from '../authorization/Auth';
+import {useSelector} from 'react-redux';
 
 export const Feedback = ({navigation}) => {
   const [text, setText] = useState('');
-  const token = useSelector(state=>state.userDetails.token);
+  const token = useSelector(state => state.userDetails.token);
+  const [loading, isLoading] = useState(true);
   const handleText = string => {
     setText(string);
   };
-  const handleSubmit =async() => {
-    const body=
-     {
-      feedback:text,
-     };
-
-    const res = await giveFeedBack(token,body);
-    navigation.goBack();
-   
-
-
-
+  const handleSubmit = async () => {
+    const body = {
+      feedback: text,
+    };
+    if (text.length >= 1) {
+      isLoading(false);
+      const res = await giveFeedBack(token, body);
+      isLoading(true);
+      navigation.goBack();
+      setText('')
+    }
   };
   return (
     <View style={{flex: 1}}>
-      <ScrollView contentContainerStyle={{flex:1}}>
+      <ScrollView contentContainerStyle={{flex: 1}}>
         <View style={styles.topbar}>
           <SafeAreaView>
             <View
@@ -55,6 +56,7 @@ export const Feedback = ({navigation}) => {
               <TouchableOpacity
                 onPress={() => {
                   navigation.goBack();
+                  setText('');
                 }}>
                 <Image
                   style={styles.menu}
@@ -70,7 +72,14 @@ export const Feedback = ({navigation}) => {
                 }}>
                 Feedback
               </Text>
-              <Icon name="home-outline" size={28} color="#fff"  onPress={()=> {navigation.navigate('HomeStack')}}/>
+              <Icon
+                name="home-outline"
+                size={28}
+                color="#fff"
+                onPress={() => {
+                  navigation.navigate('HomeStack');
+                }}
+              />
             </View>
           </SafeAreaView>
         </View>
@@ -91,11 +100,13 @@ export const Feedback = ({navigation}) => {
                 onChangeText={handleText}
                 style={styles.textNotes}
                 textAlignVertical="top"
+                value={text}
               />
             </View>
           </View>
         </View>
       </ScrollView>
+
       <View style={styles.buttonbody}>
         <TouchableOpacity onPress={handleSubmit} style={styles.button}>
           <Text style={styles.buttontext}>Submit</Text>
@@ -126,6 +137,12 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   button: {
+    height: 60,
+    backgroundColor: '#301934',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button1: {
     height: 60,
     backgroundColor: '#301934',
     alignItems: 'center',

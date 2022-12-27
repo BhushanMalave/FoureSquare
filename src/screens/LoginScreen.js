@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -14,6 +14,7 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -24,19 +25,28 @@ import {setToken} from '../redux/ReduxPersist/User';
 import {useDispatch} from 'react-redux';
 import {setLoginState} from '../redux/ReduxPersist/States';
 
+
 export const Login = ({navigation}) => {
   const {width, height} = useWindowDimensions();
   const width1 = width < height ? -15.5 : -45;
   const width2 = width < height ? -15.5 : -50;
-  let Email = '';
+  let [email,setEmail] = useState('') ;
+  const [loading,isLoading] = useState(true);
+  const [loading1,isLoading1] = useState(true);
 
   const handleForgotPassword = async () => {
+    console.log(
+      email
+    )
     const obj = {
-      email: Email,
+      email: email,
     };
+    console.log(obj);
+    isLoading1(false);
     const response = await forgotPasswordApi(obj);
+    isLoading1(true);
     if (response?.message === 'Otp sent, please check your mail') {
-      navigation.navigate('Verification', {Email});
+      navigation.navigate('Verification', {email});
     }
   };
   const signinValidationSchema = yup.object().shape({
@@ -79,22 +89,30 @@ export const Login = ({navigation}) => {
             <View style={styles.viewTextInput}>
               <Formik
                 validationSchema={signinValidationSchema}
+              
                 initialValues={{email: '', password: ''}}
                 onSubmit={async (values, {resetForm}) => {
-               
-                  Email = values.email;
+                
+                    setEmail(values.email)
                 
                     const obj = {
                       email: values.email,
                       password: values.password,
                     };
+                    console.log(obj);
+                    console.log(email)
+                    isLoading(false);
+
                     const res = await signInApi(obj);
+
+                    isLoading(true);
 
                     if (res?.message === 'Login successful') {
                       dispatch(setToken(res.access_token));
                       dispatch(setLoginState(2));
                       resetForm({initialValues: ''});
                     }
+                   
                   
                  
                 }}>
@@ -198,25 +216,32 @@ export const Login = ({navigation}) => {
                         {errors.password}
                       </Text>
                     )}
-
-                    <TouchableOpacity
-                      style={{}}
-                      onPress={() => {
-                        handleForgotPassword();
-                        handleReset();
-                      }}>
-                      <Text style={styles.text}>Forgot Password?</Text>
-                    </TouchableOpacity>
+                  
+                       <TouchableOpacity
+                       onPress={() => {
+                         handleForgotPassword();
+                         handleReset();
+                       }}>
+                       <Text style={styles.text}>Forgot Password?</Text>
+                     </TouchableOpacity>
+                   
+                   
                     <View style={styles.container}>
-                      <TouchableOpacity
-                        onPress={() => {
-                        
-                          handleSubmit();
-                        }}
-                        style={styles.button}
-                        disabled={!isValid}>
-                        <Text style={styles.textbutton}>Login</Text>
-                      </TouchableOpacity>
+                      {loading ? (
+                         <TouchableOpacity
+                         onPress={() => {
+                         
+                           handleSubmit();
+                         }}
+                         style={styles.button}
+                         disabled={!isValid}>
+                         <Text style={styles.textbutton}>Login</Text>
+                       </TouchableOpacity>
+
+                      ):(
+                        <ActivityIndicator size="large" color="#7A7A7A" style={styles.button1}/>
+                      )}
+                     
                     </View>
                     <TouchableOpacity
                       onPress={() => {
@@ -313,6 +338,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 0.5,
     borderRadius: 8,
+    borderColor: '#FFF',
+    width: '100%',
+  },
+  button1: {
+    backgroundColor: 'transparent',
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderColor: '#FFF',
     width: '100%',
   },

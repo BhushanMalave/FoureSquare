@@ -1,42 +1,67 @@
 import React from 'react';
 // Import required components
-import {SafeAreaView, StyleSheet, View,} from 'react-native';
+import {SafeAreaView, StyleSheet, View} from 'react-native';
 
 // Import Map and Marker
 import MapView, {Marker} from 'react-native-maps';
 
-const Maps = ({longitude, latitude, mapRef,viewStyle={}}) => {
+const MapSearch = ({
+  longitude,
+  latitude,
+  mapRef,
+  viewStyle = {},
+  data,
+  _id,
+}) => {
   return (
-      <View style={[styles.container,{...viewStyle}]}>
-        <MapView style={styles.mapStyle} initialRegion={{
-             latitude: latitude,
-            longitude: longitude,
-             latitudeDelta: 0.0922,
-           longitudeDelta: 0.0421,
-          }} customMapStyle={mapStyle} ref={mapRef}>
-
-        
-
-          <Marker
-            draggable
-            coordinate={{
-              latitude: latitude,
-              longitude: longitude,
-              latitudeDelta: 0.53,
-              longitudeDelta: 0.01,
-            }}
-            onDragEnd={e => alert(JSON.stringify(e.nativeEvent.coordinate))}
-            title={'Test Marker'}
-          /> 
-
-          
-        
-        </MapView>
-      </View>
+    <View style={[styles.container, {...viewStyle}]}>
+      <MapView
+        style={styles.mapStyle}
+        initialRegion={{
+          latitude: latitude,
+          longitude: longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        customMapStyle={mapStyle}
+        ref={mapRef}>
+        {data.map(item => (
+          <>
+            {item?._id === _id ? (
+              <Marker
+                draggable
+                coordinate={{
+                  latitude: latitude,
+                  longitude: longitude,
+                  latitudeDelta: 0.53,
+                  longitudeDelta: 0.01,
+                }}
+                onDragEnd={e => alert(JSON.stringify(e.nativeEvent.coordinate))}
+                title={'Test Marker'}
+                pinColor="green"
+              />
+            ) : (
+              <Marker
+                draggable
+                coordinate={{
+                  latitude: item?.location.coordinates[1],
+                  longitude: item?.location.coordinates[0],
+                  latitudeDelta: 0.53,
+                  longitudeDelta: 0.01,
+                }}
+                onDragEnd={e => alert(JSON.stringify(e.nativeEvent.coordinate))}
+                title={'Test Marker'}
+                pinColor="orange"
+              />
+            )}
+          </>
+        ))}
+      </MapView>
+    </View>
   );
 };
 
-export default Maps;
+export default MapSearch;
 
 const mapStyle = [
   {

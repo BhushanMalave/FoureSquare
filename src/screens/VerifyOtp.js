@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -14,6 +14,7 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator
 } from 'react-native';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -22,10 +23,12 @@ import { verifyOtpApi } from '../authorization/Auth';
 import { resendOtpApi } from '../authorization/Auth';
 import Toast from 'react-native-simple-toast';
 
+
 export const VerifyOtp = ({navigation,route}) => {
   const {width, height} = useWindowDimensions();
   const width2 = width < height ? -19.5 : -45;
-  const Email= route.params.Email;
+  const [loading,isLoading] = useState(true);
+  const Email= route.params.email;
   const handleResendOtp = async () => {
     const obj ={
       "email": Email,
@@ -60,7 +63,9 @@ export const VerifyOtp = ({navigation,route}) => {
                     "otp":values.otp,
                     
                 }
+                isLoading(false)
                 const response = await verifyOtpApi(obj);
+                isLoading(true)
                 console.log(response);
                 if(response?.message === true)
                 {
@@ -121,14 +126,28 @@ export const VerifyOtp = ({navigation,route}) => {
                     <TouchableOpacity style={{}} onPress={handleResendOtp}>
                       <Text style={styles.text2}>Resend OTP</Text>
                     </TouchableOpacity>
-                    <View style={styles.container}>
-                      <TouchableOpacity
-                        onPress={handleSubmit}
-                        style={styles.button}
-                        disabled={!isValid}>
-                        <Text style={styles.textbutton}>Get in !</Text>
-                      </TouchableOpacity>
+                    {loading ? (
+                       <View style={styles.container}>
+                       <TouchableOpacity
+                         onPress={handleSubmit}
+                         style={styles.button}
+                         disabled={!isValid}>
+                         <Text style={styles.textbutton}>Get in !</Text>
+                       </TouchableOpacity>
+                     </View>
+
+                    ):(
+                      <View style={styles.container}>
+                      <View
+                        style={styles.button1}
+                       >
+                         <ActivityIndicator size="large" color="#7A7A7A" style={styles.button1}/>
+                      
+                      </View>
                     </View>
+
+                    )}
+                   
                   </>
                 )}
               </Formik>
@@ -197,6 +216,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 0.5,
     borderRadius: 8,
+    borderColor: '#FFF',
+    width: '100%',
+  },
+  button1: {
+    backgroundColor: 'transparent',
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderColor: '#FFF',
     width: '100%',
   },
