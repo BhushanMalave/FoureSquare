@@ -27,7 +27,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {SearchViewComponent} from '../components/SearchViewComponent';
 import {SearchViewComponentMap} from '../components/searchViewComponentMap';
-import Maps from '../components/Maps';
+import MapSearch from '../components/MapSearch';
 import Geolocation from '@react-native-community/geolocation';
 import {SearchApi} from '../authorization/Auth';
 import {useRef} from 'react';
@@ -53,7 +53,7 @@ export const Search = ({navigation}) => {
 
   const latitude = useSelector(state => state.userDetails.userlatitude);
   const longitude = useSelector(state => state.userDetails.userlongitude);
-
+  const [id,setId]=useState('');
   const [currentLongitude, setCurrentLongitude] = useState(latitude);
   const [currentLatitude, setCurrentLatitude] = useState(longitude);
   const [data, setData] = useState([]);
@@ -169,6 +169,7 @@ export const Search = ({navigation}) => {
   const renderItem = ({item}) => {
     setCurrentLatitude(Viewable[0]?.location?.coordinates[1]);
     setCurrentLongitude(Viewable[0]?.location?.coordinates[0]);
+    setId(Viewable[0]?._id);
     return (
       <SearchViewComponentMap
         item={item}
@@ -208,7 +209,6 @@ export const Search = ({navigation}) => {
       longitude: longitude,
     };
     const data = await popularPlaces(obj);
-    console.log("=-=-=-=-",data)
     setData(data);
     setOnFocus(0);
     setButtonView(1);
@@ -1722,9 +1722,11 @@ export const Search = ({navigation}) => {
           {buttonView === 2 && (
             <View style={{flex: 1, height: 700}}>
               {currentLatitude && currentLongitude !== '' ? (
-                <Maps
+                <MapSearch
                   latitude={currentLatitude}
                   longitude={currentLongitude}
+                  data={data}
+                  _id={id}
                   viewStyle={{flex: 1}}
                 />
               ) : null}

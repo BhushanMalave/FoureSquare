@@ -26,7 +26,7 @@ export const ViewPhoto = ({navigation,route}) => {
   const state = useSelector(state=> state.status.initialState);
   const dispatch = useDispatch();
   const name = route.params.name;
- const item = route.params.item;
+  const item = route.params.item;
 
  const share = async () => {
   shareOptions = {
@@ -112,7 +112,7 @@ export const ViewPhoto = ({navigation,route}) => {
                 color: 'white',
               textTransform:'capitalize'}}
             >
-                 {item?.name}
+                 {item.name ? item?.name : 'User'}
             </Text>
             <Text
               style={{

@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -17,29 +17,31 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { ReviewViewComponent } from '../components/ReviewComponent';
-import { viewReviewApi } from '../authorization/Auth';
-import { useDispatch,useSelector } from 'react-redux';
-import { setInitialState } from '../redux/ReduxPersist/States';
+import {ReviewViewComponent} from '../components/ReviewComponent';
+import {viewReviewApi} from '../authorization/Auth';
+import {useDispatch, useSelector} from 'react-redux';
+import {setInitialState} from '../redux/ReduxPersist/States';
 
-
-export const ViewReview = ({navigation,route}) => {
-  const {height,width} = useWindowDimensions();
-  const [dataReview,setDataReview] = useState('');
+export const ViewReview = ({navigation, route}) => {
+  const {height, width} = useWindowDimensions();
+  const [dataReview, setDataReview] = useState('');
   const login = useSelector(state => state.status.loginState);
-  const state = useSelector(state=> state.status.initialState);
+  const state = useSelector(state => state.status.initialState);
   const dispatch = useDispatch();
-  const placeId =route.params.placeId;
-  const name =route.params.data.placeName;
+  const placeId = route.params.placeId;
+  const name = route.params.data.placeName;
   const data = route.params.data;
+  const item = route.params.item;
   const addRev = 1;
-  const call = async () =>{
-    const body={
-      "placeId":placeId,
-    }
+ 
+
+  const call = async () => {
+    const body = {
+      placeId: placeId,
+    };
     const res = await viewReviewApi(body);
     setDataReview(res.reviews);
-  }
+  };
 
   useEffect(() => {
     call();
@@ -55,15 +57,17 @@ export const ViewReview = ({navigation,route}) => {
               marginHorizontal: 20,
               justifyContent: 'space-between',
             }}>
-               <TouchableOpacity onPress={()=>{navigation.goBack(
-                dispatch(setInitialState())
-               )}}>
-            <Image
-              style={styles.menu}
-              source={require('../assets/images/back_icon.png')}
-            />
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('DetailScreen', {item});
+                dispatch(setInitialState());
+              }}>
+              <Image
+                style={styles.menu}
+                source={require('../assets/images/back_icon.png')}
+              />
             </TouchableOpacity>
-            
+
             <Text
               style={{
                 fontFamily: 'Avenir Book',
@@ -71,44 +75,53 @@ export const ViewReview = ({navigation,route}) => {
                 color: '#fff',
                 marginTop: -5,
               }}>
-            {name.length >15 ? name.substring(0,15)+'...':name}
+              {name.length > 15 ? name.substring(0, 15) + '...' : name}
             </Text>
-            {login === 1 ? (<Icon name="addfile" size={24} color="#fff"   />):(<Icon name="addfile" size={24} color="#fff"   onPress={()=>{navigation.navigate('AddReviews',{placeId,addRev,data})}} />)}
-            
+            {login === 1 ? (
+              <Icon name="addfile" size={24} color="#fff" />
+            ) : (
+              <Icon
+                name="addfile"
+                size={24}
+                color="#fff"
+                onPress={() => {
+                  navigation.navigate('AddReviews', {
+                    placeId,
+                    addRev,
+                    data,
+                    item,
+                  });
+                }}
+              />
+            )}
           </View>
         </SafeAreaView>
       </View>
-      <View style={{flex:1}}>
-      {!dataReview ? (
-        <ActivityIndicator size="large" color="#7A7A7A" />
-      ) : (
-      dataReview?.[0] ? (dataReview?.map(item => (
-          <View key={item?._id}>
-            <ReviewViewComponent
-              item={item} 
-            />
-          </View>
-        ))):(
+      <View style={{flex: 1}}>
+        {!dataReview ? (
+          <ActivityIndicator size="large" color="#7A7A7A" />
+        ) : dataReview?.[0] ? (
+          dataReview?.map(item => (
+            <View key={item?._id}>
+              <ReviewViewComponent item={item} />
+            </View>
+          ))
+        ) : (
           <View
-          style={{
-           width:'100%'
-          }}>
-          <Text
             style={{
-              color: 'black',
-              marginTop: 20,
-            alignSelf:'center'
+              width: '100%',
             }}>
-            No Reviews Found
-          </Text>
-        </View>
-
-        )
-          
-        
-      )}
-    </View>
-       
+            <Text
+              style={{
+                color: 'black',
+                marginTop: 20,
+                alignSelf: 'center',
+              }}>
+              No Reviews Found
+            </Text>
+          </View>
+        )}
+      </View>
     </ScrollView>
   );
 };

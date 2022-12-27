@@ -100,7 +100,7 @@ export const HotelViewComponent = ({onPress, item, state}) => {
               />
             </Pressable>
           ) : favData?.length > 0 ? (
-            favData.filter(ele => ele._id === item._id)?.length > 0 ? (
+            favData.filter(ele => ele?._id === item?._id)?.length > 0 ? (
               <TouchableOpacity
                 onPress={() => {
                   addToFavourite(item?._id);
@@ -160,13 +160,14 @@ export const HotelViewComponent = ({onPress, item, state}) => {
               fontSize: 14,
               color: '#7A7A7A',
               fontWeight: '500',
-           
             }}>
-          {item?.keywords?.length >10 ? item?.keywords.substring(0,10)+'...' : (item?.keywords)} 
-          {' • '}
-          {`${convertPriceRange(item?.priceRange)}  `}
-           
-            {Math.round(item?.dist?.calculated *100)/100}
+            {item?.keywords?.length > 10
+              ? item?.keywords.substring(0, 10) + '...'
+              : item?.keywords}
+            {' • '}
+            {`${convertPriceRange(item?.priceRange)}  `}
+
+            {Math.round(item?.dist?.calculated * 100) / 100}
             {'km'}
           </Text>
           <View style={{}}>
@@ -177,19 +178,25 @@ export const HotelViewComponent = ({onPress, item, state}) => {
                 color: '#7A7A7A',
                 fontWeight: '500',
                 flexShrink: 1,
-                width:'100%',
-              
+                width: '100%',
               }}>
-              {
-              width > height ? (
-                item?.address
-              ):(
-               item?.address?.length > 33
-                ? item?.address.substring(0, 33) + '...'
-                : item?.address
-              )
-              
-              }
+              {width > height ? (
+                item?.address?.length > 90 ? (
+                  item?.address.substring(0, 95) + '...'
+                ) : (
+                  item?.address
+                )
+              ) : (
+                <>
+                  {Platform.OS === 'ios'
+                    ? item?.address?.length > 25
+                      ? item?.address.substring(0, 29) + '...'
+                      : item?.address
+                    : item?.address?.length > 33
+                    ? item?.address.substring(0, 33) + '...'
+                    : item?.address}
+                </>
+              )}
             </Text>
           </View>
         </View>

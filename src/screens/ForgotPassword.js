@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -25,6 +25,7 @@ export const ForgotPassword = ({navigation,route}) => {
   const {width, height} = useWindowDimensions();
   const width1 = width < height ? -11.5 : -25;
   const width2 = width < height ? -20.5 : -50;
+  const [loading,isLoading] = useState(true);
   const Email= route.params.Email;
   const signinValidationSchema = yup.object().shape({
     password: yup
@@ -64,7 +65,9 @@ export const ForgotPassword = ({navigation,route}) => {
                     "newPassword":values.password
                 }
                 console.log(obj)
+                isLoading(false)
                 const response = await changePasswordApi(obj);
+                isLoading(true)
                 console.log(response);
                   
                 if(response?.message === "Your new password is updated. Please log in...")

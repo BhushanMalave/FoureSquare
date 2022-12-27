@@ -15,6 +15,7 @@ import {
   Pressable,
   TouchableOpacity,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 
 import ImagePicker from 'react-native-image-crop-picker';
@@ -29,53 +30,59 @@ export const AddReview = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();
   const token = useSelector(state => state.userDetails.token);
   const [text, setText] = useState('');
+  const [loading,isLoading] = useState(true);
   const [imgData, setImgData] = useState([]);
-
+  const item = route.params.item;
   const placeId = route.params.placeId;
   const data = route.params.data;
   const addRev = route.params.addRev;
+  console.log(addRev);
   const dispatch = useDispatch();
 
   const handleSubmit = async () => {
-    // console.log(text);
-    // console.log(imgData);
     let resp;
     let resp1;
     let payload;
 
     if (addRev === 1) {
-      payload = new FormData();
-      payload.append('placeId', placeId);
-      payload.append('review', text);
-      for (let i = 0; i < imgData.length; i++) {
-        payload.append(imgData[i].name, {
-          uri: imgData[i].path,
-          type: imgData[i].mime,
-          name: `${imgData[i].filename}.${imgData[i].mime.substring(
-            imgData[i].mime.indexOf('/') + 1,
-          )}`,
-        });
-      }
-
-      console.log(payload);
-
-      resp1 = await addReview(token, payload);
-      console.log(resp1);
-      if (resp1 !== undefined) {
-        if (resp1.message === 'edited sucessfully(already reviwed)') {
-          setImgData([]);
-          setText('');
-          Toast.show('Edited Successfully and Already Reviewed');
-          dispatch(setInitialState());
-          navigation.navigate('ViewReviews', {data, placeId});
-        } else {
-          setImgData([]);
-          setText('');
-          Toast.show('Review Added');
-          dispatch(setInitialState());
-          navigation.navigate('ViewReviews', {data, placeId});
+      console.log("/././.")
+      if(text.length> 0 ){
+        payload = new FormData();
+        payload.append('placeId', placeId);
+        payload.append('review', text);
+        for (let i = 0; i < imgData.length; i++) {
+          payload.append(imgData[i].name, {
+            uri: imgData[i].path,
+            type: imgData[i].mime,
+            name: `${imgData[i].filename}.${imgData[i].mime.substring(
+              imgData[i].mime.indexOf('/') + 1,
+            )}`,
+          });
         }
+        console.info(payload);
+        isLoading(false);
+        resp1 = await addReview(token, payload);
+        isLoading(true);
+        if (resp1 !== undefined) {
+          if (resp1.message === 'edited sucessfully(already reviwed)') {
+            setImgData([]);
+            setText('');
+            Toast.show('Edited Successfully and Already Reviewed');
+            dispatch(setInitialState());
+            navigation.navigate('ViewReviews', {data, placeId, item});
+          } else {
+            setImgData([]);
+            setText('');
+            Toast.show('Review Added');
+            dispatch(setInitialState());
+            navigation.navigate('ViewReviews', {data, placeId, item});
+          }
+        }
+
+      }else{
+        Toast.show('Enter review or upload images to submit');
       }
+     
     }
 
     if (addRev === 2) {
@@ -91,17 +98,20 @@ export const AddReview = ({navigation, route}) => {
             )}`,
           });
         }
-      }
-      console.log(payload);
-      resp = await addImages(token, payload);
-      dispatch(setInitialState());
-      console.log(resp);
-      if (resp !== undefined) {
-        setImgData([]);
-        setText('');
-        Toast.show('Uploaded Sucessfully');
+        console.log(payload);
+        isLoading(false)
+        resp = await addImages(token, payload);
+        isLoading(true)
         dispatch(setInitialState());
-        navigation.navigate('PhotosGallery', {placeId, data});
+        if (resp !== undefined) {
+          setImgData([]);
+          setText('');
+          Toast.show('Uploaded Sucessfully');
+          dispatch(setInitialState());
+          navigation.navigate('PhotosGallery', {placeId, data, item});
+        }
+      }else{
+        Toast.show('Upload images to submit');
       }
     }
   };
@@ -152,12 +162,12 @@ export const AddReview = ({navigation, route}) => {
                     setImgData([]);
                     setText('');
                     dispatch(setInitialState());
-                    navigation.navigate('PhotosGallery', {data, placeId});
+                    navigation.navigate('PhotosGallery', {data, placeId, item});
                   } else if (addRev === 1) {
                     setImgData([]);
                     setText('');
                     dispatch(setInitialState());
-                    navigation.navigate('ViewReviews', {data, placeId});
+                    navigation.navigate('ViewReviews', {data, placeId, item});
                   } else {
                     dispatch(setInitialState());
                     navigation.goBack();
@@ -254,11 +264,19 @@ export const AddReview = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <View style={styles.buttonbody}>
+      {loading ? (
+          <View style={styles.buttonbody}>
+          <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+            <Text style={styles.buttontext}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+      ): (
+        <View style={styles.buttonbody}>
         <TouchableOpacity onPress={handleSubmit} style={styles.button}>
-          <Text style={styles.buttontext}>Submit</Text>
+        <ActivityIndicator size="large" color="#7A7A7A" style={styles.button}/>
         </TouchableOpacity>
       </View>
+      )}
     </View>
   );
 };

@@ -58,10 +58,9 @@ export const NearYou = ({navigation}) => {
       longitude: longitude,
     };
     const data = await nearYouPlaces(obj);
-  
-    setData(data);
 
-  }
+    setData(data);
+  };
 
   const mapRef = useRef(null);
 
@@ -90,7 +89,6 @@ export const NearYou = ({navigation}) => {
       }
     };
     requestLocationPermission();
-
   }, [state]);
 
   const getOneTimeLocation = async () => {
@@ -129,14 +127,13 @@ export const NearYou = ({navigation}) => {
         //Setting Longitude state
         setCurrentLatitude(currentLatitude);
         dispatch(setuserlongitude(currentLongitude));
-        if(latitude && longitude){
+        if (latitude && longitude) {
           favouriteDataCall();
           call();
         }
-      
       },
       error => {
-        Toast.show(error.message);
+       // Toast.show(error.message);
       },
       {
         enableHighAccuracy: false,
