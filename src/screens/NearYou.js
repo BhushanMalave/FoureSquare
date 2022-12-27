@@ -17,6 +17,7 @@ import {
   useWindowDimensions,
   PermissionsAndroid,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import {HotelViewComponent} from '../components/HotelViewComponent';
 import {useDispatch, useSelector} from 'react-redux';
@@ -42,6 +43,7 @@ export const NearYou = ({navigation}) => {
 
   const [currentLongitude, setCurrentLongitude] = useState('');
   const [currentLatitude, setCurrentLatitude] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
 
   const favouriteDataCall = async () => {
     const body = {
@@ -63,6 +65,34 @@ export const NearYou = ({navigation}) => {
   };
 
   const mapRef = useRef(null);
+
+  const onRefresh = React.useCallback(async () => {
+    const requestLocationPermission = async () => {
+      if (Platform.OS === 'ios') {
+        getOneTimeLocation();
+      } else {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: 'Location Access Required',
+              message: 'This App needs to Access your location',
+            },
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            //To Check, If Permission is granted
+            getOneTimeLocation();
+          } else {
+            Toast.show('Permission Denied');
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+    };
+    requestLocationPermission();
+  
+  }, [refreshing]);
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -144,7 +174,11 @@ export const NearYou = ({navigation}) => {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false}
+    refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }
+    >
       <View style={{height: 200}}>
         {currentLatitude && currentLongitude !== '' ? (
           <Maps

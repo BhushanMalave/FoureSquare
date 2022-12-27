@@ -36,7 +36,6 @@ export const AddReview = ({navigation, route}) => {
   const placeId = route.params.placeId;
   const data = route.params.data;
   const addRev = route.params.addRev;
-  console.log(addRev);
   const dispatch = useDispatch();
 
   const handleSubmit = async () => {
@@ -45,7 +44,6 @@ export const AddReview = ({navigation, route}) => {
     let payload;
 
     if (addRev === 1) {
-      console.log("/././.")
       if(text.length> 0 ){
         payload = new FormData();
         payload.append('placeId', placeId);
@@ -59,7 +57,6 @@ export const AddReview = ({navigation, route}) => {
             )}`,
           });
         }
-        console.info(payload);
         isLoading(false);
         resp1 = await addReview(token, payload);
         isLoading(true);
@@ -98,7 +95,6 @@ export const AddReview = ({navigation, route}) => {
             )}`,
           });
         }
-        console.log(payload);
         isLoading(false)
         resp = await addImages(token, payload);
         isLoading(true)

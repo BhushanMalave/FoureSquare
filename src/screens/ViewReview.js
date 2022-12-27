@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ActivityIndicator,
+  RefreshControl
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {ReviewViewComponent} from '../components/ReviewComponent';
@@ -43,11 +44,17 @@ export const ViewReview = ({navigation, route}) => {
     setDataReview(res.reviews);
   };
 
+  const onRefresh = React.useCallback(async () => {
+    call();
+  }, [refreshing]);
+
   useEffect(() => {
     call();
   }, [state]);
   return (
-    <ScrollView style={{flex: 1}}>
+    <ScrollView style={{flex: 1}}  refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }>
       <View style={styles.topbar}>
         <SafeAreaView>
           <View

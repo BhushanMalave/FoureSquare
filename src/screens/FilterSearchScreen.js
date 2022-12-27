@@ -24,21 +24,17 @@ import {
 import MapView, {Marker} from 'react-native-maps';
 import Icon from 'react-native-vector-icons/Feather';
 import {useDispatch, useSelector} from 'react-redux';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {SearchViewComponent} from '../components/SearchViewComponent';
 import {SearchViewComponentMap} from '../components/searchViewComponentMap';
-import Maps from '../components/Maps';
-import Geolocation from '@react-native-community/geolocation';
+import MapSearch from '../components/MapSearch';
 import {SearchApi} from '../authorization/Auth';
-import {useRef} from 'react';
 import {nearYouPlaces} from '../authorization/Auth';
 import {topPickPlaces} from '../authorization/Auth';
 import {popularPlaces} from '../authorization/Auth';
 import {placeCategoryLunch} from '../authorization/Auth';
 import {placeCategoryCafe} from '../authorization/Auth';
 import {getNearByCityApi} from '../authorization/Auth';
-import { filterSearchApi } from '../authorization/Auth';
-import MapSearch from '../components/MapSearch';
+import {filterSearchApi} from '../authorization/Auth';
 
 export const FilterSearch = ({navigation}) => {
   const {height, width} = useWindowDimensions();
@@ -46,18 +42,17 @@ export const FilterSearch = ({navigation}) => {
   const [text, setText] = useState('');
   const [text1, setText1] = useState(null);
   const [text2, setText2] = useState(null);
-
+  const dispatch = useDispatch();
   const [iconState, setIconState] = useState(false);
   const [onFocus, setOnFocus] = useState(0);
-
+  const [mapSelect, setMapSelect] = useState(false);
   const [buttonView, setButtonView] = useState(0);
 
   const latitude = useSelector(state => state.userDetails.userlatitude);
   const longitude = useSelector(state => state.userDetails.userlongitude);
-
-  const [currentLongitude, setCurrentLongitude] = useState(latitude);
-  const [currentLatitude, setCurrentLatitude] = useState(longitude);
-  const [id,setId] =useState("");
+  const [id, setId] = useState('');
+  const [currentLongitude, setCurrentLongitude] = useState(longitude);
+  const [currentLatitude, setCurrentLatitude] = useState(latitude);
   const [data, setData] = useState([]);
   const favData = useSelector(state => state.userDetails.userFavData);
   const [cityData, setCityData] = useState(null);
@@ -85,23 +80,22 @@ export const FilterSearch = ({navigation}) => {
     wifi: false,
   });
 
-  const [filterData,setFilterData] = useState({
-    'latitude':latitude,
-    'longitude':longitude,
-    'text':'',
-    'radius':text2,
-    'priceRange':"",
-    'sortBy':"", 
-    'acceptcreditCredit':false,
-    'delivery':false,
-    'dogFriendly':false,
-    'familyFriendlyPlace':false,
-    'inWalkingdistance':false,
-    'outdoorSeating':false,
-    'parking':false,
-    'wifi':false,
-
-  }) 
+  const [filterData, setFilterData] = useState({
+    latitude: latitude,
+    longitude: longitude,
+    text: '',
+    radius: text2,
+    priceRange: '',
+    sortBy: '',
+    acceptcreditCards: false,
+    delivery: false,
+    dogFriendly: false,
+    familyFriendlyPlace: false,
+    inWalkingdistance: false,
+    outdoorSeating: false,
+    parking: false,
+    wifi: false,
+  });
   const handleText = string => {
     setText(string);
   };
@@ -112,32 +106,37 @@ export const FilterSearch = ({navigation}) => {
     setText2(string);
     setFilterData({
       ...filterData,
-      radius:text2,
-    })
+      radius: text2,
+    });
   };
   const setOnFocus1 = () => {
     setOnFocus(1);
     setButtonView(0);
     setIconState(true);
+    setMapSelect(false);
   };
 
   const setOnFocus2 = () => {
     setOnFocus(2);
     setButtonView(0);
     setIconState(true);
+    setMapSelect(false);
   };
   const handleMapView = () => {
     setButtonView(2);
     setOnFocus(0);
+    setMapSelect(false);
   };
   const handleListView = () => {
     setButtonView(1);
     setOnFocus(0);
+    setMapSelect(false);
   };
 
   const handleSearch = async () => {
     setButtonView(1);
     setOnFocus(0);
+    setMapSelect(false);
 
     const body = {
       latitude: latitude,
@@ -166,10 +165,8 @@ export const FilterSearch = ({navigation}) => {
     SetViewable(Check);
   });
 
-
   const viewConfigRef = React.useRef({viewAreaCoveragePercentThreshold: 90});
 
- 
   const renderItem = ({item}) => {
     setCurrentLatitude(Viewable[0]?.location?.coordinates[1]);
     setCurrentLongitude(Viewable[0]?.location?.coordinates[0]);
@@ -194,6 +191,7 @@ export const FilterSearch = ({navigation}) => {
     setData(data);
     setOnFocus(0);
     setButtonView(1);
+    setMapSelect(false);
   };
 
   const topPicksCall = async () => {
@@ -205,6 +203,7 @@ export const FilterSearch = ({navigation}) => {
     setData(data);
     setOnFocus(0);
     setButtonView(1);
+    setMapSelect(false);
   };
 
   const popularCall = async () => {
@@ -216,6 +215,7 @@ export const FilterSearch = ({navigation}) => {
     setData(data);
     setOnFocus(0);
     setButtonView(1);
+    setMapSelect(false);
   };
 
   const lunchCall = async () => {
@@ -227,6 +227,7 @@ export const FilterSearch = ({navigation}) => {
     setData(data);
     setOnFocus(0);
     setButtonView(1);
+    setMapSelect(false);
   };
 
   const cafeCall = async () => {
@@ -238,15 +239,32 @@ export const FilterSearch = ({navigation}) => {
     setData(data);
     setOnFocus(0);
     setButtonView(1);
+    setMapSelect(false);
   };
 
   const SuggestaionNearByPlacesCall = async () => {
+    setCurrentLatitude(latitude);
+    setCurrentLongitude(longitude);
     const obj = {
       latitude: latitude,
       longitude: longitude,
     };
     const data = await getNearByCityApi(obj);
     setCityData(data);
+  };
+
+  const callMapSelect = async () => {
+    const obj = {
+      latitude: currentLatitude,
+      longitude: currentLongitude,
+    };
+    //  console.info(obj);
+    const data = await nearYouPlaces(obj);
+    // console.info(data);
+    setData(data);
+    setOnFocus(0);
+    setButtonView(1);
+    setMapSelect(false);
   };
 
   const nearByPlaceData = async item => {
@@ -261,55 +279,61 @@ export const FilterSearch = ({navigation}) => {
     console.log(res.result);
     setData(res.result);
     setOnFocus(0);
+    setMapSelect(false);
   };
 
- const callFilterData = async () =>{
-    const res = await filterSearchApi(filterData);
-  setFilterData({
-    'latitude':latitude,
-    'longitude':longitude,
-    'text':'',
-    'radius':text2,
-    'priceRange':"",
-    'sortBy':"", 
-    'acceptcreditCredit':false,
-    'delivery':false,
-    'dogFriendly':false,
-    'familyFriendlyPlace':false,
-    'inWalkingdistance':false,
-    'outdoorSeating':false,
-    'parking':false,
-    'wifi':false,
-  })
-  setFeatures({
-    acceptCC: false,
-    deliver: false,
-    dogFriendly: false,
-    familyFriendly: false,
-    walkingDistance: false,
-    outDoorSeating: false,
-    parking: false,
-    wifi: false,
-  })
+  Object.filter = (obj, predicate) =>
+    Object.fromEntries(Object.entries(obj).filter(predicate));
 
-  setPrice({
-    one: false,
-    tens: false,
-    hundreds: false,
-    thousands: false,
-  })
+  const callFilterData = async () => {
+    const body = Object.filter(filterData, ([key, value]) => !!value);
+    const res = await filterSearchApi(body);
+    setData(res);
+    setFilterData({
+      latitude: latitude,
+      longitude: longitude,
+      text: '',
+      radius: text2,
+      priceRange: '',
+      sortBy: '',
+      acceptcreditCards: false,
+      delivery: false,
+      dogFriendly: false,
+      familyFriendlyPlace: false,
+      inWalkingdistance: false,
+      outdoorSeating: false,
+      parking: false,
+      wifi: false,
+    });
+    setFeatures({
+      acceptCC: false,
+      deliver: false,
+      dogFriendly: false,
+      familyFriendly: false,
+      walkingDistance: false,
+      outDoorSeating: false,
+      parking: false,
+      wifi: false,
+    });
 
-  setSortBy({
-    popular: false,
-    distance: false,
-    rating: false,
-  })
+    setPrice({
+      one: false,
+      tens: false,
+      hundreds: false,
+      thousands: false,
+    });
 
-  setText2("");
-  setIconState(true);
-  setOnFocus(0);
-  setButtonView(1);
- }
+    setSortBy({
+      popular: false,
+      distance: false,
+      rating: false,
+    });
+
+    setText2('');
+    setIconState(true);
+    setOnFocus(0);
+    setButtonView(1);
+  };
 
   useEffect(() => {
     SuggestaionNearByPlacesCall();
@@ -329,56 +353,52 @@ export const FilterSearch = ({navigation}) => {
               }}>
               <TouchableOpacity
                 onPress={() => {
-                  
-                    setFilterData({
-                      'latitude':latitude,
-                      'longitude':longitude,
-                      'text':'',
-                      'radius':text2,
-                      'priceRange':"",
-                      'sortBy':"", 
-                      'acceptcreditCredit':false,
-                      'delivery':false,
-                      'dogFriendly':false,
-                      'familyFriendlyPlace':false,
-                      'inWalkingdistance':false,
-                      'outdoorSeating':false,
-                      'parking':false,
-                      'wifi':false,
-                    })
-                    setFeatures({
-                      acceptCC: false,
-                      deliver: false,
-                      dogFriendly: false,
-                      familyFriendly: false,
-                      walkingDistance: false,
-                      outDoorSeating: false,
-                      parking: false,
-                      wifi: false,
-                    })
-                  
-                    setPrice({
-                      one: false,
-                      tens: false,
-                      hundreds: false,
-                      thousands: false,
-                    })
-                  
-                    setSortBy({
-                      popular: false,
-                      distance: false,
-                      rating: false,
-                    })
-                  
-                    setText2("");
-                   
-                    setOnFocus(0);
-                    setButtonView(0);
-                    
+                  setFilterData({
+                    latitude: latitude,
+                    longitude: longitude,
+                    text: '',
+                    radius: text2,
+                    priceRange: '',
+                    sortBy: '',
+                    acceptcreditCards: false,
+                    delivery: false,
+                    dogFriendly: false,
+                    familyFriendlyPlace: false,
+                    inWalkingdistance: false,
+                    outdoorSeating: false,
+                    parking: false,
+                    wifi: false,
+                  });
+                  setFeatures({
+                    acceptCC: false,
+                    deliver: false,
+                    dogFriendly: false,
+                    familyFriendly: false,
+                    walkingDistance: false,
+                    outDoorSeating: false,
+                    parking: false,
+                    wifi: false,
+                  });
 
-                    navigation.goBack();
-                 
-                 
+                  setPrice({
+                    one: false,
+                    tens: false,
+                    hundreds: false,
+                    thousands: false,
+                  });
+
+                  setSortBy({
+                    popular: false,
+                    distance: false,
+                    rating: false,
+                  });
+
+                  setText2('');
+                  setIconState(true);
+                  setOnFocus(0);
+                  setButtonView(0);
+
+                  navigation.goBack();
                 }}>
                 <Image
                   style={styles.menu}
@@ -420,6 +440,7 @@ export const FilterSearch = ({navigation}) => {
                     setIconState(false);
                     setOnFocus(0);
                     setButtonView(0);
+                    setMapSelect(false);
                   }}>
                   <Image
                     style={styles.filter}
@@ -430,7 +451,6 @@ export const FilterSearch = ({navigation}) => {
                 <TouchableOpacity
                   onPress={() => {
                     callFilterData();
-                   
                   }}>
                   <Text
                     style={{
@@ -465,7 +485,7 @@ export const FilterSearch = ({navigation}) => {
               />
               <TextInput
                 name="nearMe"
-                value= {text}
+                value={text}
                 placeholder="Near Me"
                 placeholderTextColor={'#ccc'}
                 style={styles.textInput}
@@ -658,7 +678,11 @@ export const FilterSearch = ({navigation}) => {
                 </Text>
               </TouchableOpacity>
 
-              <View
+              <TouchableOpacity
+                onPress={() => {
+                  setMapSelect(true);
+                  setOnFocus(0);
+                }}
                 style={{
                   flexDirection: 'row',
                   borderBottomWidth: 0.7,
@@ -682,8 +706,45 @@ export const FilterSearch = ({navigation}) => {
                   }}>
                   Select Search area on map
                 </Text>
-              </View>
+              </TouchableOpacity>
             </>
+          )}
+
+          {mapSelect === true && (
+            <View style={{flex: 1, height: 700}}>
+              {currentLatitude && currentLongitude !== '' ? (
+                <MapView
+                  style={styles.mapStyle}
+                  initialRegion={{
+                    latitude: currentLatitude,
+                    longitude: currentLongitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                  onPress={e => {
+                    setCurrentLatitude(e.nativeEvent.coordinate.latitude);
+                    setCurrentLongitude(e.nativeEvent.coordinate.longitude);
+
+                    setTimeout(() => {
+                      callMapSelect();
+                    }, 500);
+                  }}
+                  customMapStyle={mapStyle}>
+                  <Marker
+                    draggable
+                    coordinate={{
+                      latitude: currentLatitude,
+                      longitude: currentLongitude,
+                      latitudeDelta: 0.53,
+                      longitudeDelta: 0.01,
+                    }}
+                    onDragEnd={e =>
+                      alert(JSON.stringify(e.nativeEvent.coordinate))
+                    }
+                  />
+                </MapView>
+              ) : null}
+            </View>
           )}
 
           {iconState === false && (
@@ -727,8 +788,8 @@ export const FilterSearch = ({navigation}) => {
                         });
                         setFilterData({
                           ...filterData,
-                          sortBy:'viewCount',
-                        })
+                          sortBy: 'viewCount',
+                        });
                       }}>
                       <Text
                         style={{
@@ -780,8 +841,8 @@ export const FilterSearch = ({navigation}) => {
                         });
                         setFilterData({
                           ...filterData,
-                          sortBy:'dist.calculated',
-                        })
+                          sortBy: 'dist.calculated',
+                        });
                       }}>
                       <Text
                         style={{
@@ -828,8 +889,8 @@ export const FilterSearch = ({navigation}) => {
                         });
                         setFilterData({
                           ...filterData,
-                          sortBy:'totalrating',
-                        })
+                          sortBy: 'totalrating',
+                        });
                       }}>
                       <Text
                         style={{
@@ -950,8 +1011,8 @@ export const FilterSearch = ({navigation}) => {
                         });
                         setFilterData({
                           ...filterData,
-                          priceRange:1,
-                        })
+                          priceRange: 1,
+                        });
                       }}>
                       <Text
                         style={{
@@ -1005,8 +1066,8 @@ export const FilterSearch = ({navigation}) => {
                         });
                         setFilterData({
                           ...filterData,
-                          priceRange:10,
-                        })
+                          priceRange: 10,
+                        });
                       }}>
                       <Text
                         style={{
@@ -1059,8 +1120,8 @@ export const FilterSearch = ({navigation}) => {
                         });
                         setFilterData({
                           ...filterData,
-                          priceRange:100,
-                        })
+                          priceRange: 100,
+                        });
                       }}>
                       <Text
                         style={{
@@ -1109,8 +1170,8 @@ export const FilterSearch = ({navigation}) => {
                         });
                         setFilterData({
                           ...filterData,
-                          priceRange:1000,
-                        })
+                          priceRange: 1000,
+                        });
                       }}>
                       <Text
                         style={{
@@ -1192,8 +1253,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            acceptcreditCredit:true,
-                          })
+                            acceptcreditCards: true,
+                          });
                         }}>
                         <Icon
                           name="plus"
@@ -1222,8 +1283,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            acceptcreditCredit:false,
-                          })
+                            acceptcreditCards: false,
+                          });
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1261,8 +1322,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            delivery:true,
-                          })
+                            delivery: true,
+                          });
                         }}>
                         <Icon
                           name="plus"
@@ -1291,8 +1352,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            delivery:false,
-                          })
+                            delivery: false,
+                          });
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1330,8 +1391,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            dogFriendly:true,
-                          })
+                            dogFriendly: true,
+                          });
                         }}>
                         <Icon
                           name="plus"
@@ -1360,8 +1421,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            dogFriendly:false,
-                          })
+                            dogFriendly: false,
+                          });
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1399,8 +1460,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            familyFriendlyPlace:true,
-                          })
+                            familyFriendlyPlace: true,
+                          });
                         }}>
                         <Icon
                           name="plus"
@@ -1429,8 +1490,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            familyFriendlyPlace:false,
-                          })
+                            familyFriendlyPlace: false,
+                          });
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1468,8 +1529,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            inWalkingdistance:true,
-                          })
+                            inWalkingdistance: true,
+                          });
                         }}>
                         <Icon
                           name="plus"
@@ -1498,8 +1559,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            inWalkingdistance:false,
-                          })
+                            inWalkingdistance: false,
+                          });
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1537,8 +1598,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            outdoorSeating:true,
-                          })
+                            outdoorSeating: true,
+                          });
                         }}>
                         <Icon
                           name="plus"
@@ -1567,8 +1628,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            outDoorSeating:false,
-                          })
+                            outDoorSeating: false,
+                          });
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1606,8 +1667,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            parking:true,
-                          })
+                            parking: true,
+                          });
                         }}>
                         <Icon
                           name="plus"
@@ -1636,8 +1697,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            parking:false,
-                          })
+                            parking: false,
+                          });
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1675,8 +1736,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            wifi:true,
-                          })
+                            wifi: true,
+                          });
                         }}>
                         <Icon
                           name="plus"
@@ -1705,8 +1766,8 @@ export const FilterSearch = ({navigation}) => {
                           });
                           setFilterData({
                             ...filterData,
-                            wifi:false,
-                          })
+                            wifi: false,
+                          });
                         }}>
                         <Image
                           style={{fontSize: 16, marginRight: 25, marginTop: 20}}
@@ -1747,29 +1808,33 @@ export const FilterSearch = ({navigation}) => {
           )}
           {buttonView === 1 && (
             <View>
-              {!data ? ( <ActivityIndicator size="large" color="#7A7A7A" />) : (
-                 data?.[0] ? (
-                  data?.map(item => (
-                    <View key={item?._id}>
-                      <SearchViewComponent
-                        item={item}
-                        state={state}
-                        onPress={() => {
-                          navigation.navigate('DetailScreen', {item});
-                        }}
-                      />
-                    </View>
-                  ))
-
-        ):(
-          <View>
-            <Text style={{color:'black',alignSelf:'center',fontSize:18,marginTop:20}}>No Search Found</Text>
-          </View>
-        )
-
+              {!data ? (
+                <ActivityIndicator size="large" color="#7A7A7A" />
+              ) : data?.[0] ? (
+                data?.map(item => (
+                  <View key={item?._id}>
+                    <SearchViewComponent
+                      item={item}
+                      state={state}
+                      onPress={() => {
+                        navigation.navigate('DetailScreen', {item});
+                      }}
+                    />
+                  </View>
+                ))
+              ) : (
+                <View>
+                  <Text
+                    style={{
+                      color: 'black',
+                      alignSelf: 'center',
+                      fontSize: 18,
+                      marginTop: 20,
+                    }}>
+                    No Search Found
+                  </Text>
+                </View>
               )}
-             
-             
             </View>
           )}
         </View>
@@ -1850,5 +1915,236 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  mapStyle: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
 });
 
+const mapStyle = [
+  {
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#ebe3cd',
+      },
+    ],
+  },
+  {
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#523735',
+      },
+    ],
+  },
+  {
+    elementType: 'labels.text.stroke',
+    stylers: [
+      {
+        color: '#f5f1e6',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#c9b2a6',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.land_parcel',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#dcd2be',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.land_parcel',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#ae9e90',
+      },
+    ],
+  },
+  {
+    featureType: 'landscape.natural',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dfd2ae',
+      },
+    ],
+  },
+  {
+    featureType: 'poi',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dfd2ae',
+      },
+    ],
+  },
+  {
+    featureType: 'poi',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#93817c',
+      },
+    ],
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'geometry.fill',
+    stylers: [
+      {
+        color: '#a5b076',
+      },
+    ],
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#447530',
+      },
+    ],
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#f5f1e6',
+      },
+    ],
+  },
+  {
+    featureType: 'road.arterial',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#fdfcf8',
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#f8c967',
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#e9bc62',
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway.controlled_access',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#e98d58',
+      },
+    ],
+  },
+  {
+    featureType: 'road.highway.controlled_access',
+    elementType: 'geometry.stroke',
+    stylers: [
+      {
+        color: '#db8555',
+      },
+    ],
+  },
+  {
+    featureType: 'road.local',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#806b63',
+      },
+    ],
+  },
+  {
+    featureType: 'transit.line',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dfd2ae',
+      },
+    ],
+  },
+  {
+    featureType: 'transit.line',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#8f7d77',
+      },
+    ],
+  },
+  {
+    featureType: 'transit.line',
+    elementType: 'labels.text.stroke',
+    stylers: [
+      {
+        color: '#ebe3cd',
+      },
+    ],
+  },
+  {
+    featureType: 'transit.station',
+    elementType: 'geometry',
+    stylers: [
+      {
+        color: '#dfd2ae',
+      },
+    ],
+  },
+  {
+    featureType: 'water',
+    elementType: 'geometry.fill',
+    stylers: [
+      {
+        color: '#b9d3c2',
+      },
+    ],
+  },
+  {
+    featureType: 'water',
+    elementType: 'labels.text.fill',
+    stylers: [
+      {
+        color: '#92998d',
+      },
+    ],
+  },
+];
