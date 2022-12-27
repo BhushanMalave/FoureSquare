@@ -25,7 +25,6 @@ import {Rating, AirbnbRating} from 'react-native-ratings';
 import {useSelector, useDispatch} from 'react-redux';
 import {RatingModel} from '../components/RatingModel';
 import {setRatingState} from '../redux/ReduxPersist/States';
-import Geolocation from '@react-native-community/geolocation';
 import {useRef} from 'react';
 import {placeDetails} from '../authorization/Auth';
 import {addFavouriteApi} from '../authorization/Auth';
@@ -88,7 +87,7 @@ export const DetailScreen = ({navigation, route}) => {
       placeId: id,
     };
     const res = await addFavouriteApi(token, body);
-    console.log(res);
+ 
     dispatch(setInitialState());
   };
 
@@ -97,7 +96,7 @@ export const DetailScreen = ({navigation, route}) => {
       placeId: id,
     };
     const res = await addFavouriteApi(token, body);
-    console.log(res);
+   
     dispatch(setInitialState());
   };
 

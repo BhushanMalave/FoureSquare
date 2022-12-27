@@ -122,16 +122,23 @@ export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
                 fontWeight: '500',
                 flexShrink: 1,
               }}>
-               {
-              width > height ? (
-                item?.address
-              ):(
-               item?.address?.length > 33
-                ? item?.address.substring(0, 33) + '...'
-                : item?.address
-              )
-              
-              }
+              {width > height ? (
+                item?.address?.length > 90 ? (
+                  item?.address.substring(0, 95) + '...'
+                ) : (
+                  item?.address
+                )
+              ) : (
+                <>
+                  {Platform.OS === 'ios'
+                    ? item?.address?.length > 25
+                      ? item?.address.substring(0, 29) + '...'
+                      : item?.address
+                    : item?.address?.length > 33
+                    ? item?.address.substring(0, 33) + '...'
+                    : item?.address}
+                </>
+              )}
             </Text>
           </View>
         </View>
