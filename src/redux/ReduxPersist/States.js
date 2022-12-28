@@ -7,6 +7,7 @@ export const StateSlice = createSlice({
     ratingState: false,
     loginState: 0,
     initialState:false,
+    textRadius:"",
   },
   reducers: {
     setRatingState: (state, action) => {
@@ -18,11 +19,15 @@ export const StateSlice = createSlice({
     setInitialState: (state, action) => {
       state.initialState = !state.initialState;
     },
+    setTextRadius: (state, action) => {
+      console.info(action.payload);
+      state.textRadius = action.payload;
+    },
 
    
   },
 });
 
-export const {setRatingState, setLoginState,setInitialState} = StateSlice.actions;
+export const {setRatingState, setLoginState,setInitialState,setTextRadius} = StateSlice.actions;
 
 export default StateSlice.reducer;

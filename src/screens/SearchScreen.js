@@ -42,7 +42,6 @@ export const Search = ({navigation}) => {
   const state = useSelector(state => state.status.initialState);
   const [text, setText] = useState('');
   const [text1, setText1] = useState(null);
-  const [text2, setText2] = useState(null);
   const dispatch = useDispatch();
   const [iconState, setIconState] = useState(true);
   const [onFocus, setOnFocus] = useState(0);
@@ -85,7 +84,7 @@ export const Search = ({navigation}) => {
     latitude: latitude,
     longitude: longitude,
     text: '',
-    radius: text2,
+    radius: '',
     priceRange: '',
     sortBy: '',
     acceptcreditCards: false,
@@ -103,13 +102,7 @@ export const Search = ({navigation}) => {
   const handleText1 = string => {
     setText1(string);
   };
-  const handleText2 = string => {
-    setText2(string);
-    setFilterData({
-      ...filterData,
-      radius: text2,
-    });
-  };
+
   const setOnFocus1 = () => {
     setOnFocus(1);
     setButtonView(0);
@@ -293,7 +286,7 @@ export const Search = ({navigation}) => {
       latitude: latitude,
       longitude: longitude,
       text: '',
-      radius: text2,
+      radius: '',
       priceRange: '',
       sortBy: '',
       acceptcreditCards: false,
@@ -329,7 +322,7 @@ export const Search = ({navigation}) => {
       rating: false,
     });
 
-    setText2('');
+
     setIconState(true);
     setOnFocus(0);
     setButtonView(1);
@@ -358,7 +351,7 @@ export const Search = ({navigation}) => {
                       latitude: latitude,
                       longitude: longitude,
                       text: '',
-                      radius: text2,
+                      radius: '',
                       priceRange: '',
                       sortBy: '',
                       acceptcreditCards: false,
@@ -394,7 +387,7 @@ export const Search = ({navigation}) => {
                       rating: false,
                     });
 
-                    setText2('');
+                   
                     setIconState(true);
                     setOnFocus(0);
                     setButtonView(0);
@@ -972,7 +965,18 @@ export const Search = ({navigation}) => {
                         marginTop: Platform.OS === 'ios' ? 15 : 3,
                         color: 'black',
                       }}
-                      onChangeText={val => setText2(val)}
+                      onChangeText={str => {
+                        setFilterData({
+                          ...filterData,
+                          radius: str,
+                        });
+                      }}
+                      onChange={str => {
+                        setFilterData({
+                          ...filterData,
+                          radius: str,
+                        });
+                      }}
                     />
                     <Text
                       style={{
