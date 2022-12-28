@@ -247,17 +247,20 @@ export const Search = ({navigation}) => {
     setCityData(data);
   };
 
-  const callMapSelect = async () => {
+  const callMapSelect = async (lat,long) => {
     const obj = {
-      latitude: currentLatitude,
-      longitude: currentLongitude,
+      latitude: lat,
+      longitude: long,
     };
+   // console.info(obj);
     const data = await nearYouPlaces(obj);
+    // console.info(data);
     setData(data);
     setOnFocus(0);
     setButtonView(1);
     setMapSelect(false);
-    dispatch(setInitialState());
+    setCurrentLatitude(latitude);
+    setCurrentLongitude(longitude);
   };
 
   const nearByPlaceData = async item => {
@@ -706,7 +709,7 @@ export const Search = ({navigation}) => {
           )}
 
           {mapSelect === true && (
-            <View style={{flex: 1, height: 700}}>
+            <View style={{flex: 1, height:Platform.OS === 'ios' ? 700 : 758}}>
               {currentLatitude && currentLongitude !== '' ? (
                 <MapView
                   style={styles.mapStyle}
@@ -719,8 +722,11 @@ export const Search = ({navigation}) => {
                   onPress={e => {
                     setCurrentLatitude(e.nativeEvent.coordinate.latitude);
                     setCurrentLongitude(e.nativeEvent.coordinate.longitude);
+                    const lat = e.nativeEvent.coordinate.latitude;
+                    const long = e.nativeEvent.coordinate.longitude;
+
                     setTimeout(() => {
-                      callMapSelect();
+                      callMapSelect(lat,long);
                     }, 500);
                   }}
                   customMapStyle={mapStyle}>
