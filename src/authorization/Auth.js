@@ -63,13 +63,13 @@ export const signUpApi = async objBody => {
       'https://assesment-seven.vercel.app/signUp',
       body,
     );
-    Toast.show(response.data.message[0], Toast.SHORT);
+    Toast.show(response.data.message, Toast.SHORT);
     if (response.data) {
       return response.data;
     }
   } catch (error) {
     Toast.show("User Allready Exist", Toast.SHORT);
-    console.log('mpPasword', error.response.data);
+    console.log('signUP', error.response.data);
   }
 };
 

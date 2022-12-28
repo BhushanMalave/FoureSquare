@@ -23,6 +23,7 @@ import moment from 'moment';
 export const ViewPhoto = ({navigation,route}) => {
   const {height, width} = useWindowDimensions();
   const [data,setData] = useState('');
+
   const state = useSelector(state=> state.status.initialState);
   const dispatch = useDispatch();
   const name = route.params.name;

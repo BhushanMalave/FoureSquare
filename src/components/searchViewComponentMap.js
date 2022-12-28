@@ -35,6 +35,23 @@ export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
     });
   };
 
+  const log1 = () => {
+    
+    Alert.alert('', 'Login to add  to Favourite', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+      {
+        text: 'Login',
+        onPress: () => {
+          dispatch(setLoginState(0));
+        },
+      },
+    ]);
+  };
+
+
   const convertPriceRange = number => {
     if (number < 10) {
       return '₹';
@@ -92,7 +109,7 @@ export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
             {item?.placeName}
           </Text>
           {login === 1 ? (
-            <Pressable>
+            <Pressable onPress={()=>{log1()}}>
               <Image
                 source={require('../assets/images/favourite_star.png')}
                 style={styles.star}
@@ -132,9 +149,31 @@ export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
             </TouchableOpacity>
           )}
         </View>
-        <View
+        {item?.totalrating >= 8 ? (
+           <View
+           style={{
+             backgroundColor: '#74d434',
+             height: 23,
+             width: 25,
+             borderRadius: 4,
+             marginTop: 0,
+           }}>
+           <Text
+             style={{
+               fontFamily: 'Avenir Light',
+               fontSize: 14,
+               textAlign: 'center',
+               alignSelf: 'center',
+               color: 'white',
+               marginTop: 2,
+             }}>
+             {item?.totalrating}
+           </Text>
+         </View>
+        ) : (
+          <View
           style={{
-            backgroundColor: '#74d434',
+            backgroundColor:'#b0e034',
             height: 23,
             width: 25,
             borderRadius: 4,
@@ -152,6 +191,8 @@ export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
             {item?.totalrating}
           </Text>
         </View>
+        )}
+       
         <View style={{marginTop: 5}}>
           <Text
             style={{

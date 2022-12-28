@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ReviewViewComponent} from '../components/ReviewComponent';
@@ -27,6 +27,7 @@ import Share from 'react-native-share';
 export const PhotosGallery = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();
   const [dataImg, setDataImg] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const login = useSelector(state => state.status.loginState);
   const state = useSelector(state => state.status.initialState);
   const dispatch = useDispatch();
@@ -59,6 +60,22 @@ export const PhotosGallery = ({navigation, route}) => {
     const res = await viewPhotoApi(body);
     const da = getStructuredData(res.reviews);
     setDataImg(da);
+  };
+
+  const log = () => {
+    
+    Alert.alert('', 'Login to add Photos', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+      {
+        text: 'Login',
+        onPress: () => {
+          dispatch(setLoginState(0));
+        },
+      },
+    ]);
   };
 
   const onRefresh = React.useCallback(async () => {
@@ -105,21 +122,22 @@ export const PhotosGallery = ({navigation, route}) => {
               {name.length > 15 ? name.substring(0, 15) + '...' : name}
             </Text>
             {login === 1 ? (
-              <Icon name="camera-plus-outline" size={24} color="#fff" />
+              <TouchableOpacity onPress={()=>{log()}}>
+                <Image source={require('../assets/images/aad_photo.png')} style={{height:24,width:34,}}/>
+              </TouchableOpacity>
+              
             ) : (
-              <Icon
-                name="camera-plus-outline"
-                size={24}
-                color="#fff"
-                onPress={() => {
-                  navigation.navigate('AddReviews', {placeId, addRev, data , item});
-                }}
-              />
+              <TouchableOpacity   onPress={() => {
+                navigation.navigate('AddReviews', {placeId, addRev, data , item});
+              }}>
+              <Image source={require('../assets/images/aad_photo.png')} style={{height:24,width:34,}}/>
+            </TouchableOpacity>
+             
             )}
           </View>
         </SafeAreaView>
       </View>
-      <ScrollView style={{flex: 1, backgroundColor: 'black'}}>
+      <ScrollView contentContainerStyle={{flex: 1, backgroundColor: 'black',height:height-100}}>
         <View style={styles.container}>
           {dataImg.length<1 ? (
             <ActivityIndicator
@@ -186,6 +204,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexWrap: 'wrap',
-    height: '100%',
+    height: '100%',marginLeft:3,
   },
 });
