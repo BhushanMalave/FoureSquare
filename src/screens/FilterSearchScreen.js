@@ -252,7 +252,7 @@ export const FilterSearch = ({navigation}) => {
       latitude: lat,
       longitude: long,
     };
-   // console.info(obj);
+    console.info(obj);
     const data = await nearYouPlaces(obj);
     // console.info(data);
     setData(data);
@@ -482,7 +482,7 @@ export const FilterSearch = ({navigation}) => {
               />
               <TextInput
                 name="nearMe"
-                value={text}
+                value={text1}
                 placeholder="Near Me"
                 placeholderTextColor={'#ccc'}
                 style={styles.textInput}
