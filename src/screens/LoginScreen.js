@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   ImageBackground,
   SafeAreaView,
@@ -25,19 +25,16 @@ import {setToken} from '../redux/ReduxPersist/User';
 import {useDispatch} from 'react-redux';
 import {setLoginState} from '../redux/ReduxPersist/States';
 
-
 export const Login = ({navigation}) => {
   const {width, height} = useWindowDimensions();
   const width1 = width < height ? -15.5 : -45;
   const width2 = width < height ? -15.5 : -50;
-  let [email,setEmail] = useState('') ;
-  const [loading,isLoading] = useState(true);
-  const [loading1,isLoading1] = useState(true);
+  let [email, setEmail] = useState('');
+  const [loading, isLoading] = useState(true);
+  const [loading1, isLoading1] = useState(true);
 
   const handleForgotPassword = async () => {
-    console.log(
-      email
-    )
+    console.log(email);
     const obj = {
       email: email,
     };
@@ -89,32 +86,27 @@ export const Login = ({navigation}) => {
             <View style={styles.viewTextInput}>
               <Formik
                 validationSchema={signinValidationSchema}
-              
                 initialValues={{email: '', password: ''}}
                 onSubmit={async (values, {resetForm}) => {
-                
-                    setEmail(values.email)
-                
-                    const obj = {
-                      email: values.email,
-                      password: values.password,
-                    };
-                    console.log(obj);
-                    console.log(email)
-                    isLoading(false);
+                  setEmail(values.email);
 
-                    const res = await signInApi(obj);
+                  const obj = {
+                    email: values.email,
+                    password: values.password,
+                  };
+                  console.log(obj);
+                  console.log(email);
+                  isLoading(false);
 
-                    isLoading(true);
+                  const res = await signInApi(obj);
 
-                    if (res?.message === 'Login successful') {
-                      dispatch(setToken(res.access_token));
-                      dispatch(setLoginState(2));
-                      resetForm({initialValues: ''});
-                    }
-                   
-                  
-                 
+                  isLoading(true);
+
+                  if (res?.message === 'Login successful') {
+                    dispatch(setToken(res.access_token));
+                    dispatch(setLoginState(2));
+                    resetForm({initialValues: ''});
+                  }
                 }}>
                 {({
                   handleChange,
@@ -216,32 +208,32 @@ export const Login = ({navigation}) => {
                         {errors.password}
                       </Text>
                     )}
-                  
-                       <TouchableOpacity
-                       onPress={() => {
-                         handleForgotPassword();
-                         handleReset();
-                       }}>
-                       <Text style={styles.text}>Forgot Password?</Text>
-                     </TouchableOpacity>
-                   
-                   
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleForgotPassword();
+                        handleReset();
+                      }}>
+                      <Text style={styles.text}>Forgot Password?</Text>
+                    </TouchableOpacity>
+
                     <View style={styles.container}>
                       {loading ? (
-                         <TouchableOpacity
-                         onPress={() => {
-                         
-                           handleSubmit();
-                         }}
-                         style={styles.button}
-                         disabled={!isValid}>
-                         <Text style={styles.textbutton}>Login</Text>
-                       </TouchableOpacity>
-
-                      ):(
-                        <ActivityIndicator size="large" color="#7A7A7A" style={styles.button1}/>
+                        <TouchableOpacity
+                          onPress={() => {
+                            handleSubmit();
+                          }}
+                          style={styles.button}
+                          disabled={!isValid}>
+                          <Text style={styles.textbutton}>Login</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <ActivityIndicator
+                          size="large"
+                          color="#7A7A7A"
+                          style={styles.button1}
+                        />
                       )}
-                     
                     </View>
                     <TouchableOpacity
                       onPress={() => {

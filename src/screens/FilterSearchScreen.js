@@ -252,7 +252,7 @@ export const FilterSearch = ({navigation}) => {
       latitude: lat,
       longitude: long,
     };
-    console.info(obj);
+   // console.info(obj);
     const data = await nearYouPlaces(obj);
     // console.info(data);
     setData(data);
