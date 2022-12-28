@@ -78,9 +78,31 @@ export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
                   />
                 </TouchableOpacity>
         </View>
-        <View
+        {item?.totalrating >= 8 ? (
+           <View
+           style={{
+             backgroundColor: '#74d434',
+             height: 23,
+             width: 25,
+             borderRadius: 4,
+             marginTop: 0,
+           }}>
+           <Text
+             style={{
+               fontFamily: 'Avenir Light',
+               fontSize: 14,
+               textAlign: 'center',
+               alignSelf: 'center',
+               color: 'white',
+               marginTop: 2,
+             }}>
+             {item?.totalrating}
+           </Text>
+         </View>
+        ) : (
+          <View
           style={{
-            backgroundColor: '#74d434',
+            backgroundColor:'#b0e034',
             height: 23,
             width: 25,
             borderRadius: 4,
@@ -95,9 +117,11 @@ export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
               color: 'white',
               marginTop: 2,
             }}>
-            {item?.totalrating / 2}
+            {item?.totalrating}
           </Text>
         </View>
+        )}
+       
         <View style={{marginTop: 5}}>
           <Text
             style={{

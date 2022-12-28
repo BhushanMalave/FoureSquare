@@ -42,6 +42,8 @@ export const DetailScreen = ({navigation, route}) => {
   const login = useSelector(state => state.status.loginState);
   const token = useSelector(state => state.userDetails.token);
   const favData = useSelector(state => state.userDetails.userFavData);
+  const latitude = useSelector(state => state.userDetails.userlatitude);
+  const longitude = useSelector(state => state.userDetails.userlongitude);
   const [data, setData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const dispatch = useDispatch();
@@ -104,13 +106,14 @@ export const DetailScreen = ({navigation, route}) => {
 
   const call = async () => {
     const obj = {
-      placeName: item.placeName,
+      latitude:latitude,
+      longitude:longitude,
       placeId: item._id,
     };
     const data = await placeDetails(obj);
-    setData(data);
-    setCurrentLongitude(data?.location?.coordinates[0]);
-    setCurrentLatitude(data?.location?.coordinates[1]);
+    setData(data.result[0]);
+    setCurrentLongitude(data?.result[0]?.location?.coordinates[0]);
+    setCurrentLatitude(data?.result[0]?.location?.coordinates[1]);
 
     const no = item?.totalrating / 2;
     setRating(no);
@@ -408,7 +411,7 @@ export const DetailScreen = ({navigation, route}) => {
                 marginTop: 20,
                 marginLeft: Platform.OS === 'ios' ? 10 : 15,
               }}>
-              +91 {data?.phoneNumber.substring(2,13)}
+              +91 {data?.phoneNumber?.substring(2,13)}
             </Text>
             <Text
               style={{

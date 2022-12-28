@@ -122,16 +122,17 @@ export const PhotosGallery = ({navigation, route}) => {
               {name.length > 15 ? name.substring(0, 15) + '...' : name}
             </Text>
             {login === 1 ? (
-              <Icon name="camera-plus-outline" size={24} color="#fff" onPress={()=>{log()}}/>
+              <TouchableOpacity onPress={()=>{log()}}>
+                <Image source={require('../assets/images/aad_photo.png')} style={{height:24,width:34,}}/>
+              </TouchableOpacity>
+              
             ) : (
-              <Icon
-                name="camera-plus-outline"
-                size={24}
-                color="#fff"
-                onPress={() => {
-                  navigation.navigate('AddReviews', {placeId, addRev, data , item});
-                }}
-              />
+              <TouchableOpacity   onPress={() => {
+                navigation.navigate('AddReviews', {placeId, addRev, data , item});
+              }}>
+              <Image source={require('../assets/images/aad_photo.png')} style={{height:24,width:34,}}/>
+            </TouchableOpacity>
+             
             )}
           </View>
         </SafeAreaView>
@@ -203,6 +204,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexWrap: 'wrap',
-    height: '100%',
+    height: '100%',marginLeft:3,
   },
 });

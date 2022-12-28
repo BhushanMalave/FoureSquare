@@ -100,21 +100,22 @@ export const ViewReview = ({navigation, route}) => {
               {name.length > 15 ? name.substring(0, 15) + '...' : name}
             </Text>
             {login === 1 ? (
-              <Icon name="addfile" size={24} color="#fff" onPress={()=>{log()}}/>
+              <TouchableOpacity onPress={()=>{log()}}>
+                <Image source={require('../assets/images/add_review.png')} style={{height:24,width:20}}/>
+              </TouchableOpacity>
+             
             ) : (
-              <Icon
-                name="addfile"
-                size={24}
-                color="#fff"
-                onPress={() => {
-                  navigation.navigate('AddReviews', {
-                    placeId,
-                    addRev,
-                    data,
-                    item,
-                  });
-                }}
-              />
+              <TouchableOpacity  onPress={() => {
+                navigation.navigate('AddReviews', {
+                  placeId,
+                  addRev,
+                  data,
+                  item,
+                });
+              }}>
+              <Image source={require('../assets/images/add_review.png')} style={{height:24,width:20}}/>
+            </TouchableOpacity>
+             
             )}
           </View>
         </SafeAreaView>
