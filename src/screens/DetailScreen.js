@@ -69,7 +69,6 @@ export const DetailScreen = ({navigation, route}) => {
       console.log('error while sharing');
     }
   };
-  // console.log(data);
   const log = () => {
     
     Alert.alert('', 'Login to add Review', [
@@ -111,11 +110,11 @@ export const DetailScreen = ({navigation, route}) => {
       placeId: item._id,
     };
     const data = await placeDetails(obj);
-    setData(data.result[0]);
-    setCurrentLongitude(data?.result[0]?.location?.coordinates[0]);
-    setCurrentLatitude(data?.result[0]?.location?.coordinates[1]);
+    setData(data[0]);
+    setCurrentLongitude(data[0]?.location?.coordinates[0]);
+    setCurrentLatitude(data[0]?.location?.coordinates[1]);
 
-    const no = item?.totalrating / 2;
+    const no = data[0]?.totalrating / 2;
     setRating(no);
     dispatch(setOverallRating(rating));
     dispatch(setPlaceId(item._id));

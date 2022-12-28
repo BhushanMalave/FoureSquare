@@ -26,7 +26,7 @@ import Share from 'react-native-share';
 
 export const PhotosGallery = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();
-  const [dataImg, setDataImg] = useState([]);
+  const [dataImg, setDataImg] = useState([10]);
   const [refreshing, setRefreshing] = useState(false);
   const login = useSelector(state => state.status.loginState);
   const state = useSelector(state => state.status.initialState);
@@ -139,7 +139,7 @@ export const PhotosGallery = ({navigation, route}) => {
       </View>
       <ScrollView contentContainerStyle={{flex: 1, backgroundColor: 'black',height:height-100}}>
         <View style={styles.container}>
-          {dataImg.length<1 ? (
+          {dataImg[0] === 10 ? (
             <ActivityIndicator
               size="large"
               color="#7A7A7A"
@@ -147,8 +147,8 @@ export const PhotosGallery = ({navigation, route}) => {
             />
           ) : (
             <>
-              {dataImg.length > 0  ? (
-                dataImg.map(item => {
+              {dataImg?.length > 0  ? (
+                dataImg?.map(item => {
                   const id = item?.id;
                   return (
                     <TouchableOpacity
@@ -204,6 +204,6 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexWrap: 'wrap',
-    height: '100%',marginLeft:3,
+    height: '100%',
   },
 });

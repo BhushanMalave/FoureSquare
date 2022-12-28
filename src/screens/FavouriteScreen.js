@@ -69,7 +69,7 @@ export const Favourite = ({navigation}) => {
     latitude: latitude,
     longitude: longitude,
     text: '',
-    radius: text,
+    radius: '',
     priceRange: '',
     sortBy: '',
     acceptcreditCards: false,
@@ -130,7 +130,7 @@ export const Favourite = ({navigation}) => {
         latitude: latitude,
         longitude: longitude,
         text: '',
-        radius: text,
+        radius: '',
         priceRange: '',
         sortBy: '',
         acceptcreditCards: false,
@@ -166,7 +166,6 @@ export const Favourite = ({navigation}) => {
         rating: false,
       });
 
-      setText('');
       setIconState(true);
    
   };
@@ -577,7 +576,18 @@ export const Favourite = ({navigation}) => {
                           marginTop: Platform.OS === 'ios' ? 15 : 3,
                           color: 'black',
                         }}
-                        onChangeText={handleText}
+                        onChangeText={str => {
+                          setFilterData({
+                            ...filterData,
+                            radius: str,
+                          });
+                        }}
+                        onChange={str => {
+                          setFilterData({
+                            ...filterData,
+                            radius: str,
+                          });
+                        }}
                       />
                       <Text
                         style={{
