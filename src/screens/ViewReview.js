@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {ReviewViewComponent} from '../components/ReviewComponent';
@@ -26,6 +26,7 @@ import {setInitialState} from '../redux/ReduxPersist/States';
 export const ViewReview = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();
   const [dataReview, setDataReview] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
   const login = useSelector(state => state.status.loginState);
   const state = useSelector(state => state.status.initialState);
   const dispatch = useDispatch();
@@ -35,7 +36,21 @@ export const ViewReview = ({navigation, route}) => {
   const item = route.params.item;
   const addRev = 1;
  
-
+  const log = () => {
+    
+    Alert.alert('', 'Login to add Reviews', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+      {
+        text: 'Login',
+        onPress: () => {
+          dispatch(setLoginState(0));
+        },
+      },
+    ]);
+  };
   const call = async () => {
     const body = {
       placeId: placeId,
@@ -85,7 +100,7 @@ export const ViewReview = ({navigation, route}) => {
               {name.length > 15 ? name.substring(0, 15) + '...' : name}
             </Text>
             {login === 1 ? (
-              <Icon name="addfile" size={24} color="#fff" />
+              <Icon name="addfile" size={24} color="#fff" onPress={()=>{log()}}/>
             ) : (
               <Icon
                 name="addfile"

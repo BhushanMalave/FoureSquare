@@ -34,6 +34,22 @@ export const HotelViewComponent = ({onPress, item, state}) => {
       }
     });
   };
+  const log1 = () => {
+    
+    Alert.alert('', 'Login to add  to Favourite', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+      {
+        text: 'Login',
+        onPress: () => {
+          dispatch(setLoginState(0));
+        },
+      },
+    ]);
+  };
+
 
   const convertPriceRange = number => {
     if (number < 10) {
@@ -93,7 +109,7 @@ export const HotelViewComponent = ({onPress, item, state}) => {
             {item?.placeName}
           </Text>
           {login === 1 ? (
-            <Pressable>
+            <Pressable onPress={()=>{log1()}}>
               <Image
                 source={require('../assets/images/favourite_star.png')}
                 style={styles.star}

@@ -35,6 +35,23 @@ export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
     });
   };
 
+  const log1 = () => {
+    
+    Alert.alert('', 'Login to add  to Favourite', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+      {
+        text: 'Login',
+        onPress: () => {
+          dispatch(setLoginState(0));
+        },
+      },
+    ]);
+  };
+
+
   const convertPriceRange = number => {
     if (number < 10) {
       return '₹';
@@ -92,7 +109,7 @@ export const SearchViewComponentMap = ({onPress, item, state,style={}}) => {
             {item?.placeName}
           </Text>
           {login === 1 ? (
-            <Pressable>
+            <Pressable onPress={()=>{log1()}}>
               <Image
                 source={require('../assets/images/favourite_star.png')}
                 style={styles.star}

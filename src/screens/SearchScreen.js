@@ -259,9 +259,7 @@ export const Search = ({navigation}) => {
       latitude: currentLatitude,
       longitude: currentLongitude,
     };
-    console.info(obj);
     const data = await nearYouPlaces(obj);
-    console.info(data);
     setData(data);
     setOnFocus(0);
     setButtonView(1);
@@ -278,7 +276,6 @@ export const Search = ({navigation}) => {
       text: item?.cityName,
     };
     const res = await SearchApi(body);
-    console.log(res.result);
     setData(res.result);
     setOnFocus(0);
     setMapSelect(false);
@@ -1815,7 +1812,8 @@ export const Search = ({navigation}) => {
               {!data ? (
                 <ActivityIndicator size="large" color="#7A7A7A" />
               ) : data?.[0] ? (
-                data?.map(item => (
+                <View style={{marginBottom:20,}}>
+               { data?.map(item => (
                   <View key={item?._id}>
                     <SearchViewComponent
                       item={item}
@@ -1825,8 +1823,8 @@ export const Search = ({navigation}) => {
                       }}
                     />
                   </View>
-                ))
-              ) : (
+                ))}
+             </View> ) : (
                 <View>
                   <Text
                     style={{

@@ -19,19 +19,21 @@ import {
   PermissionsAndroid,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Maps from '../components/Maps';
 import {Rating, AirbnbRating} from 'react-native-ratings';
 import {useSelector, useDispatch} from 'react-redux';
 import {RatingModel} from '../components/RatingModel';
-import {setRatingState} from '../redux/ReduxPersist/States';
+import {setLoginState, setRatingState} from '../redux/ReduxPersist/States';
 import {useRef} from 'react';
 import {placeDetails} from '../authorization/Auth';
 import {addFavouriteApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
 import {setOverallRating} from '../redux/ReduxPersist/User';
 import {setPlaceId} from '../redux/ReduxPersist/User';
+
 
 export const DetailScreen = ({navigation, route}) => {
   const {width, height} = useWindowDimensions();
@@ -64,6 +66,38 @@ export const DetailScreen = ({navigation, route}) => {
     } catch (error) {
       console.log('error while sharing');
     }
+  };
+  // console.log(data);
+  const log = () => {
+    
+    Alert.alert('', 'Login to add Review', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+      {
+        text: 'Login',
+        onPress: () => {
+          dispatch(setLoginState(0));
+        },
+      },
+    ]);
+  };
+
+  const log1 = () => {
+    
+    Alert.alert('', 'Login to add  to Favourite', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+      },
+      {
+        text: 'Login',
+        onPress: () => {
+          dispatch(setLoginState(0));
+        },
+      },
+    ]);
   };
 
   const mapRef = useRef(null);
@@ -114,7 +148,9 @@ export const DetailScreen = ({navigation, route}) => {
     <>
     {!data ? (
       <SafeAreaView>
-          <ActivityIndicator size="large" color="#7A7A7A" />
+        <View style={{height:height,alignContent:'center'}}>
+          <ActivityIndicator size="large" color="#7A7A7A" style={{marginTop:40,}} />
+        </View>
       </SafeAreaView>
     ):(
 
@@ -173,7 +209,7 @@ export const DetailScreen = ({navigation, route}) => {
                 />
                 </TouchableOpacity>
                 {login === 1 ? (
-                  <Pressable>
+                  <Pressable onPress={()=>{log1()}}>
                     <Image
                       source={require('../assets/images/favourite_icon_copy.png')}
                       style={styles.star}
@@ -383,7 +419,7 @@ export const DetailScreen = ({navigation, route}) => {
                 marginTop: 20,
                 marginLeft: Platform.OS === 'ios' ? 10 : 15,
               }}>
-              Drive : 5km
+              Drive : {Math.round(data?.dist?.calculated * 100) / 100} km
             </Text>
           </View>
         </LinearGradient>
@@ -399,10 +435,11 @@ export const DetailScreen = ({navigation, route}) => {
           </View>
         ) : (
           <View style={styles.buttonbody}>
-            <View
+            <TouchableOpacity
+            onPress={()=>{log()}}
               style={styles.button}>
               <Text style={styles.buttontext}>Add Review</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         )}
       </View>
