@@ -483,7 +483,7 @@ export const Search = ({navigation}) => {
               />
               <TextInput
                 name="nearMe"
-                value={text}
+                value={text1}
                 placeholder="Near Me"
                 placeholderTextColor={'#ccc'}
                 style={styles.textInput}

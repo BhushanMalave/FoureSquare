@@ -94,10 +94,11 @@ export const CreateAccount = () => {
 
                   isLoading(false);
                   const response = await signUpApi(obj);
+                  console.log(response);
                   isLoading(true);
 
                   if (response?.message === 'User registered successfully') {
-                    dispatch(setToken(response.access_token));
+                    dispatch(setToken(response.access_Token));
                     dispatch(setLoginState(2));
                     resetForm({initialValues: ''});
                   } else {
