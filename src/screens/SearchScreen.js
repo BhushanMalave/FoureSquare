@@ -1818,7 +1818,7 @@ export const Search = ({navigation}) => {
             </View>
           )}
           {buttonView === 1 && (
-            <View>
+            <View style={{marginBottom:4}}>
               {!data ? (
                 <ActivityIndicator size="large" color="#7A7A7A" />
               ) : data?.[0] ? (

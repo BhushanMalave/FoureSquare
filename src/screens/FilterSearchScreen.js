@@ -1817,7 +1817,7 @@ export const FilterSearch = ({navigation}) => {
             </View>
           )}
           {buttonView === 1 && (
-            <View>
+             <View style={{marginBottom:22}}>
               {!data ? (
                 <ActivityIndicator size="large" color="#7A7A7A" />
               ) : data?.[0] ? (
