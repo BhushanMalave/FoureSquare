@@ -16,10 +16,12 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import { setInitialState } from '../redux/ReduxPersist/States';
+import { setLoginState } from '../redux/ReduxPersist/States';
 
 export const FaviouriteViewComponent = ({item,onPress,navigation}) => {
   const token = useSelector(state=>state.userDetails.token);
   const state = useSelector(state=> state.status.initialState);
+
   const {height, width} = useWindowDimensions();
   const dispatch=useDispatch();
   const convertPriceRange = number => {

@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
+import { setLoginState } from '../redux/ReduxPersist/States';
 
 export const ReviewViewComponent = ({item}) => {
   const {height, width} = useWindowDimensions();
