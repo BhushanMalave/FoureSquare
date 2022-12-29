@@ -23,6 +23,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {viewPhotoApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
 import Share from 'react-native-share';
+import { setLoginState } from '../redux/ReduxPersist/States';
 
 export const PhotosGallery = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();

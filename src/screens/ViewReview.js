@@ -22,6 +22,7 @@ import {ReviewViewComponent} from '../components/ReviewComponent';
 import {viewReviewApi} from '../authorization/Auth';
 import {useDispatch, useSelector} from 'react-redux';
 import {setInitialState} from '../redux/ReduxPersist/States';
+import { setLoginState } from '../redux/ReduxPersist/States';
 
 export const ViewReview = ({navigation, route}) => {
   const {height, width} = useWindowDimensions();

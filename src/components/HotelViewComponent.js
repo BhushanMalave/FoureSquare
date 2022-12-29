@@ -16,6 +16,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {addFavouriteApi} from '../authorization/Auth';
 import {setInitialState} from '../redux/ReduxPersist/States';
+import { setLoginState } from '../redux/ReduxPersist/States';
 
 export const HotelViewComponent = ({onPress, item, state}) => {
   const {height, width} = useWindowDimensions();
